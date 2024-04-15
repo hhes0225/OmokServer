@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32901.82
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APIServer", "WebApplication2\APIServer.csproj", "{3C39946D-B71A-4320-B16E-7EE4084721F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FakeHiveServer", "HiveServer\FakeHiveServer.csproj", "{073D799C-3001-4091-80AA-6408BF5514AD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3C39946D-B71A-4320-B16E-7EE4084721F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C39946D-B71A-4320-B16E-7EE4084721F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C39946D-B71A-4320-B16E-7EE4084721F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C39946D-B71A-4320-B16E-7EE4084721F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{073D799C-3001-4091-80AA-6408BF5514AD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{073D799C-3001-4091-80AA-6408BF5514AD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{073D799C-3001-4091-80AA-6408BF5514AD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{073D799C-3001-4091-80AA-6408BF5514AD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {EF5DF29C-442B-4616-A7B9-E89EE89E7CCF}
+	EndGlobalSection
+EndGlobal
