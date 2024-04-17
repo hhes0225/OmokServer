@@ -1,7 +1,7 @@
 # OmokServer
 Developed by. 한희선
 
-### API Server
+## API Server
 Game Server와 계정을 관리하는 Hive Server를 구현,
 이 두 서버를 통해 로그인 기능을 구현한다.
 
