@@ -1,2 +1,2 @@
 # OmokServer
-# Developed by. 한희선
+Developed by. 한희선
