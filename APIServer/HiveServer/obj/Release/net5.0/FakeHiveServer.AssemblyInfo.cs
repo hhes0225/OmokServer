@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("FakeHiveServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bdf826f33e377a3794d8d81c59996530c7fee0ee")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0626392fad193b7536ebd62375b4e0f92b981fac")]
 [assembly: System.Reflection.AssemblyProductAttribute("FakeHiveServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("FakeHiveServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
