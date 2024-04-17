@@ -23,5 +23,5 @@ sequenceDiagram
   participant E as HiveServer
   participant F as HiveRedis
   participant G as HiveMySQL
-  client->>HiveServer:로그인 요청
+  A->>HiveServer:로그인 요청
 ```
