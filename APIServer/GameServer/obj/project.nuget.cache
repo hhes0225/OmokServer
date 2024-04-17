@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "c4qWQLJn4oY02q9KT1gpk1dwafn80Mwqn42Ici1PvN+HJjjNfzoYBlnrTAT/ft3UmrIcHwiVuSQAXb3cm7wv7w==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\ASUS\\Source\\Repos\\hhes0225\\OmokServer\\APIServer\\GameServer\\GameServer.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.19.6\\microsoft.visualstudio.azure.containers.tools.targets.1.19.6.nupkg.sha512"
+  ],
+  "logs": []
+}

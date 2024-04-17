@@ -1,0 +1,10 @@
+{
+  "version": 2,
+  "dgSpecHash": "y2nQWR6WrT1S6R7I4EJrGDRizr96nEVq+ArTFS6+3h8vEOS5gq8ehyNXwn3OgQfOCm9dTFY9NzGiVn3QXuH9YQ==",
+  "success": true,
+  "projectFilePath": "C:\\Users\\ASUS\\Source\\Repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\HiveServer.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\ASUS\\.nuget\\packages\\microsoft.visualstudio.azure.containers.tools.targets\\1.19.6\\microsoft.visualstudio.azure.containers.tools.targets.1.19.6.nupkg.sha512"
+  ],
+  "logs": []
+}

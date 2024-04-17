@@ -1,13 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
+using GameServer.Models;
+using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading.Tasks;
-using WebApplication2.Models;
 
-namespace WebApplication2.Controllers
+namespace GameServer.Controllers
 {
     public class HomeController : Controller
     {
