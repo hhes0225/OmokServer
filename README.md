@@ -1,6 +1,8 @@
 # OmokServer
 Developed by: 한희선
+
 개발 기간: 2024.04.15~
+
 프로젝트 개요: 온라인 오목 게임을 위한 게임 서버 개발
 
 ## API Server
