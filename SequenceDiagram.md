@@ -42,7 +42,7 @@ sequenceDiagram
       else
           D-->>B: 유저 데이터 로드
       end
-      B-->>C: 인증토큰 저장
+      B-->>C: 고유번호, 인증토큰 저장
       B-->>A: 로그인 성공 응답
   end
 ```
