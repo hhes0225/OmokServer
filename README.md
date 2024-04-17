@@ -15,12 +15,26 @@ Game Server와 계정을 관리하는 Hive Server를 구현,
 - Server: ASP.NET core 웹 어플리케이션
 
 ### 작업 내역
+#### 초기 작업
 |구현 여부|구현 사항|
 |------|------|
 |✅|DB 스키마 정의|
 |✅|시퀀스 다이어그램 작성|
 |✅|SQL DB 생성|
 |⛔|Redis DB 생성|
+
+#### Hive Server
 |⛔|DB와 프로젝트 연결|
+|⛔|Redis와 프로젝트 연결|
+|⛔|Repository 구현(인터페이스, DB에서 데이터베이스 관련 작업)|
 |⛔|DAO, DTO 작성|
+|⛔|계정 생성 동작 처리|
+
+
+#### Game Server
+|⛔|DB와 프로젝트 연결|
+|⛔|Redis와 프로젝트 연결|
+|⛔|Repository 구현(인터페이스, DB에서 데이터베이스 관련 작업)|
+|⛔|DAO, DTO 작성|
+
   
