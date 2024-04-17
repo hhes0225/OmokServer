@@ -7,7 +7,7 @@ sequenceDiagram
   participant B as HiveServer
   participant C as HiveRedis
   participant D as HiveMySQL
-  client->>HiveServer: 계정 생성 요청
+  A->>HiveServer: 계정 생성 요청
   HiveServer->>HiveMySQL: 계정 데이터 생성
 ```
 
