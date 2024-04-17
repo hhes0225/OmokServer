@@ -24,4 +24,7 @@ sequenceDiagram
   participant F as HiveRedis
   participant G as HiveMySQL
   A->>E:로그인 요청
+  E->>G: 데이터 조회 요청
+  G-->>E: 데이터 반환
+  
 ```
