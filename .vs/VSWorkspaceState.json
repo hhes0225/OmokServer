@@ -1,7 +1,10 @@
 {
   "ExpandedNodes": [
     "",
-    "\\APIServer"
+    "\\APIServer",
+    "\\APIServer\\GameServer",
+    "\\APIServer\\HiveServer",
+    "\\APIServer\\HiveServer\\Repository"
   ],
   "SelectedNode": "\\APIServer\\APIServer.sln",
   "PreviewInSolutionExplorer": false
