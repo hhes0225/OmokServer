@@ -64,6 +64,10 @@
             "SqlKata.Execution": {
               "target": "Package",
               "version": "[2.4.0, )"
+            },
+            "ZLogger": {
+              "target": "Package",
+              "version": "[2.4.1, )"
             }
           },
           "imports": [

@@ -35,5 +35,4 @@ public enum ErrorCode: UInt16
 
     //GameDB 4000~
     GetGameDBConnectionFail=4002
-    
 }
