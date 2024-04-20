@@ -3,35 +3,19 @@ using HiveServer.Repository;
 using ZLogger;
 using System.Configuration;
 
-//ASP.NET Core À¥ ¾ÖÇÃ¸®ÄÉÀÌ¼ÇÀ» ±¸¼ºÇÏ±â À§ÇÑ »õ·Î¿î ºô´õ °´Ã¼¸¦ »ı¼º
 WebApplicationBuilder builder =  WebApplication.CreateBuilder(args);
 
-//Repository µî·Ï
-//DI ÆĞÅÏ
-//ex) "IAccountDB" ÀÎÅÍÆäÀÌ½º¿Í "AccountDB" Å¬·¡½º °£ÀÇ ÀÇÁ¸¼ºÀ» µî·Ï
+//Repository ë“±ë¡
 builder.Services.AddScoped<IAccountDB, AccountDB>();
 builder.Services.AddSingleton<IMemoryDB, MemoryDB>();
 
-
-//À¥ API °ü·Ã ¸ğµâ »ç¿ë ¼±¾ğ: IServiceCollecion ÄÁÆ®·Ñ·¯ µî·Ï
 builder.Services.AddControllers();
 
-//¾ÖÇÃ¸®ÄÉÀÌ¼ÇÀÇ ¼³Á¤ Á¤º¸¸¦ °¡Á®¿È.
-//¼³Á¤ ex) ¾ÖÇÃ¸®ÄÉÀÌ¼ÇÀÇ Æ÷Æ® ¹øÈ£ or µ¥ÀÌÅÍº£ÀÌ½º ¿¬°á Á¤º¸ µî(appsetting.json?)
 IConfiguration configuration = builder.Configuration;
-//DBConfigÀÇ ¿¬°á Á¤º¸¸¦ °¡Á®¿À´Â ÄÚµå
-//ÁøÂ¥ ³Ê¶§¹®¿¡ ¹ã»ü´Ù.
-//appsettings.json ÆÄÀÏ¿¡¼­ DBConfig ¼½¼Ç¿¡ ÀÖ´Â ¼³Á¤ °ªÀ» °¡Á®¿Í¼­ DBConfig Å¬·¡½ºÀÇ ÀÎ½ºÅÏ½º¿¡ ¹ÙÀÎµù
-//GetSection(nameof(DBConfig)): ¼³Á¤ ÆÄÀÏ¿¡¼­ DBConfig ¼½¼ÇÀ» °¡Á®¿À´Â ¸Ş¼­µå
 builder.Services.Configure<DBConfig>(configuration.GetSection(nameof(DBConfig)));
 
-//WebApplicationBuilder °´Ã¼¸¦ »ç¿ëÇÏ¿© ASP.NET Core À¥ ¾ÖÇÃ¸®ÄÉÀÌ¼ÇÀ» ºôµå
-//¾ÖÇÃ¸®ÄÉÀÌ¼ÇÀ» ½ÇÇà °¡´ÉÇÑ ÇüÅÂ·Î ¸¸µé°í, ±× °á°ú¸¦ º¯¼ö¿¡ ÀúÀå
 var app = builder.Build();
 
-//ÄÁÆ®·Ñ·¯ÀÇ ¾×¼Ç ¸Ş¼­µå¸¦ È£ÃâÇÏ°í ÇØ´ç ¾×¼Ç ¸Ş¼­µå¿¡¼­ ¹İÈ¯ÇÑ µ¥ÀÌÅÍ¸¦ Å¬¶óÀÌ¾ğÆ®¿¡°Ô ¹İÈ¯
-//Å¬¶óÀÌ¾ğÆ®´Â ÁÖ·Î JSON Çü½ÄÀ¸·Î µ¥ÀÌÅÍ¸¦ ¹Ş°Ô µÊ
 app.MapDefaultControllerRoute();
 
-//¼­¹ö ÁÖ¼Ò·Î ¾ÖÇÃ¸®ÄÉÀÌ¼ÇÀ» ½ÇÇàÇÏ°í »ç¿ëÀÚÀÇ ¿äÃ»¿¡ ´ëÇÑ ÀÀ´äÀ» Ã³¸®
 app.Run(configuration["ServerAddress"]);
