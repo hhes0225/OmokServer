@@ -11,35 +11,42 @@ namespace HiveServer.Controllers;
 public class LoginController : ControllerBase
 {
     private readonly IAccountDB _accountDB;
+    private readonly IMemoryDB _memoryDB;
     private readonly ILogger<LoginController> _logger;
     
 
-    public LoginController(ILogger<LoginController> logger, IAccountDB accountDB)
+    public LoginController(ILogger<LoginController> logger, IAccountDB accountDB, IMemoryDB memoryDB)
     {
         _logger = logger;
         _accountDB = accountDB;
+        _memoryDB = memoryDB;
     }
 
     [HttpPost]
     public async Task<LoginResponse> Post(LoginRequest request)
     {
         LoginResponse response=new LoginResponse();
-        Tuple<ErrorCode, string> result = await _accountDB.VerifyUser(request.Email, request.Password);
 
-        if(result.Item1 != ErrorCode.None)
+        Tuple<ErrorCode, string> sqlDBResult = await _accountDB.VerifyUser(request.Email, request.Password);
+        if(sqlDBResult.Item1 != ErrorCode.None)
         {
-            response.Result = result.Item1;
+            response.Result = sqlDBResult.Item1;
             return response;
         }
 
         //인증토큰 생성
         string token = Security.GenerateAuthToken(request.Email);
-
-        Console.WriteLine(token);
+        response.AuthToken= token;
 
         //Redis에 이메일과 인증토큰 저장
+        ErrorCode errorCode = await _memoryDB.RegisterUserAsync(request.Email, token);
+        if (errorCode != ErrorCode.None)
+        {
+            response.Result = errorCode;
+            return response;
+        }
 
-
+        //인증토큰 반환
         return response;
     }
 

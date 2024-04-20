@@ -15,7 +15,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HiveServer")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7989c34c5831562d256e11c284080f06d9a5b0bf")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cf3e04753182eb08fcdf57eaad96945b25d94161")]
 [assembly: System.Reflection.AssemblyProductAttribute("HiveServer")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HiveServer")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

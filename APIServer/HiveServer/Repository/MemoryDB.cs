@@ -4,6 +4,7 @@ using CloudStructures;
 using CloudStructures.Structures;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
+using Org.BouncyCastle.Bcpg;
 
 
 namespace HiveServer.Repository;
@@ -28,6 +29,30 @@ public class MemoryDB : IMemoryDB
 
     public async Task<ErrorCode> RegisterUserAsync(string email, string authToken)
     {
+        ErrorCode errorCode = ErrorCode.None;
+
+        RedisDBAuthUserData user = new()
+        {
+            Email = email,
+            AuthToken = authToken
+        };
+
+        string keyValue = user.Email;
+
+        try
+        {
+            RedisString<RedisDBAuthUserData> redis = new(_redisConn, keyValue, LoginTimeSpan());
+
+            if(await redis.SetAsync(user, LoginTimeSpan())==false)
+            {
+                return ErrorCode.LoginFailAddRedis;
+            }
+        }
+        catch (Exception ex)
+        {
+            return ErrorCode.RedisFailException;
+        }
+
         return ErrorCode.None;
     }
 
@@ -41,11 +66,20 @@ public class MemoryDB : IMemoryDB
        
         return new Tuple<bool, RedisDBAuthUserData> (true, null);
     }
+
+    public TimeSpan LoginTimeSpan()
+    {
+        return TimeSpan.FromHours(RedisKeyExpireTime.LoginKeyExpireHour);
+    }
 }
 
+public class RedisKeyExpireTime
+{
+    public const ushort LoginKeyExpireHour = 6;
+}
 
 public class RedisDBAuthUserData
 {
-    public string email { get; set; } = "";
+    public string Email { get; set; } = "";
     public string AuthToken { get; set; } = "";
 }
