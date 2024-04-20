@@ -15,11 +15,13 @@ public enum ErrorCode: UInt16
 
     //Account 관련 Error 처리 2000~
     CreateAccountFailException=2001,
+    CreateAccountDuplicatedUser=2020,
+    FindAccountExistException = 2018,
+    AccountAlreadyExist = 2019,
     //로그인 관련 Error
-    LoginFailException=2002,
+    LoginFailException =2002,
     LoginFailUserNotExist=2003,
     LoginFailWrongPassword=2004,
-    LoginFailWrongEmail=2005,
     LoginFailSetAuthToken=2006,//???
     DuplicatedLogin=2007,
     //인증토큰 관련 에러

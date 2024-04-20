@@ -10,6 +10,7 @@ WebApplicationBuilder builder =  WebApplication.CreateBuilder(args);
 //DI 패턴
 //ex) "IAccountDB" 인터페이스와 "AccountDB" 클래스 간의 의존성을 등록
 builder.Services.AddScoped<IAccountDB, AccountDB>();
+builder.Services.AddSingleton<IMemoryDB, MemoryDB>();
 
 
 //웹 API 관련 모듈 사용 선언: IServiceCollecion 컨트롤러 등록
@@ -18,7 +19,11 @@ builder.Services.AddControllers();
 //애플리케이션의 설정 정보를 가져옴.
 //설정 ex) 애플리케이션의 포트 번호 or 데이터베이스 연결 정보 등(appsetting.json?)
 IConfiguration configuration = builder.Configuration;
-//builder.Services.Configure<DBConfig>(configuration.GetSection(nameof(DBConfig)));
+//DBConfig의 연결 정보를 가져오는 코드
+//진짜 너때문에 밤샜다.
+//appsettings.json 파일에서 DBConfig 섹션에 있는 설정 값을 가져와서 DBConfig 클래스의 인스턴스에 바인딩
+//GetSection(nameof(DBConfig)): 설정 파일에서 DBConfig 섹션을 가져오는 메서드
+builder.Services.Configure<DBConfig>(configuration.GetSection(nameof(DBConfig)));
 
 //WebApplicationBuilder 객체를 사용하여 ASP.NET Core 웹 애플리케이션을 빌드
 //애플리케이션을 실행 가능한 형태로 만들고, 그 결과를 변수에 저장
