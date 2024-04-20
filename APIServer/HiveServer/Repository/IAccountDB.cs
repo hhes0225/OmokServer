@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Threading.Tasks;
 
-namespace HiveServer.Services;
+namespace HiveServer.Repository;
 
 public interface IAccountDB : IDisposable
 {
+    public Task<ErrorCode> FindAccountExistAsync(string email);
+
     //계정 생성 메소드
     //주어진 이메일 주소와 비밀번호를 받아서 데이터베이스에 새로운 계정을 추가하고,
     //이 과정에서 발생하는 오류를 처리
@@ -17,5 +19,5 @@ public interface IAccountDB : IDisposable
     //인증에 성공한 경우에는 사용자의 식별자(ID, email 등)를 반환
     //arguments: 이메일, 비밀번호
     //return: 메소드 정상/비정상 동작+원인 파악하기 위한 ErrorCode & 유저 이메일
-    public Task<Tuple<ErrorCode, Int64>> VerifyUser(String email, string pw);
+    public Task<Tuple<ErrorCode, string>> VerifyUser(String email, string pw);
 }
