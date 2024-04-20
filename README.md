@@ -28,7 +28,8 @@ Game Server와 계정을 관리하는 Hive Server를 구현,
 |------|------|
 |✅|DB와 프로젝트 연결|
 |✅|Redis와 프로젝트 연결|
-|✅|Repository 구현(인터페이스, DB에서 데이터베이스 관련 작업)|
+|✅|Repository-mysql 연동, 정보 조회, 데이터 삽입|
+|✅|Repository-redis 연동, 데이터 삽입|
 |⛔|DAO, DTO 작성|
 |✅|Controller-계정 존재 여부 확인|
 |✅|Controller-계정 생성 시 비밀번호 암호화|
