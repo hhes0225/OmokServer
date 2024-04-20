@@ -8,27 +8,21 @@ namespace HiveServer.Services;
 
 public class Security
 {
-    //»ı¼ºµÇ´Â ¼ÖÆ® ¹®ÀÚ¿­Àº ¹«Á¶°Ç ¿µ¾î ¼Ò¹®ÀÚ¿Í ¼ıÀÚ·Î ±¸¼ºµÊ.
+    //ìƒì„±ë˜ëŠ” ì†”íŠ¸ ë¬¸ìì—´ì€ ë¬´ì¡°ê±´ ì˜ì–´ ì†Œë¬¸ìì™€ ìˆ«ìë¡œ êµ¬ì„±ë¨.
     private const String AllowableCharacters = "abcdefghijklmnopqrstuvwxyz0123456789";
 
-    //È¸¿ø°¡ÀÔ: Hash ¾ÏÈ£È­¸¦ À§ÇÑ Salt ¹®ÀÚ¿­ »ı¼º
+    //íšŒì›ê°€ì…: Hash ì•”í˜¸í™”ë¥¼ ìœ„í•œ Salt ë¬¸ìì—´ ìƒì„±
     public static String SaltString()
     {
-        var bytes = new byte[64];//1byte*±æÀÌ 64ÀÎ ¹ÙÀÌÆ® »ı¼º
+        var bytes = new byte[64];//1byte*ê¸¸ì´ 64ì¸ ë°”ì´íŠ¸ ìƒì„±
         using (var random = RandomNumberGenerator.Create())
         {
-            random.GetBytes(bytes); //64¹ÙÀÌÆ®¸¦ ·£´ıÀ¸·Î Ã¤¿ö³Ö±â(ÀÌÁø¼ö)
+            random.GetBytes(bytes);
         }
-        //RandomNumberGenerator.Create().GetBytes(bytes)·Î ÇØµµ µÇ´Âµ¥,
-        //usingÀ» ¾²¸é »ç¿ë ÈÄ ¹Ù·Î DisposeÇØ¼­ ¸Ş¸ğ¸® °ü¸®¿¡ ¿ëÀÌÇØÁø´Ù.
-
-        //char = 1byteÀÌ¹Ç·Î 1byte¸¶´Ù ´ëÀÀµÇ´Â char·Î º¯È¯
-        //ÀÌ¶§, AllowableCharacters ¹è¿­¿¡ ÀÖ´Â ¹®ÀÚ·Î¸¸ º¯È¯ÇØÁØ´Ù.
         return new string(bytes.Select(x => AllowableCharacters[x % AllowableCharacters.Length]).ToArray());
     }
 
-    //È¸¿ø°¡ÀÔ & ·Î±×ÀÎ: Salt ¹®ÀÚ¿­·Î ºñ¹Ğ¹øÈ£ Hash ¾ÏÈ£È­
-    //SHA-256 ÇØ½ÃÀÇ 16Áø¼ö ¹®ÀÚ¿­ Ç¥ÇöÀº Ç×»ó 64ÀÚ¸®
+    //íšŒì›ê°€ì… & ë¡œê·¸ì¸: Salt ë¬¸ìì—´ë¡œ ë¹„ë°€ë²ˆí˜¸ Hash ì•”í˜¸í™”
     public static string HashPassword(string saltvalue, string password)
     {
         var sha = SHA256.Create();
@@ -43,10 +37,10 @@ public class Security
         return stringBuilder.ToString();
     }
 
-    //·Î±×ÀÎ: Redis(Memory)¿¡ ÀúÀåÇÒ ÅäÅ« »ı¼º - JWS
+    //ë¡œê·¸ì¸: Redis(Memory)ì— ì €ì¥í•  í† í° ìƒì„± - JWS
     public static string GenerateAuthToken(string email)
     {
-        //JWS Payload ¼³Á¤
+        //JWS Payload ì„¤ì •
         var claims = new[]
         {
             new Claim(ClaimTypes.Email, email)
