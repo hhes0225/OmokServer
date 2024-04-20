@@ -4,7 +4,8 @@
     "\\APIServer",
     "\\APIServer\\HiveServer",
     "\\APIServer\\HiveServer\\Controllers",
-    "\\APIServer\\HiveServer\\Repository"
+    "\\APIServer\\HiveServer\\Repository",
+    "\\APIServer\\HiveServer\\Services"
   ],
   "SelectedNode": "\\APIServer\\APIServer.sln",
   "PreviewInSolutionExplorer": false

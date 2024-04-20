@@ -1,4 +1,4 @@
-﻿using HiveServer.Services;
+﻿using HiveServer.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using ZLogger;
@@ -31,21 +31,30 @@ public class CreateAccountController : ControllerBase
     //클라이언트가 서버에게 데이터를 제출하고자 할 때(주로 폼 데이터나 JSON 데이터) 사용
 
     //계정 생성이므로 이메일, 비밀번호가 들어오면 DB에 조회
-    //있으면 Du
     public async Task<CreateAccountResponse> Post(CreateAccountRequest request)
     {
         CreateAccountResponse response= new CreateAccountResponse(); // Response 메시지 객체 생성
+        
+        //DB에 이메일 정보 조회해서 이미 존재 여부 확인
+        ErrorCode errorCode = await _accountDB.FindAccountExistAsync(request.Email);
 
-        ////일단 정보 조회해서 있는지 확인
-        ////ErrorCode errorCode = await _accountDB.CreateAccountAsync(request.Email, request.Password);
-        //ErrorCode = ErrorCode.None;
+        //DB 사용자 정보 조회에 문제 발생
+        if (errorCode != ErrorCode.None)
+        {
+            response.Result = errorCode;
+            return response;
+        }
 
-        //if (errorCode != ErrorCode.None)
-        //{
-        //    response.Result=errorCode;
-        //    return response;
-        //}
-       
+        //계정 생성
+        errorCode = await _accountDB.CreateAccountAsync(request.Email, request.Password);
+
+        //계정 생성 실패
+        if (errorCode != ErrorCode.None)
+        {
+            response.Result = errorCode;
+            return response;
+        }
+
 
         return response;
     }
@@ -80,6 +89,7 @@ public class CreateAccountRequest
     public string Password { get; set; }
 
 }
+
 public class CreateAccountResponse
 {
     public ErrorCode Result { get; set; } = ErrorCode.None;//Default is None
