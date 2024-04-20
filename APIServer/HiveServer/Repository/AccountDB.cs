@@ -46,7 +46,6 @@ public class AccountDB:IAccountDB
             if (count != 0)
             {
                 return ErrorCode.AccountAlreadyExist;
-                Console.WriteLine("account is already exist");
             }
         }
         catch (Exception e)
@@ -123,7 +122,6 @@ public class AccountDB:IAccountDB
     private void Open()
     {
         _dbConnection = new MySqlConnection(_dbConfig.Value.AccountDB);
-		Console.WriteLine(_dbConfig.Value.AccountDB);
         _dbConnection.Open();
     }
 
