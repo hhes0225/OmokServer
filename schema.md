@@ -23,9 +23,10 @@ CREATE TABLE Account(
 ### User table
 
 ```
-Use Omok;
+Use GameDB;
 
 CREATE TABLE User(
+	uid BIGINT NOT NULL AUTO_INCREMENT COMMENT '유저 고유번호',
 	email VARCHAR(50) NOT NULL COMMENT '이메일',
 	nickname VARCHAR(30) NOT NULL COMMENT '닉네임',
 	create_date DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '생성 일시',
@@ -33,6 +34,8 @@ CREATE TABLE User(
 	win_count INT NOT NULL DEFAULT 0 COMMENT '이긴 횟수',
 	draw_count INT NOT NULL DEFAULT 0 COMMENT '비긴 횟수',
 	lose_count INT NOT NULL DEFAULT 0 COMMENT '진 횟수',
-	PRIMARY KEY(email)
-)
+	PRIMARY KEY(uid),
+	UNIQUE(email),
+	UNIQUE(nickname)
+)COMMENT '게임 유저 정보 테이블';
 ```
