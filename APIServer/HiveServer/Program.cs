@@ -1,5 +1,5 @@
-using HiveServer.Services;
-using HiveServer.Repository;
+using APIServer.Services;
+using APIServer.Repository;
 using ZLogger;
 using System.Configuration;
 

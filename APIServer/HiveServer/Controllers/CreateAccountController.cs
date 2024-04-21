@@ -1,10 +1,10 @@
-﻿using HiveServer.Repository;
+﻿using APIServer.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using ZLogger;
 
 
-namespace HiveServer.Controllers;
+namespace APIServer.Controllers;
 
 [ApiController]
 [Route("[controller]")]

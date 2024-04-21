@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 
 
-namespace HiveServer.Services;
+namespace APIServer.Services;
 
 public class Security
 {

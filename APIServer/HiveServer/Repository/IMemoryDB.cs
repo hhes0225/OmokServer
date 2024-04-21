@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 
-namespace HiveServer.Repository;
+namespace APIServer.Repository;
 
 public interface IMemoryDB : IDisposable
 {
