@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Data;
 using SqlKata.Execution; //QueryFactory 사용하기 위함(그냥 SqlKata는 안됨)
-using HiveServer.Services;
+using APIServer.Services;
 using Microsoft.Extensions.Options;
 using MySqlConnector;
 using ZLogger;
 
 
-namespace HiveServer.Repository;
+namespace APIServer.Repository;
 
 public class AccountDB:IAccountDB
 {
@@ -121,6 +121,10 @@ public class AccountDB:IAccountDB
                 return  new Tuple <ErrorCode, string> (ErrorCode.LoginFailWrongPassword, "0");
             }
 
+            //계정 정보가 맞다면 현재 시간으로 변경
+            string newDate = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+            int count = _queryFactory.Query("Account").Where("email", email).Update(new {recent_login_date=newDate});
+
         }
         catch (Exception e)
         {
@@ -133,7 +137,7 @@ public class AccountDB:IAccountDB
     private void Open()
     {
         _dbConnection = new MySqlConnection(_dbConfig.Value.AccountDB);
-		Console.WriteLine(_dbConfig.Value.AccountDB);
+		//Console.WriteLine(_dbConfig.Value.AccountDB);
         _dbConnection.Open();
     }
 

@@ -1,21 +1,24 @@
-var builder = WebApplication.CreateBuilder(args);
+//using GameServer.Services;
+using GameServer.Repository;
+using System.Configuration;
+using ZLogger;
 
-IConfiguration configuration = builder.Configuration;
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-//DI 관련 작업
-//mysql-Omok DB의 User table
-//builder.Services.AddScoped<IUserDB, UserDB>();
-//Redis
-//builder.Services.AddSingleton<ICacheDB, CacheDB>();
+//Repository 등록
+builder.Services.AddScoped<IUserDB, UserDB>();
+builder.Services.AddSingleton<IMemoryDB, MemoryDB>();
 
 
 // Add services to the container.
 builder.Services.AddControllers();
 
-WebApplication app = builder.Build();
+IConfiguration configuration = builder.Configuration;
+builder.Services.Configure<DBConfig>(configuration.GetSection(nameof(DBConfig)));
 
-app.UseRouting();
 
-app.UseAuthorization();
+var app = builder.Build();
 
-app.Run();
+app.MapDefaultControllerRoute();
+
+app.Run(configuration["ServerAddress"]);

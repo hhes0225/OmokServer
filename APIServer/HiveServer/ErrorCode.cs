@@ -23,6 +23,7 @@ public enum ErrorCode: UInt16
     LoginFailUserNotExist=2003,
     LoginFailWrongPassword=2004,
     LoginFailSetAuthToken=2006,//???
+    LoginFailSetRecentDate=2022,
     DuplicatedLogin=2007,
     //인증토큰 관련 에러
     AuthTokenMismatch=2008,
@@ -32,8 +33,9 @@ public enum ErrorCode: UInt16
     AuthTokenFailSetNx=2011,//???
     LoginFailAddRedis=2012,
     CheckAuthFailNotExist=2015,
-    CheckAuthFailNotMatch=2016,
-    CheckAuthFailException=2017,
+    CheckAuthFailEmailNotMatch=2016,
+    CheckAuthFailAuthTokenNotMatch = 2021,
+    CheckAuthFailException =2017,
 
     //GameDB 4000~
     GetGameDBConnectionFail=4002

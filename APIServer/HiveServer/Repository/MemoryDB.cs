@@ -1,4 +1,4 @@
-using HiveServer.Services;
+using APIServer.Services;
 using ZLogger;
 using CloudStructures;
 using CloudStructures.Structures;
@@ -7,7 +7,7 @@ using Microsoft.Extensions.Options;
 using Org.BouncyCastle.Bcpg;
 
 
-namespace HiveServer.Repository;
+namespace APIServer.Repository;
 
 public class MemoryDB : IMemoryDB
 {
@@ -53,11 +53,39 @@ public class MemoryDB : IMemoryDB
             return ErrorCode.RedisFailException;
         }
 
-        return ErrorCode.None;
+        return errorCode;
     }
 
+
+    //키 값(이메일)로 Redis에서 정보 조회
     public async Task<ErrorCode> CheckUserAuthAsync(string email, string authToken)
     {
+        try
+        {
+            RedisString<RedisDBAuthUserData> redis = new RedisString<RedisDBAuthUserData>(_redisConn, email, null);
+            RedisResult<RedisDBAuthUserData> userAuthData = await redis.GetAsync();
+            Console.WriteLine(userAuthData.ToString());
+
+            if (!userAuthData.HasValue)
+            {
+                return ErrorCode.CheckAuthFailNotExist;
+            }
+
+
+            if (userAuthData.Value.Email!=email )
+            {
+                return ErrorCode.CheckAuthFailEmailNotMatch;
+            }
+            if(userAuthData.Value.AuthToken != authToken)
+            {
+                return ErrorCode.CheckAuthFailAuthTokenNotMatch;
+            }
+        }
+        catch
+        {
+            return ErrorCode.CheckAuthFailException;
+        }
+
         return ErrorCode.None;
     }
 
@@ -82,4 +110,9 @@ public class RedisDBAuthUserData
 {
     public string Email { get; set; } = "";
     public string AuthToken { get; set; } = "";
+
+    public override string ToString()
+    {
+        return $"Email: {Email}, AuthToken: {AuthToken}"; // 필요한 속성들을 포함하여 원하는 형식으로 출력
+    }
 }

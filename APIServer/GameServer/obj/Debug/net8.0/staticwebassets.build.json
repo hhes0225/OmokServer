@@ -1,11 +1,19 @@
 {
   "Version": 1,
-  "Hash": "l7u3aWEfDP80lSlPqwR0olMxsgF1A9N3VDU90RTgd94=",
+  "Hash": "D1iSU47yI5x4jV6DIJtjjLZX7HAp3gUlnHwPiWLLBcY=",
   "Source": "GameServer",
   "BasePath": "_content/GameServer",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [],
-  "DiscoveryPatterns": [],
+  "DiscoveryPatterns": [
+    {
+      "Name": "GameServer\\wwwroot",
+      "Source": "GameServer",
+      "ContentRoot": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\GameServer\\wwwroot\\",
+      "BasePath": "_content/GameServer",
+      "Pattern": "**"
+    }
+  ],
   "Assets": []
 }

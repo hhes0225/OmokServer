@@ -2,9 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\APIServer",
+    "\\APIServer\\GameServer",
+    "\\APIServer\\GameServer\\Controllers",
+    "\\APIServer\\GameServer\\Repository",
     "\\APIServer\\HiveServer",
     "\\APIServer\\HiveServer\\Controllers",
-    "\\APIServer\\HiveServer\\Repository",
     "\\APIServer\\HiveServer\\Services"
   ],
   "SelectedNode": "\\APIServer\\APIServer.sln",

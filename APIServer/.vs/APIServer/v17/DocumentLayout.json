@@ -3,24 +3,28 @@
   "WorkspaceRootPath": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|c:\\users\\asus\\source\\repos\\hhes0225\\omokserver\\apiserver\\hiveserver\\controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|solutionrelative:hiveserver\\controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|c:\\users\\asus\\source\\repos\\hhes0225\\omokserver\\apiserver\\hiveserver\\repository\\imemorydb.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|solutionrelative:hiveserver\\repository\\imemorydb.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|c:\\users\\asus\\source\\repos\\hhes0225\\omokserver\\apiserver\\hiveserver\\httptest.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
+      "RelativeMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|solutionrelative:hiveserver\\httptest.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|c:\\users\\asus\\source\\repos\\hhes0225\\omokserver\\apiserver\\hiveserver\\repository\\memorydb.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|solutionrelative:hiveserver\\repository\\memorydb.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|c:\\users\\asus\\source\\repos\\hhes0225\\omokserver\\apiserver\\hiveserver\\repository\\accountdb.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|solutionrelative:hiveserver\\repository\\accountdb.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|c:\\users\\asus\\source\\repos\\hhes0225\\omokserver\\apiserver\\hiveserver\\errorcode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|solutionrelative:hiveserver\\errorcode.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|c:\\users\\asus\\source\\repos\\hhes0225\\omokserver\\apiserver\\hiveserver\\httptest.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}",
-      "RelativeMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|solutionrelative:hiveserver\\httptest.http||{5703B403-55E7-4C63-8C88-A8F52C7A45C5}"
+      "AbsoluteMoniker": "D:0:0:{9925E451-9B18-44E0-A5E9-C1EFFA796DC2}|GameServer\\GameServer.csproj|c:\\users\\asus\\source\\repos\\hhes0225\\omokserver\\apiserver\\gameserver\\controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9925E451-9B18-44E0-A5E9-C1EFFA796DC2}|GameServer\\GameServer.csproj|solutionrelative:gameserver\\controllers\\logincontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|c:\\users\\asus\\source\\repos\\hhes0225\\omokserver\\apiserver\\hiveserver\\controllers\\verifytogameservercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{8D5D4C46-1A6A-48CA-A920-40672C0EB39A}|HiveServer\\HiveServer.csproj|solutionrelative:hiveserver\\controllers\\verifytogameservercontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9925E451-9B18-44E0-A5E9-C1EFFA796DC2}|GameServer\\GameServer.csproj|c:\\users\\asus\\source\\repos\\hhes0225\\omokserver\\apiserver\\gameserver\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{9925E451-9B18-44E0-A5E9-C1EFFA796DC2}|GameServer\\GameServer.csproj|solutionrelative:gameserver\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -29,18 +33,18 @@
       "VerticalTabListWidth": 256,
       "DocumentGroups": [
         {
-          "DockedWidth": 200,
-          "SelectedChildIndex": 1,
+          "DockedWidth": 237,
+          "SelectedChildIndex": 0,
           "Children": [
             {
               "$type": "Document",
-              "DocumentIndex": 4,
+              "DocumentIndex": 0,
               "Title": "httpTest.http",
               "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\httpTest.http",
               "RelativeDocumentMoniker": "HiveServer\\httpTest.http",
               "ToolTip": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\httpTest.http",
               "RelativeToolTip": "HiveServer\\httpTest.http",
-              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAUAAAAVAAAA",
+              "ViewState": "AQIAAAUAAAAAAAAAAADwvw4AAADfAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003502|",
               "WhenOpened": "2024-04-20T16:59:34.965Z",
               "IsPinned": true,
@@ -48,55 +52,64 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 0,
-              "Title": "LoginController.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\Controllers\\LoginController.cs",
-              "RelativeDocumentMoniker": "HiveServer\\Controllers\\LoginController.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\Controllers\\LoginController.cs",
-              "RelativeToolTip": "HiveServer\\Controllers\\LoginController.cs",
-              "ViewState": "AQIAAD0AAAAAAAAAAAAAAEMAAAAvAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-20T15:35:39.117Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 3,
-              "Title": "AccountDB.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\Repository\\AccountDB.cs",
-              "RelativeDocumentMoniker": "HiveServer\\Repository\\AccountDB.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\Repository\\AccountDB.cs",
-              "RelativeToolTip": "HiveServer\\Repository\\AccountDB.cs",
-              "ViewState": "AQIAAJkAAAAAAAAAAAAYwJUAAAAVAAAA",
+              "Title": "LoginController.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\GameServer\\Controllers\\LoginController.cs",
+              "RelativeDocumentMoniker": "GameServer\\Controllers\\LoginController.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\GameServer\\Controllers\\LoginController.cs",
+              "RelativeToolTip": "GameServer\\Controllers\\LoginController.cs",
+              "ViewState": "AQIAAB4AAAAAAAAAAAAkwCYAAAALAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-20T15:30:39.086Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "IMemoryDB.cs",
-              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\Repository\\IMemoryDB.cs",
-              "RelativeDocumentMoniker": "HiveServer\\Repository\\IMemoryDB.cs",
-              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\Repository\\IMemoryDB.cs",
-              "RelativeToolTip": "HiveServer\\Repository\\IMemoryDB.cs",
-              "ViewState": "AQIAAAMAAAAAAAAAAAAowAoAAAAAAAAA",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-20T16:57:29.368Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-21T13:40:55.408Z",
+              "IsPinned": true
             },
             {
               "$type": "Document",
               "DocumentIndex": 2,
+              "Title": "ErrorCode.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\ErrorCode.cs",
+              "RelativeDocumentMoniker": "HiveServer\\ErrorCode.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\ErrorCode.cs",
+              "RelativeToolTip": "HiveServer\\ErrorCode.cs",
+              "ViewState": "AQIAAB4AAAAAAAAAAADwvyQAAAAaAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-21T16:01:06.324Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
               "Title": "MemoryDB.cs",
               "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\Repository\\MemoryDB.cs",
               "RelativeDocumentMoniker": "HiveServer\\Repository\\MemoryDB.cs",
               "ToolTip": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\Repository\\MemoryDB.cs",
               "RelativeToolTip": "HiveServer\\Repository\\MemoryDB.cs",
-              "ViewState": "AQIAABgAAAAAAAAAAAAywAoAAAAYAAAA",
+              "ViewState": "AQIAAEEAAAAAAAAAAAAkwEkAAAAAAAAA",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2024-04-20T15:25:44.28Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-04-21T15:41:31.089Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "VerifyToGameServerController.cs",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\Controllers\\VerifyToGameServerController.cs",
+              "RelativeDocumentMoniker": "HiveServer\\Controllers\\VerifyToGameServerController.cs",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\HiveServer\\Controllers\\VerifyToGameServerController.cs",
+              "RelativeToolTip": "HiveServer\\Controllers\\VerifyToGameServerController.cs",
+              "ViewState": "AQIAABUAAAAAAAAAAAASwBsAAAAAAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-04-21T14:31:27.307Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "appsettings.json",
+              "DocumentMoniker": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\GameServer\\appsettings.json",
+              "RelativeDocumentMoniker": "GameServer\\appsettings.json",
+              "ToolTip": "C:\\Users\\ASUS\\source\\repos\\hhes0225\\OmokServer\\APIServer\\GameServer\\appsettings.json",
+              "RelativeToolTip": "GameServer\\appsettings.json",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAA0AAAAoAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
+              "WhenOpened": "2024-04-21T13:36:06.511Z"
             }
           ]
         }

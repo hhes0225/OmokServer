@@ -1,10 +1,10 @@
-﻿using HiveServer.Repository;
+﻿using APIServer.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 using ZLogger;
 
 
-namespace HiveServer.Controllers;
+namespace APIServer.Controllers;
 
 //컨트롤러가 API 엔드포인트를 처리하는 데 사용
 [ApiController]

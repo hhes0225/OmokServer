@@ -24,3 +24,17 @@ C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\obj\Debug\ne
 C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\obj\Debug\net8.0\GameServer.pdb
 C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\obj\Debug\net8.0\GameServer.genruntimeconfig.cache
 C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\obj\Debug\net8.0\ref\GameServer.dll
+C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\obj\Debug\net8.0\GameServer.csproj.AssemblyReference.cache
+C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\bin\Debug\net8.0\MySqlConnector.dll
+C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\bin\Debug\net8.0\SqlKata.dll
+C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\bin\Debug\net8.0\System.IO.Hashing.dll
+C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\bin\Debug\net8.0\Utf8StringInterpolation.dll
+C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\bin\Debug\net8.0\ZLogger.dll
+C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\obj\Debug\net8.0\GameServer.csproj.Up2Date
+C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\bin\Debug\net8.0\GameServer.staticwebassets.runtime.json
+C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\bin\Debug\net8.0\CloudStructures.dll
+C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\bin\Debug\net8.0\Dapper.dll
+C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\bin\Debug\net8.0\Humanizer.dll
+C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\bin\Debug\net8.0\Pipelines.Sockets.Unofficial.dll
+C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\bin\Debug\net8.0\SqlKata.Execution.dll
+C:\Users\ASUS\Source\Repos\hhes0225\OmokServer\APIServer\GameServer\bin\Debug\net8.0\StackExchange.Redis.dll
