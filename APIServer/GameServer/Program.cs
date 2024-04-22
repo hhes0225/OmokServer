@@ -5,7 +5,7 @@ using ZLogger;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-//Repository µî·Ï
+//Repository ì €ìž¥
 builder.Services.AddScoped<IUserDB, UserDB>();
 builder.Services.AddSingleton<IMemoryDB, MemoryDB>();
 
