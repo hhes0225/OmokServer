@@ -24,7 +24,6 @@ public class VerifyToGameServerController : ControllerBase
     [HttpPost]
     public async Task<VerifyTokenResponse> Verify([FromBody] VerifyTokenRequestBody request)
     {
-        Console.WriteLine("Verify...\n");
         VerifyTokenResponse response = new VerifyTokenResponse();
         ErrorCode errorCode = await _memoryDB.CheckUserAuthAsync(request.Email, request.HiveToken);
 
