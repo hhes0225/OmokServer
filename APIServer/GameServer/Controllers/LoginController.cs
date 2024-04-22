@@ -22,7 +22,6 @@ public class LoginController : Controller
         _userDB = userDB;
         _memoryDB = memoryDB;
         _hiveServerAddress = configuration["HiveServerAddress"] + "/VerifyToGameServer";
-        Console.WriteLine(_hiveServerAddress);
     }
 
     [HttpPost]
@@ -30,7 +29,7 @@ public class LoginController : Controller
     {
         LoginResponse response = new LoginResponse();
 
-        //client request¸¦ »ı¼ºÇÏ¿© HiveServer¿¡ Àü´Ş
+        //client requestë¥¼ ìƒì„±í•˜ì—¬ HiveServerì— ì „ë‹¬
         HttpClient client = new HttpClient();
         var hiveResponse = await client.PostAsJsonAsync(_hiveServerAddress, new
         {
@@ -40,14 +39,14 @@ public class LoginController : Controller
 
         if (hiveResponse.IsSuccessStatusCode)
         {
-            //json Çü½ÄÀ¸·Î ÀÀ´ä ³»¿ë ÀĞ¾î¿À±â
+            //json í˜•ì‹ìœ¼ë¡œ ì‘ë‹µ ë‚´ìš© ì½ì–´ì˜¤ê¸°
             var responseContent = await hiveResponse.Content.ReadAsStringAsync();
             responseContent = responseContent.Replace("result", "Result");
 
-            //ÀÀ´ä ³»¿ë jsonÀ¸·Î deserializeÇÏ¿© °´Ã¼·Î º¯È¯
+            //ì‘ë‹µ ë‚´ìš© jsonìœ¼ë¡œ deserializeí•˜ì—¬ ê°ì²´ë¡œ ë³€í™˜
             var responseObject = JsonSerializer.Deserialize<LoginResponse>(responseContent);
 
-            // °á°ú enum °ª ÃßÃâ
+            // ê²°ê³¼ enum ê°’ ì¶”ì¶œ
             var result = responseObject.Result;
 
             if (responseObject.Result != ErrorCode.None)
@@ -62,11 +61,11 @@ public class LoginController : Controller
             return response;
         }
 
-        //Mysql: ÀÌ¸ŞÀÏ Á¤º¸·Î À¯Àú µ¥ÀÌÅÍ ·Îµå
+        //Mysql: ì´ë©”ì¼ ì •ë³´ë¡œ ìœ ì € ë°ì´í„° ë¡œë“œ
         var userData = _userDB.FindUserDataAsync(request.Email);
 
 
-        //¾ø´Â À¯Àú¶ó¸é »õ·Î »ı¼º
+        //ì—†ëŠ” ìœ ì €ë¼ë©´ ìƒˆë¡œ ìƒì„±
         if (userData.Result == null)
         {
             ErrorCode insertData = await _userDB.InsertUserAsync(request.Email);
@@ -77,11 +76,11 @@ public class LoginController : Controller
                 return response;
             }
 
-            //À¯Àú µ¥ÀÌÅÍ ·Îµå
+            //ìœ ì € ë°ì´í„° ë¡œë“œ
             userData = _userDB.FindUserDataAsync(request.Email);
         }
 
-        //Redis¿¡ ÀÌ¸ŞÀÏ°ú ÀÎÁõÅäÅ« ÀúÀå(ÃßÈÄ ÀÎ°ÔÀÓ¿¡¼­´Â ÀÌ Á¤º¸¸¸ »ç¿ëÇÏ¿© ÀÎÁõ)
+        //Redisì— ì´ë©”ì¼ê³¼ ì¸ì¦í† í° ì €ì¥(ì¶”í›„ ì¸ê²Œì„ì—ì„œëŠ” ì´ ì •ë³´ë§Œ ì‚¬ìš©í•˜ì—¬ ì¸ì¦)
         ErrorCode errorCode = await _memoryDB.RegisterUserAsync(request.Email, request.AuthToken);
         if(errorCode != ErrorCode.None)
         {
@@ -90,7 +89,7 @@ public class LoginController : Controller
         }
 
 
-        //ÃÖÁ¾ ·Î±×ÀÎ °á°ú ¸®ÅÏ
+        //ìµœì¢… ë¡œê·¸ì¸ ê²°ê³¼ ë¦¬í„´
         return response;
     }
 
