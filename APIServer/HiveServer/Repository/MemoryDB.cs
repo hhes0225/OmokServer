@@ -57,14 +57,13 @@ public class MemoryDB : IMemoryDB
     }
 
 
-    //Å° °ª(ÀÌ¸ŞÀÏ)·Î Redis¿¡¼­ Á¤º¸ Á¶È¸
+    //í‚¤ ê°’(ì´ë©”ì¼)ë¡œ Redisì—ì„œ ì •ë³´ ì¡°íšŒ
     public async Task<ErrorCode> CheckUserAuthAsync(string email, string authToken)
     {
         try
         {
             RedisString<RedisDBAuthUserData> redis = new RedisString<RedisDBAuthUserData>(_redisConn, email, null);
             RedisResult<RedisDBAuthUserData> userAuthData = await redis.GetAsync();
-            Console.WriteLine(userAuthData.ToString());
 
             if (!userAuthData.HasValue)
             {
@@ -113,6 +112,6 @@ public class RedisDBAuthUserData
 
     public override string ToString()
     {
-        return $"Email: {Email}, AuthToken: {AuthToken}"; // ÇÊ¿äÇÑ ¼Ó¼ºµéÀ» Æ÷ÇÔÇÏ¿© ¿øÇÏ´Â Çü½ÄÀ¸·Î Ãâ·Â
+        return $"Email: {Email}, AuthToken: {AuthToken}";
     }
 }
