@@ -63,7 +63,7 @@ public class CreateAccountRequest
     [Required]
     [MinLength(1, ErrorMessage = "PASSWORD CANNOT BE EMPTY")]
     [StringLength(50, ErrorMessage ="PASSWORD IS TOO LONG")]
-    [DataType(DataType.Password)] //입력 필드가 사용자의 비밀번호를 나타낸다는 것을 지정
+    [DataType(DataType.Password)]
     public string Password { get; set; }
 
 }
