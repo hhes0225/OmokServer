@@ -6,7 +6,7 @@ Developed by: 한희선
 프로젝트 개요: 온라인 오목 게임을 위한 게임 서버 개발
 
 ## API Server
-Game Server와 계정을 관리하는 Hive Server를 구현,
+로그인을 요청하는 Game Server와 계정을 관리하는 Hive Server를 구현,
 이 두 서버를 통해 로그인 기능을 구현한다.
  
 ### 사용 기술
@@ -51,4 +51,14 @@ Game Server와 계정을 관리하는 Hive Server를 구현,
 |✅|Controller: email, 인증토큰 Redis에 저장|
 |⛔|DAO, DTO로 파일 분리|
 
-  
+## Socket Server
+인게임에서 유저 관리 / 채팅 기능 / 방 입장 기능 / 오목 로직 기능을 수행하는 서버를 구현한다.
+
+### 작업 내역
+|구현 여부|구현 사항|
+|------|------|
+|✅|서버 패킷 관련 사항 구현|
+|⛔|채팅 기능|
+|⛔|client와 연결|
+|⛔|client 패킷 수정|
+|⛔|방 입장 및 관리 관련 기능 구현|
