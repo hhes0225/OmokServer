@@ -1,8 +1,0 @@
-{
-  "profiles": {
-    "OmokServer": {
-      "commandName": "Project",
-      "commandLineArgs": "--uniqueID 1 --name OmokServer --maxConnectionNumber 32  --port 12021 --maxRequestLength 100 --receiveBufferSize 100 --sendBufferSize 100 --roomMaxCount 20 --roomMaxUserCount 2 --roomStartNumber 1"
-    }
-  }
-}
