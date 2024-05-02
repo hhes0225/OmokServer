@@ -53,7 +53,7 @@ public class ReceiveFilter : FixedHeaderReceiveFilter<OmokBinaryRequestInfo>
     protected override OmokBinaryRequestInfo ResolveRequestInfo(ArraySegment<byte> header, byte[] bodyBuffer, int offset, int length)
     {
         return new OmokBinaryRequestInfo(
-            BitConverter.ToInt16(header.Array, offset),
+            BitConverter.ToInt16(header.Array, 0),
             BitConverter.ToInt16(header.Array, 0+2),
             bodyBuffer.CloneRange(offset, length)
             );

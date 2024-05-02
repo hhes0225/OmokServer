@@ -106,13 +106,13 @@ public partial class PKTResRoomEnter//srv->cli 방 입장 결과 response
 }
 
 [MemoryPackable]
-public partial class PTKNtfRoomUserList//방 입장 시 방 안 유저에게 서로의 존재를 notify?
+public partial class PKTNtfRoomUserList//방 입장 시 방 안 유저에게 서로의 존재를 notify?
 {
-    List<string> UserIDList { get; set; } = new List<string>();
+    public List<string> UserIDList { get; set; } = new List<string>();
 }
 
 [MemoryPackable]
-public partial class PTKNtfRoomNewUser//방에 새 유저 입장 시 이미 방에 있는 사람들에게 Notify
+public partial class PKTNtfRoomNewUser//방에 새 유저 입장 시 이미 방에 있는 사람들에게 Notify
 {
     public string UserID { get; set; }
 }

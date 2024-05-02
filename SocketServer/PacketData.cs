@@ -30,13 +30,29 @@ public class PacketData
         }
     }
 
-    //Notify하는 부분 아직 구현중
+    //클라와 연결된 순간 자기 자신에게 연결되었다고 알림(Notify)
+    public PacketData MakeNTFInConnectOrDisconnectClientPacket(bool isConnect, string sessionID)
+    {
+        var packet = new PacketData();
+
+        if (isConnect)//Connect
+        {
+            packet.PacketID = (Int16)PACKETID.NTF_IN_CONNECT_CLIENT;
+        }
+        else//Disconnect
+        {
+            packet.PacketID = (Int16)PACKETID.NTF_IN_DISCONNECT_CLIENT;
+        }
+
+        packet.SessionID = sessionID;//이 클라가 접속했다 알리기 위함
+        return packet;
+    }
 }
 
 //Internal Packet(시스템 내부 패킷, 자기 자신에게 보내는 패킷) 정의
 
 [MemoryPackable]
-public partial class PTKInternalReqRoomEnter
+public partial class PKTInternalReqRoomEnter
     //Room 입장 시 시스템 내부에 유저 ID, 방 번호 자기 자신에게 req(입장 가능 여부 체크..?)
 {
     public string UserID {  get; set; }
@@ -54,7 +70,7 @@ public partial class PKTInternalResRoomEnter
 }
 
 [MemoryPackable]
-public partial class PTKInternalNtfRoomLeave
+public partial class PKTInternalNtfRoomLeave
     //시스템 내부에서 방 나갔을 때 전달
     //누가, 어떤 방에서 나갔는지
 {
