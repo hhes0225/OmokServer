@@ -6,6 +6,14 @@ using System.Threading.Tasks;
 
 namespace CSBaseLib;
 
+public enum UserState
+{
+    None = 0,
+    Ready = 1,
+    Playing = 2,
+    Finished = 3
+}
+
 //클라이언트와 정확히 동일한 내용이어야 함.
 //클라이언트가 1001번 에러를 보냈을 때 서버에 에러 코드가 없어서 처리를 못해주거나 다른 에러 처리로 넘어갈수도 있음
 
@@ -87,7 +95,7 @@ public enum PACKETID : int
     NTF_ROOM_LEAVE_USER=1023,
 
     REQ_ROOM_CHAT=1026,
-    NTF_ROOM_CHAT=1027,
+    NTF_ROOM_CHAT=1028,
 
     REQ_ROOM_DEV_ALL_ROOM_START_GAME=1091,
     RES_ROOM_DEV_ALL_ROOM_START_GAME=1092,

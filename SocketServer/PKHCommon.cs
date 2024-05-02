@@ -75,6 +75,7 @@ public class PKHCommon : PKHandler
             {
                 //에러 메시지와 함께 response 메시지 전달
                 ResponseLoginToClient(ERROR_CODE.LOGIN_ALREADY_WORKING, sessionID);
+                MainServer.MainLogger.Debug("이미 로그인 중임");
                 return;
             }
 
@@ -85,6 +86,7 @@ public class PKHCommon : PKHandler
             //packet생성해서 그 결과를 response
             if(errorCode == ERROR_CODE.NONE)
             {
+                MainServer.MainLogger.Debug($"{reqData.UserID} 로그인 성공");
                 ResponseLoginToClient(errorCode, sessionID);
                 //리스폰스 메시지 전달
                 MainServer.MainLogger.Debug("로그인 요청 답변 보냄");

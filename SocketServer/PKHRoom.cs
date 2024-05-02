@@ -47,7 +47,7 @@ public class PKHRoom:PKHandler
         {
             var user = UserMgr.GetUser(sessionID);
 
-            if (user == null || user.IsSessionConfirm(sessionID))
+            if (user == null || user.IsSessionConfirm(sessionID)==false)
             {
                 ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_INVALID_USER, sessionID);
                 return;
@@ -78,7 +78,7 @@ public class PKHRoom:PKHandler
 
             user.RoomEnter(reqData.RoomNubmer);
 
-            room.NotifyPacketUserLIst(sessionID);
+            room.NotifyPacketUserList(sessionID);
             room.NotifyPacketNewUser(sessionID, user.ID());//방의 다른 유저에게 나 왔다고 알리기
 
             ResponseEnterRoomToClient(ERROR_CODE.NONE, sessionID);
@@ -115,11 +115,14 @@ public class PKHRoom:PKHandler
 
             if (user == null)
             {
+                MainServer.MainLogger.Debug("유저 존재하지 않음");
                 return;
+                
             }
 
             if(CheckUserLeaveRoomAvailable(sessionID, user.RoomNumber) == false)
             {
+                MainServer.MainLogger.Debug("올바른 방 나가기 요청이 아님");
                 return ;
             }
 

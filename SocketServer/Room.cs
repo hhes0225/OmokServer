@@ -62,7 +62,7 @@ public class Room
         return UserList.Count;
     }
 
-    public void NotifyPacketUserLIst(string userNetSessionID)
+    public void NotifyPacketUserList(string userNetSessionID)
     {
         var packet = new CSBaseLib.PKTNtfRoomUserList();
 
@@ -115,19 +115,49 @@ public class Room
                 continue;
             }
 
-            NetSendFunc(user.NetSessionID, sendPacket);
+            NetSendFunc(user.NetSessionID, sendPacket);//SendData
         }
+    }
+
+    public bool IsAllReady()
+    {
+        foreach(var user in UserList)
+        {
+            if (user.GetUserState()!=UserState.Ready)
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 }
 
 public class RoomUser
 {
     public string UserID { get; private set; }
-    public string NetSessionID { get; private set; } 
+    public string NetSessionID { get; private set; }
+    public UserState State { get; private set; } = UserState.None;
 
     public void Set(string userID, string netSessionID)
     {
         UserID = userID;
         NetSessionID = netSessionID;
     }
+
+    public void Ready()
+    {
+        State = UserState.Ready;
+    }
+
+    public UserState GetUserState()
+    {
+        return State;
+    }
+
+    public void Play()
+    {
+        State = UserState.Playing;
+    }
+
 }

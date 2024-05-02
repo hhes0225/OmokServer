@@ -84,6 +84,7 @@ public class PacketProcessor
         CommonPacketHandler.RegisterPacketHandler(PacketHandlerMap);
 
         RoomPacketHandler.Init(serverNetwork, UserMgr);
+        RoomPacketHandler.SetRoomList(RoomList);
         RoomPacketHandler.RegisterPacketHandler(PacketHandlerMap);
     }
 
