@@ -1,4 +1,9 @@
 - 서버는 웬만해서 wait, sleep 넣으면 안됨(대신 Timer를 사용)
+
+
+
+
+
 ### UserManager.cs
 ```
 //동접자 1000명, 250ms마다 하트비트 검사
@@ -66,6 +71,8 @@ void CheckHeartBeat(int beginIndex, int endIndex)
 ```
 
 
+
+
 ### User.cs
 ```
 private Datetime _heartbeat;//유저 connection될때
@@ -90,6 +97,8 @@ public bool CheckHeartBeat(DateTime curTime){
 ```
 
 
+
+
 ### PKHCommon.cs - innerpacket 전송하는 핸들러
 ```
 //+ registerPacketHandler 메서드에 함수 핸들러 등록
@@ -109,6 +118,9 @@ public void NotifyInUserCheck(){
 	}
 }
 ```
+
+
+
 
 
 - Room도 비슷하게(방에서 쫓아내는것은 괜찮지만 Disconnect하게 되지는 않음)
