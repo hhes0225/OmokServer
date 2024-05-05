@@ -3,6 +3,7 @@ using MemoryPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -120,7 +121,7 @@ public class PKHRoom:PKHandler
                 
             }
 
-            if(CheckUserLeaveRoomAvailable(sessionID, user.RoomNumber) == false)
+            if(RemoveUserFromRoom(sessionID, user.RoomNumber) == false)
             {
                 MainServer.MainLogger.Debug("올바른 방 나가기 요청이 아님");
                 return ;
@@ -131,6 +132,8 @@ public class PKHRoom:PKHandler
             ResponseLeaveRoomToClient(sessionID);
 
             MainServer.MainLogger.Debug("Request Leave Room - Success");
+
+                                         
         }
         catch(Exception ex)
         {
@@ -138,7 +141,7 @@ public class PKHRoom:PKHandler
         }
     }
 
-    bool CheckUserLeaveRoomAvailable(string sessionID, int roomNumber)
+    bool RemoveUserFromRoom(string sessionID, int roomNumber)
     {
         MainServer.MainLogger.Debug($"LeaveRoomUser. SessionID: {sessionID}");
 
@@ -180,7 +183,7 @@ public class PKHRoom:PKHandler
         MainServer.MainLogger.Debug($"NotifyLeaveInternal. SessionID: {sessionID}");
 
         var reqData = MemoryPackSerializer.Deserialize<PKTInternalNtfRoomLeave>(packetData.BodyData);
-        CheckUserLeaveRoomAvailable(sessionID, reqData.RoomNumber);
+        RemoveUserFromRoom(sessionID, reqData.RoomNumber);
     }
 
     public void RequestChat(PacketData packetData)
@@ -247,4 +250,26 @@ public class PKHRoom:PKHandler
 
         return (true, room, roomUser);
     }
+
+    //public void NotifyToAllRoomUsers(string sessionID, string notifyBody)
+    //{
+    //    var roomObject = CheckRoomAndRoomUser(sessionID);
+
+    //    if (roomObject.Item1 == false)
+    //    {
+    //        return;
+    //    }
+
+
+    //    var notifyPacket = new PKTNtfRoomChat()
+    //    {
+    //        UserID = roomObject.Item3.UserID,
+    //        ChatMessage = notifyBody
+    //    };
+
+    //    var body = MemoryPackSerializer.Serialize(notifyPacket);
+    //    var sendData = PacketMaker.MakePacket(PACKETID.NTF_ROOM_CHAT, body);
+
+    //    roomObject.Item2.Broadcast("", sendData);
+    //}
 }

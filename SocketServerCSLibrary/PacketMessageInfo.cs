@@ -146,3 +146,60 @@ public partial class PKTNtfRoomChat//Ntf == Response 역할을 하게 됨. 실�
     public string UserID { get; set; }
     public string ChatMessage { get; set; }
 }
+
+[MemoryPackable]
+public partial class PKTReqReadyOmok
+{
+    public int RoomNumber;
+    public string UserID;
+}
+
+[MemoryPackable]
+public partial class PKTResReadyOmok
+{
+    public short Result;
+}
+
+[MemoryPackable]
+public partial class PKTNtfReadyOmok
+{
+    public string UserID;
+    public short IsReady;
+}
+
+// 오목 시작 통보(서버에서 클라이언트들에게)
+[MemoryPackable]
+public partial class PKTNtfStartOmok
+{
+    public string BlackUserID; // 선턴 유저 ID
+    public string WhiteUserID;
+}
+
+// 돌 두기
+[MemoryPackable]
+public partial class PKTReqPutMok
+{
+    public int PosX;
+    public int PosY;
+}
+
+[MemoryPackable]
+public partial class PKTResPutMok
+{
+    public short Result;
+}
+
+[MemoryPackable]
+public partial class PKTNtfPutMok
+{
+    public int PosX;
+    public int PosY;
+    public int Mok;
+}
+
+// 오목 게임 종료 통보
+[MemoryPackable]
+public partial class PKTNtfEndOmok
+{
+    public string WinUserID;
+}

@@ -147,6 +147,19 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
     {
         MainLogger.Info(string.Format($"세션 번호{session.SessionID} 접속 해제"));
 
+        var roomList = RoomMgr.GetRoomList();
+
+        foreach (var room in roomList)
+        {
+            var roomUser = room.GetUserByNetSessionID(session.SessionID);
+
+            if (roomUser != null)
+            {
+                room.RemoveUser(roomUser);
+                break;
+            }
+        }
+
         var packet = notifyPacket.MakeNTFInConnectOrDisconnectClientPacket(false, session.SessionID);
         Distribute(packet);
     }

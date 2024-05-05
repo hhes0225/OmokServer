@@ -110,6 +110,7 @@ namespace OmokClient
             var notifyPkt = MemoryPackSerializer.Deserialize<PKTNtfRoomNewUser>(packetData);
 
             AddRoomUserList(notifyPkt.UserID);
+            AddRoomChatMessageList(notifyPkt.UserID, "님이 입장하셨습니다.");
 
             DevLog.Write($"방에 새로 들어온 유저 받음");
         }
@@ -130,6 +131,7 @@ namespace OmokClient
             var notifyPkt = MemoryPackSerializer.Deserialize<PKTNtfRoomLeaveUser>(packetData);
 
             RemoveRoomUserList(notifyPkt.UserID);
+            AddRoomChatMessageList(notifyPkt.UserID, "님이 퇴장하셨습니다.");
 
             DevLog.Write($"방에서 나간 유저 받음");
         }
@@ -165,6 +167,7 @@ namespace OmokClient
         {
             var responsePkt = MemoryPackSerializer.Deserialize<PKTResReadyOmok>(packetData);
 
+
             DevLog.Write($"게임 준비 완료 요청 결과:  {(ErrorCode)responsePkt.Result}");
 
             if ((ErrorCode)responsePkt.Result == ErrorCode.None)
@@ -177,7 +180,9 @@ namespace OmokClient
         {
             var notifyPkt = MemoryPackSerializer.Deserialize<PKTNtfReadyOmok>(packetData);
 
-            if (notifyPkt.IsReady)
+            AddRoomChatMessageList(notifyPkt.UserID, "님 준비 완료!");
+
+            if (notifyPkt.IsReady==CSCommon.UserState.Ready)
             {
                 DevLog.Write($"[{notifyPkt.UserID}]님은 게임 준비 완료");
             }
@@ -203,6 +208,8 @@ namespace OmokClient
             StartGame(IsMyTurn, notifyPkt.BlackUserID, notifyPkt.WhiteUserID);
 
             DevLog.Write($"게임 시작. 흑돌 플레이어: {notifyPkt.BlackUserID}");
+            AddRoomChatMessageList(notifyPkt.BlackUserID, "님은 흑돌입니다.");
+            AddRoomChatMessageList(notifyPkt.WhiteUserID, "님은 백돌입니다.");
         }
 
 
@@ -217,7 +224,7 @@ namespace OmokClient
             else
             {
                 DevLog.Write($"오목 놓기 실패: {(ErrorCode)responsePkt.Result}");
-                OmokLogic.한수무르기();
+                OmokLogic.Undo();
             }
         }
 
@@ -226,7 +233,7 @@ namespace OmokClient
         {
             var notifyPkt = MemoryPackSerializer.Deserialize<PKTNtfPutMok>(packetData);
 
-            플레이어_돌두기(IsMyTurn, notifyPkt.PosX, notifyPkt.PosY);
+            PlayerPutStone(IsMyTurn, notifyPkt.PosX, notifyPkt.PosY);
 
             IsMyTurn = !IsMyTurn;
 

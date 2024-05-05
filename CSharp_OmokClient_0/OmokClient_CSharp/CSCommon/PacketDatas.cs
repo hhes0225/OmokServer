@@ -5,7 +5,19 @@ using System.Text;
 
 namespace CSCommon
 {
+    public enum PutStoneResult
+    {
+        Success = 0,
+        SamSam = 1,
+    }
 
+    public class UserState
+    {
+        public const Int16 None = 0;
+        public const Int16 Ready = 1;
+        public const Int16 Playing = 2;
+        public const Int16 Finished = 3;
+    }
     public class PacketDef
     {
         public const Int16 PacketHeaderSize = 4;
@@ -114,7 +126,8 @@ namespace CSCommon
     [MemoryPackable]
     public partial class PKTReqReadyOmok 
     {
-        public short Result;
+        public int RoomNumber;
+        public string UserID;
     }
 
     [MemoryPackable]
@@ -127,7 +140,7 @@ namespace CSCommon
     public partial class PKTNtfReadyOmok 
     {
         public string UserID;
-        public bool IsReady;
+        public short IsReady;
     }
 
 

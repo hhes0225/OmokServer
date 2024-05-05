@@ -182,7 +182,7 @@ namespace OmokClient
                 if ((string)user == userID)
                 {
                     removeItem = user;
-                    return;
+                    break;
                 }
             }
 

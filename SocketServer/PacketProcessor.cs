@@ -40,6 +40,7 @@ public class PacketProcessor
     Dictionary<int, Action<PacketData>> PacketHandlerMap = new Dictionary<int, Action<PacketData>>();
     PKHCommon CommonPacketHandler = new PKHCommon();
     PKHRoom RoomPacketHandler = new PKHRoom();
+    PKHOmokGame OmokPacketHandler = new PKHOmokGame();
 
     public void CreateAndStart(List<Room> roomList, MainServer mainServer)
     {
@@ -86,6 +87,10 @@ public class PacketProcessor
         RoomPacketHandler.Init(serverNetwork, UserMgr);
         RoomPacketHandler.SetRoomList(RoomList);
         RoomPacketHandler.RegisterPacketHandler(PacketHandlerMap);
+
+        OmokPacketHandler.Init(serverNetwork, UserMgr);
+        OmokPacketHandler.SetRoomList(RoomList);
+        OmokPacketHandler.RegisterPacketHandler(PacketHandlerMap);
     }
 
     void Process()

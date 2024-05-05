@@ -47,6 +47,11 @@ public class Room
         return UserList.Remove(user);
     }
 
+    public List<RoomUser> GetUserList()
+    {
+        return UserList;
+    }
+
     public RoomUser GetUser(string userID)
     {
         return UserList.Find(x => x.UserID == userID);
@@ -100,6 +105,24 @@ public class Room
 
         var bodyData = MemoryPackSerializer.Serialize(packet);
         var sendPacket = PacketMaker.MakePacket(PACKETID.NTF_ROOM_LEAVE_USER, bodyData);
+
+        //방 전체에게 뿌리기 -> Broadcast
+        Broadcast("", sendPacket);
+    }
+
+    public void NotifyPacketUserReady(string userID)
+    {
+        if (CurrentUserCount() == 0)
+        {
+            return;
+        }
+
+        var packet = new CSBaseLib.PKTNtfReadyOmok();
+        packet.UserID = userID;
+        packet.IsReady = (Int16)(GetUser(userID).GetUserState());
+
+        var bodyData = MemoryPackSerializer.Serialize(packet);
+        var sendPacket = PacketMaker.MakePacket(PACKETID.NTF_READY_OMOK, bodyData);
 
         //방 전체에게 뿌리기 -> Broadcast
         Broadcast("", sendPacket);

@@ -80,6 +80,7 @@ namespace OmokClient
         // 접속 끊기
         private void btnDisconnect_Click(object sender, EventArgs e)
         {
+            PostSendPacket(CSCommon.PacketID.ReqRoomLeave, null);
             SetDisconnectd();
             Network.Close();
         }
@@ -121,7 +122,15 @@ namespace OmokClient
         // 게임 준비 완료
         private void button6_Click(object sender, EventArgs e)
         {
-            PostSendPacket(CSCommon.PacketID.ReqReadyOmok, null);
+            var userReadyReq = new CSCommon.PKTReqReadyOmok()
+            {
+                RoomNumber = int.Parse(textBoxRoomNumber.Text),
+                UserID = textBoxUserID.Text
+            };
+
+            var body = MemoryPackSerializer.Serialize(userReadyReq);
+
+            PostSendPacket(CSCommon.PacketID.ReqReadyOmok, body);
 
             DevLog.Write($"게임 준비 완료 요청");
         }
@@ -141,6 +150,8 @@ namespace OmokClient
 
             PostSendPacket(CSCommon.PacketID.ReqRoomChat, packet);
             DevLog.Write($"방 채팅 요청");
+
+            textBoxRoomSendMsg.Clear();
         }
 
         private void btnTest_Click(object sender, EventArgs e)

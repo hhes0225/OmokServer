@@ -9,7 +9,6 @@ namespace SocketServer;
 
 public class PKHandler
 {
-    //Q. 상호 참조 안되는지???
     protected MainServer ServerNetwork;
     protected UserManager UserMgr=null;
 
