@@ -265,6 +265,7 @@ namespace OmokClient
         {
             var requestPkt = new CSCommon.PKTReqPutMok
             {
+                RoomNumber = int.Parse(textBoxRoomNumber.Text),
                 PosX = x,
                 PosY = y
             };

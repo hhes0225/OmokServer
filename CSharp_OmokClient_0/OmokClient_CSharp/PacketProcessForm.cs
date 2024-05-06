@@ -121,6 +121,7 @@ namespace OmokClient
             var responsePkt = MemoryPackSerializer.Deserialize<PKTResRoomLeave>(packetData);
 
             listBoxRoomUserList.Items.Clear();
+
             listBoxRoomChatMsg.Items.Clear();
 
             DevLog.Write($"방 나가기 결과:  {(ErrorCode)responsePkt.Result}");
@@ -198,7 +199,7 @@ namespace OmokClient
             IsMyTurn = false;
 
             var notifyPkt = MemoryPackSerializer.Deserialize<PKTNtfStartOmok>(packetData);
-
+            
             if (notifyPkt.BlackUserID == textBoxUserID.Text)
             {
                 IsMyTurn = true;
@@ -224,7 +225,7 @@ namespace OmokClient
             else
             {
                 DevLog.Write($"오목 놓기 실패: {(ErrorCode)responsePkt.Result}");
-                OmokLogic.Undo();
+                //OmokLogic.Undo();
             }
         }
 
@@ -233,7 +234,7 @@ namespace OmokClient
         {
             var notifyPkt = MemoryPackSerializer.Deserialize<PKTNtfPutMok>(packetData);
 
-            PlayerPutStone(IsMyTurn, notifyPkt.PosX, notifyPkt.PosY);
+            PlayerPutStoneResponse(IsMyTurn, notifyPkt.PosX, notifyPkt.PosY);
 
             IsMyTurn = !IsMyTurn;
 

@@ -11,17 +11,21 @@ using System.Threading.Tasks;
 
 namespace SocketServer;
 
-public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
+public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>, IMainServer
 {
     public ServerOption ServerOption = new ServerOption();
-    public static SuperSocket.SocketBase.Logging.ILog MainLogger;
+
+    public SuperSocket.SocketBase.Logging.ILog MainLogger;
+    //public static SuperSocket.SocketBase.Logging.ILog MainLogger;
 
     SuperSocket.SocketBase.Config.IServerConfig m_Config;
 
-    public PacketProcessor MainPacketProcessor = new PacketProcessor();
+    public PacketProcessor MainPacketProcessor;
     public PacketData notifyPacket = new PacketData();
     RoomManager RoomMgr;
-    
+
+    ILog IMainServer.MainLogger { get; set; }
+
     //서버 설정 정의 & 구성 - 이벤트 핸들러 델리게이트 등록
     public MainServer()
         : base(new DefaultReceiveFilterFactory<ReceiveFilter, OmokBinaryRequestInfo>())
@@ -92,7 +96,7 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
         RoomMgr.CreateRooms();
 
         //packet processor 설정
-        MainPacketProcessor = new PacketProcessor();
+        MainPacketProcessor = new PacketProcessor(this);
         MainPacketProcessor.CreateAndStart(RoomMgr.GetRoomList(), this);
 
         MainLogger.Info("CreateComponent - Success");
@@ -156,6 +160,7 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
             if (roomUser != null)
             {
                 room.RemoveUser(roomUser);
+                room.NotifyPacketLeaveUser(roomUser.UserID);
                 break;
             }
         }
@@ -168,7 +173,7 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
     //packetID에 맞는 핸들러 호출해서 그 핸들러 함수에서 body 클래스에 맞게 deserialize
     void OnPacketReceived(NetworkSession session, OmokBinaryRequestInfo requestInfo)
     {
-        MainLogger.Debug(string.Format($"세션 번호 {session.SessionID}, 받은 데이터 크기 {requestInfo.Body.Length}" +
+        MainLogger.Debug(string.Format($"세션 번호 {session.SessionID}, 받은 데이터 크기 {requestInfo.Body.Length}, " +
             $"ThreadID: {System.Threading.Thread.CurrentThread.ManagedThreadId}"));
 
         var packet = new PacketData();

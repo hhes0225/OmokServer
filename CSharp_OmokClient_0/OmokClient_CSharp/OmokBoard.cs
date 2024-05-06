@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Media;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -38,7 +39,7 @@ namespace OmokClient
         bool IsMyTurn = false;
 
         private bool AIMode = false;
-        private CSCommon.OmokRule. StoneType 컴퓨터돌 = CSCommon.OmokRule.StoneType.None;
+        private CSCommon.OmokRule.StoneType ComputerStone = CSCommon.OmokRule.StoneType.None;
 
         string MyPlayerName = "";
         string BlackUserID = "";
@@ -64,20 +65,10 @@ namespace OmokClient
         }
 
         //오목 게임 시작
-        void StartGame(bool isMyTurn, string myPlayerName, string otherPlayerName)
+        void StartGame(bool isMyTurn, string blackUserID, string whiteUserID)
         {
-            MyPlayerName = myPlayerName;
-
-            if (isMyTurn)
-            {
-                BlackUserID = myPlayerName;
-                WhiteUserID = otherPlayerName;
-            }
-            else
-            {
-                BlackUserID = otherPlayerName;
-                WhiteUserID = myPlayerName;
-            }
+            BlackUserID=blackUserID;
+            WhiteUserID=whiteUserID;
 
             IsMyTurn = isMyTurn;
 
@@ -86,13 +77,39 @@ namespace OmokClient
 
             OmokLogic.StartGame();
 
-            //if (AIMode == true && 컴퓨터돌 == CSCommon.OmokRule.돌종류.흑돌)
-            //{
-            //    컴퓨터두기();
-            //}
-
             panel1.Invalidate();
         }
+        #region 구버전 StartGame
+        //void StartGame(bool isMyTurn, string myPlayerName, string otherPlayerName)
+        //{
+        //    MyPlayerName = myPlayerName;
+
+        //    if (isMyTurn)
+        //    {
+        //        BlackUserID = myPlayerName;
+        //        WhiteUserID = otherPlayerName;
+        //    }
+        //    else
+        //    {
+        //        BlackUserID = otherPlayerName;
+        //        WhiteUserID = myPlayerName;
+        //    }
+
+        //    IsMyTurn = isMyTurn;
+
+        //    PrevXPos = PrevYPos = -1;
+        //    StartSoundEffect.Play();
+
+        //    OmokLogic.StartGame();
+
+        //    //if (AIMode == true && 컴퓨터돌 == CSCommon.OmokRule.돌종류.흑돌)
+        //    //{
+        //    //    컴퓨터두기();
+        //    //}
+
+        //    panel1.Invalidate();
+        //}
+        #endregion
 
         void EndGame()
         {
@@ -205,7 +222,7 @@ namespace OmokClient
         {
             Graphics g = panel1.CreateGraphics();
             string str;
-            Font infoFont = new Font("HY견고딕", 15);
+            Font infoFont = new Font("HY견고딕", 10);
 
             if (OmokLogic.IsBlackTurn())
             {
@@ -254,36 +271,32 @@ namespace OmokClient
             // 바둑판 해당 좌표에 아무것도 없고, 게임이 끝나지 않았으면
             else if (OmokLogic.GetStoneByPos(x, y) == (int)CSCommon.OmokRule.StoneType.None && !OmokLogic.GameFinish)
             {
-                PlayerPutStone(false, x, y);
+                PlayerPutStoneRequest(false, x, y);
             }
         }
 
-        void PlayerPutStone(bool isNotify, int x, int y)
+        void PlayerPutStoneRequest(bool isNotify, int x, int y)
+        {
+            SendPacketOmokPut(x, y);
+        }
+
+        void PlayerPutStoneResponse(bool isNotify, int x, int y)
         {
             var ret = OmokLogic.PutStone(x, y);
-            if (ret != CSCommon.PutStoneResult.Success)
-            {
-                //Rectangle r = new Rectangle(시작위치, 590, 시작위치 + 돌크기 + 160, 돌크기 + 10);
-                //panel1.Invalidate(r);
-                //DevLog.Write($"돌 두기 실패: {(CSCommon.돌두기_결과)ret}");
-                return;
-            }
-
             DrawStone(x, y);
             ShowCurrentStone();
-            OmokLogic.CheckWinningCondition(x, y);
-
 
             if (isNotify == false)
             {
                 IsMyTurn = false;
-                SendPacketOmokPut(x, y);
+
             }
             else
             {
                 IsMyTurn = true;
             }
 
+            //
             Rectangle r = new Rectangle(StartPos, 590, StartPos + StoneSize + 350, StoneSize + 10);
             panel1.Invalidate(r);
         }

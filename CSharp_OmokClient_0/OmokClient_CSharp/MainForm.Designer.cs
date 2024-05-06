@@ -177,14 +177,14 @@ namespace OmokClient
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Location = new System.Drawing.Point(16, 84);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(399, 279);
+            this.groupBox1.Size = new System.Drawing.Size(555, 279);
             this.groupBox1.TabIndex = 12;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Room";
             // 
             // button7
             // 
-            this.button7.Location = new System.Drawing.Point(340, 228);
+            this.button7.Location = new System.Drawing.Point(460, 228);
             this.button7.Name = "button7";
             this.button7.Size = new System.Drawing.Size(44, 26);
             this.button7.TabIndex = 18;
@@ -196,16 +196,16 @@ namespace OmokClient
             // 
             this.textBoxRoomSendMsg.Location = new System.Drawing.Point(19, 228);
             this.textBoxRoomSendMsg.Name = "textBoxRoomSendMsg";
-            this.textBoxRoomSendMsg.Size = new System.Drawing.Size(315, 25);
+            this.textBoxRoomSendMsg.Size = new System.Drawing.Size(430, 25);
             this.textBoxRoomSendMsg.TabIndex = 17;
             // 
             // listBoxRoomChatMsg
             // 
             this.listBoxRoomChatMsg.FormattingEnabled = true;
             this.listBoxRoomChatMsg.ItemHeight = 17;
-            this.listBoxRoomChatMsg.Location = new System.Drawing.Point(123, 65);
+            this.listBoxRoomChatMsg.Location = new System.Drawing.Point(180, 65);
             this.listBoxRoomChatMsg.Name = "listBoxRoomChatMsg";
-            this.listBoxRoomChatMsg.Size = new System.Drawing.Size(261, 157);
+            this.listBoxRoomChatMsg.Size = new System.Drawing.Size(325, 157);
             this.listBoxRoomChatMsg.TabIndex = 16;
             // 
             // listBoxRoomUserList
@@ -214,7 +214,7 @@ namespace OmokClient
             this.listBoxRoomUserList.ItemHeight = 17;
             this.listBoxRoomUserList.Location = new System.Drawing.Point(18, 65);
             this.listBoxRoomUserList.Name = "listBoxRoomUserList";
-            this.listBoxRoomUserList.Size = new System.Drawing.Size(99, 157);
+            this.listBoxRoomUserList.Size = new System.Drawing.Size(150, 157);
             this.listBoxRoomUserList.TabIndex = 15;
             // 
             // button6
@@ -269,13 +269,13 @@ namespace OmokClient
             this.listBoxLog.ItemHeight = 17;
             this.listBoxLog.Location = new System.Drawing.Point(12, 369);
             this.listBoxLog.Name = "listBoxLog";
-            this.listBoxLog.Size = new System.Drawing.Size(403, 259);
+            this.listBoxLog.Size = new System.Drawing.Size(565, 259);
             this.listBoxLog.TabIndex = 17;
             // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Peru;
-            this.panel1.Location = new System.Drawing.Point(427, 53);
+            this.panel1.Location = new System.Drawing.Point(585, 53);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(603, 659);
             this.panel1.TabIndex = 18;
@@ -306,7 +306,7 @@ namespace OmokClient
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1047, 724);
+            this.ClientSize = new System.Drawing.Size(1200, 724);
             this.Controls.Add(this.btnTest);
             this.Controls.Add(this.labelStatus);
             this.Controls.Add(this.panel1);

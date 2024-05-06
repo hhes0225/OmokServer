@@ -14,7 +14,7 @@ class Program
         serverApp.InitConfig(serverOption);
         serverApp.CreateAndStartServer();
 
-        MainServer.MainLogger.Info("Press q to shutdown the server");
+        serverApp.MainLogger.Info("Press q to shutdown the server");
 
         while (true)
         {

@@ -6,20 +6,19 @@ namespace CSBaseLib;
 
 public class OmokRule
 {
+    string BlackPlayerID="";
+    string WhitePlayerID="";
+
     public enum StoneType { None, Black, White };
 
     const int BoardSize = 19;
-
 
     int[,] GameBoard = new int[BoardSize, BoardSize];
     public bool BlackPlayerTurn { get; private set; } = true;
 
     public bool GameFinish { get; private set; } = true;
 
-    //bool AI모드 = true;
-    //돌종류 컴퓨터돌;
-
-    public int CurTuenCount { get; private set; } = 0;
+    public int CurTurnCount { get; private set; } = 0;
 
 
     public int PrevXPos { get; private set; } = -1;
@@ -30,13 +29,19 @@ public class OmokRule
 
     private Stack<Point> st = new Stack<Point>();
 
+    public void SetPlayerColor(string blackPlayerID, string whitePlayerID)
+    {
+        BlackPlayerID = blackPlayerID;
+        WhitePlayerID = whitePlayerID;
+    }
+
     public void StartGame()
     {
         Array.Clear(GameBoard, 0, BoardSize * BoardSize);
         PrevXPos = PrevYPos = -1;
         CurrentXPos = CurrentYPos = -1;
         BlackPlayerTurn = true;
-        CurTuenCount = 1;
+        CurTurnCount = 1;
         GameFinish = false;
 
         st.Clear();
@@ -52,15 +57,17 @@ public class OmokRule
         return GameBoard[x, y];
     }
 
-    public bool IsBlackTurn()
+    public string WhoseTurn()
     {
-        return ((CurTuenCount % 2) == 1);
+        if((CurTurnCount % 2) == 1)
+        {
+            return BlackPlayerID;
+        }
+        return WhitePlayerID;
     }
 
     public PutStoneResult PutStone(int x, int y)
     {
-        //TODO 서버로 부터 받은 결과가 실패인 경우 현재 둔 돌의 정보를 지워야 한다
-
         if (BlackPlayerTurn)
         {   // 검은 돌
             GameBoard[x, y] = (int)StoneType.Black;
@@ -71,26 +78,6 @@ public class OmokRule
             GameBoard[x, y] = (int)StoneType.White;
         }
 
-        //if (삼삼확인(x, y) && BlackPlayerTurn)
-        //{
-        //    //오류효과음.Play();
-        //    //MessageBox.Show("금수자리입니다. \r다른곳에 놓아주세요.", "금수 - 쌍삼");
-        //    GameBoard[x, y] = (int)StoneType.None;
-        //    return PutStoneResult.SamSam;
-        //}
-        //else
-        //{
-        //    PrevXPos = CurrentXPos;
-        //    PrevYPos = CurrentYPos;
-
-        //    CurrentXPos = x;
-        //    CurrentYPos = y;
-
-        //    BlackPlayerTurn = !BlackPlayerTurn;                   // 차례 변경
-
-        //    //바둑돌소리.Play();
-        //}
-
         PrevXPos = CurrentXPos;
         PrevYPos = CurrentYPos;
 
@@ -99,10 +86,20 @@ public class OmokRule
 
         BlackPlayerTurn = !BlackPlayerTurn;                   // 차례 변경
 
-        ++CurTuenCount;
+        ++CurTurnCount;
         st.Push(new Point(x, y));
 
         return PutStoneResult.Success;
+    }
+
+    public bool CheckAvailablePosition(int x, int y)
+    {
+        if (x < 0 || x >= 19 || y < 0 || y >= 19)
+        {
+            return false; // 범위를 벗어난 경우
+        }
+
+        return GameBoard[x, y] == (int)StoneType.None;
     }
 
 
@@ -122,62 +119,36 @@ public class OmokRule
         }
     }
 
-    void Undo(object sender, EventArgs e)
-    {
-        if (!GameFinish && st.Count != 0)
-        {
-            /*무르기요청.Play();
-
-            if (MessageBox.Show("한 수 무르시겠습니까?", "무르기", MessageBoxButtons.YesNo) == DialogResult.Yes) // MessageBox 띄워서 무르기 여부 확인하고 예를 누르면
-            {
-                if (AI모드)
-                {
-                    한수무르기();
-                    한수무르기();
-                }
-
-                else
-                {
-                    한수무르기();
-                    흑돌차례 = !흑돌차례;
-                }
+    
 
 
-                panel1.Invalidate();
-            }*/
-        }
-    }
-
-
-    public void CheckWinningCondition(int x, int y)
+    public bool CheckWinningCondition(int x, int y)
     {
         if (CheckRow(x, y) == 5)        // 같은 돌 개수가 5개면 (6목이상이면 게임 계속) 
         {
-            //승리효과음.Play();
-            //MessageBox.Show((돌종류)바둑판[x, y] + " 승");
             GameFinish = true;
         }
 
         else if (CheckCol(x, y) == 5)
         {
-            //승리효과음.Play();
-            //MessageBox.Show((돌종류)바둑판[x, y] + " 승");
             GameFinish = true;
         }
 
         else if (CheckDiagonal(x, y) == 5)
         {
-            //승리효과음.Play();
-            //MessageBox.Show((돌종류)바둑판[x, y] + " 승");
             GameFinish = true;
         }
 
         else if (CheckReverseDiagonal(x, y) == 5)
         {
-            //승리효과음.Play();
-            //MessageBox.Show((돌종류)바둑판[x, y] + " 승");
             GameFinish = true;
         }
+        else
+        {
+            return false;
+        }
+
+        return true;
     }
 
     int CheckRow(int x, int y)      // ㅡ 확인
@@ -278,6 +249,33 @@ public class OmokRule
         }
 
         return continuousStoneNum;
+    }
+
+    #region undo & samsam
+    void Undo(object sender, EventArgs e)
+    {
+        if (!GameFinish && st.Count != 0)
+        {
+            /*무르기요청.Play();
+
+            if (MessageBox.Show("한 수 무르시겠습니까?", "무르기", MessageBoxButtons.YesNo) == DialogResult.Yes) // MessageBox 띄워서 무르기 여부 확인하고 예를 누르면
+            {
+                if (AI모드)
+                {
+                    한수무르기();
+                    한수무르기();
+                }
+
+                else
+                {
+                    한수무르기();
+                    흑돌차례 = !흑돌차례;
+                }
+
+
+                panel1.Invalidate();
+            }*/
+        }
     }
 
     //bool 삼삼확인(int x, int y)     // 33확인
@@ -473,6 +471,7 @@ public class OmokRule
 
     //    return 0;
     //}
+    #endregion
 }
 
 public enum PutStoneResult

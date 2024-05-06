@@ -157,6 +157,7 @@ namespace CSCommon
     [MemoryPackable]
     public partial class PKTReqPutMok 
     {
+        public int RoomNumber;
         public int PosX;
         public int PosY;
     }

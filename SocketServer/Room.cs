@@ -14,6 +14,8 @@ public class Room
     public int Number {  get; set; }
     public PacketToBytes PacketMaker = new PacketToBytes();
 
+    public OmokRule OmokBoard = new OmokRule();
+
     int MaxUserCount = 0;
 
     List <RoomUser> UserList = new List<RoomUser> ();
@@ -154,6 +156,14 @@ public class Room
 
         return true;
     }
+
+    public void SetAllInitState()
+    {
+        foreach (var user in UserList)
+        {
+            user.InitState();
+        }
+    }
 }
 
 public class RoomUser
@@ -167,20 +177,24 @@ public class RoomUser
         UserID = userID;
         NetSessionID = netSessionID;
     }
+    public UserState GetUserState()
+    {
+        return State;
+    }
 
     public void Ready()
     {
         State = UserState.Ready;
     }
 
-    public UserState GetUserState()
-    {
-        return State;
-    }
-
     public void Play()
     {
         State = UserState.Playing;
+    }
+
+    public void InitState()
+    {
+        State = UserState.None;
     }
 
 }

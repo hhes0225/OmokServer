@@ -42,6 +42,13 @@ public class PacketProcessor
     PKHRoom RoomPacketHandler = new PKHRoom();
     PKHOmokGame OmokPacketHandler = new PKHOmokGame();
 
+    private IMainServer mainServer;
+
+    public PacketProcessor(IMainServer mainServer)
+    {
+        this.mainServer = mainServer;
+    }
+
     public void CreateAndStart(List<Room> roomList, MainServer mainServer)
     {
         //유저 관련 정보 초기화
@@ -114,7 +121,7 @@ public class PacketProcessor
             }
             catch (Exception ex)
             {
-                IsThreadRunning.IfTrue(() => MainServer.MainLogger.Error(ex.ToString()));
+                IsThreadRunning.IfTrue(() => mainServer.MainLogger.Error(ex.ToString()));
             }
         }
     }

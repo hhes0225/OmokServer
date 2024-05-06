@@ -24,7 +24,7 @@ public class PKHCommon : PKHandler
 
     public void NotifyInConnectClient(PacketData packetData)
     {
-        MainServer.MainLogger.Debug($"Current Connected Session Count: {ServerNetwork.SessionCount}");
+        ServerNetwork.MainLogger.Debug($"Current Connected Session Count: {ServerNetwork.SessionCount}");
     }
 
     public void NotifyInDisconnectClient(PacketData packetData)
@@ -58,7 +58,7 @@ public class PKHCommon : PKHandler
             UserMgr.RemoveUser(sessionID);
         }
 
-        MainServer.MainLogger.Debug($"Current Connected Session Count: {ServerNetwork.SessionCount}");
+        ServerNetwork.MainLogger.Debug($"Current Connected Session Count: {ServerNetwork.SessionCount}");
     }
 
     // 클라이언트에게 로그인 요청 packet ID를 받으면 이 함수가 호출됨
@@ -66,7 +66,7 @@ public class PKHCommon : PKHandler
     {
         //session ID(오직 유저별로 1개의 통신 세션만 생성 가능)
         var sessionID = packetData.SessionID;
-        MainServer.MainLogger.Debug("로그인 요청 받음");
+        ServerNetwork.MainLogger.Debug("로그인 요청 받음");
 
         try
         {
@@ -75,7 +75,7 @@ public class PKHCommon : PKHandler
             {
                 //에러 메시지와 함께 response 메시지 전달
                 ResponseLoginToClient(ERROR_CODE.LOGIN_ALREADY_WORKING, sessionID);
-                MainServer.MainLogger.Debug("이미 로그인 중임");
+                ServerNetwork.MainLogger.Debug("이미 로그인 중임");
                 return;
             }
 
@@ -86,15 +86,15 @@ public class PKHCommon : PKHandler
             //packet생성해서 그 결과를 response
             if(errorCode == ERROR_CODE.NONE)
             {
-                MainServer.MainLogger.Debug($"{reqData.UserID} 로그인 성공");
+                ServerNetwork.MainLogger.Debug($"{reqData.UserID} 로그인 성공");
                 ResponseLoginToClient(errorCode, sessionID);
                 //리스폰스 메시지 전달
-                MainServer.MainLogger.Debug("로그인 요청 답변 보냄");
+                ServerNetwork.MainLogger.Debug("로그인 요청 답변 보냄");
             }
         }
         catch (Exception ex)
         {
-            MainServer.MainLogger.Error(ex.ToString());
+            ServerNetwork.MainLogger.Error(ex.ToString());
         }
     }
 

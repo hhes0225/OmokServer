@@ -42,7 +42,7 @@ public class PKHRoom:PKHandler
     public void RequestRoomEnter(PacketData packetData)
     {
         var sessionID = packetData.SessionID;
-        MainServer.MainLogger.Debug("Request Room Enter");
+        ServerNetwork.MainLogger.Debug("Request Room Enter");
 
         try
         {
@@ -84,11 +84,11 @@ public class PKHRoom:PKHandler
 
             ResponseEnterRoomToClient(ERROR_CODE.NONE, sessionID);
 
-            MainServer.MainLogger.Debug("RequestEnterInternal - Success");
+            ServerNetwork.MainLogger.Debug("RequestEnterInternal - Success");
         }
         catch (Exception ex)
         {
-            MainServer.MainLogger.Error(ex.ToString());
+            ServerNetwork.MainLogger.Error(ex.ToString());
         }
     }
 
@@ -108,7 +108,7 @@ public class PKHRoom:PKHandler
     void RequestRoomLeave(PacketData packetData)
     {
         var sessionID = packetData.SessionID;
-        MainServer.MainLogger.Debug("방 나가기 요청");
+        ServerNetwork.MainLogger.Debug("방 나가기 요청");
 
         try
         {
@@ -116,34 +116,35 @@ public class PKHRoom:PKHandler
 
             if (user == null)
             {
-                MainServer.MainLogger.Debug("유저 존재하지 않음");
+                ServerNetwork.MainLogger.Debug("유저 존재하지 않음");
                 return;
                 
             }
 
             if(RemoveUserFromRoom(sessionID, user.RoomNumber) == false)
             {
-                MainServer.MainLogger.Debug("올바른 방 나가기 요청이 아님");
+                ServerNetwork.MainLogger.Debug("올바른 방 나가기 요청이 아님");
                 return ;
             }
 
             user.LeaveRoom();
 
             ResponseLeaveRoomToClient(sessionID);
+            
 
-            MainServer.MainLogger.Debug("Request Leave Room - Success");
+            ServerNetwork.MainLogger.Debug("Request Leave Room - Success");
 
                                          
         }
         catch(Exception ex)
         {
-            MainServer.MainLogger.Error(ex.ToString());
+            ServerNetwork.MainLogger.Error(ex.ToString());
         }
     }
 
     bool RemoveUserFromRoom(string sessionID, int roomNumber)
     {
-        MainServer.MainLogger.Debug($"LeaveRoomUser. SessionID: {sessionID}");
+        ServerNetwork.MainLogger.Debug($"LeaveRoomUser. SessionID: {sessionID}");
 
         var room = GetRoom(roomNumber);
         if (room == null)
@@ -180,7 +181,7 @@ public class PKHRoom:PKHandler
     public void NotifyLeaveInternal(PacketData packetData)
     {
         var sessionID = packetData.SessionID;
-        MainServer.MainLogger.Debug($"NotifyLeaveInternal. SessionID: {sessionID}");
+        ServerNetwork.MainLogger.Debug($"NotifyLeaveInternal. SessionID: {sessionID}");
 
         var reqData = MemoryPackSerializer.Deserialize<PKTInternalNtfRoomLeave>(packetData.BodyData);
         RemoveUserFromRoom(sessionID, reqData.RoomNumber);
@@ -189,7 +190,7 @@ public class PKHRoom:PKHandler
     public void RequestChat(PacketData packetData)
     {
         var sessionID = packetData.SessionID;
-        MainServer.MainLogger.Debug("Room Request Chat");
+        ServerNetwork.MainLogger.Debug("Room Request Chat");
 
         try
         {
@@ -216,11 +217,11 @@ public class PKHRoom:PKHandler
             //1st arg가 sessionID인데, 이것이 같으면 전달이 안됨. 근데 여기서는 ""로 했으므로
             //무조건 방 안 모든 유저에게 전송될 것(sessionID가 ""인 클라는 존재 X)
 
-            MainServer.MainLogger.Debug("Room Request Chat - Success");
+            ServerNetwork.MainLogger.Debug("Room Request Chat - Success");
         }
         catch (Exception ex)
         {
-            MainServer.MainLogger.Error(ex.ToString());
+            ServerNetwork.MainLogger.Error(ex.ToString());
         }
     }
 
@@ -251,25 +252,25 @@ public class PKHRoom:PKHandler
         return (true, room, roomUser);
     }
 
-    //public void NotifyToAllRoomUsers(string sessionID, string notifyBody)
-    //{
-    //    var roomObject = CheckRoomAndRoomUser(sessionID);
+    public void NotifyToAllRoomUsers(string sessionID, string notifyBody)
+    {
+        var roomObject = CheckRoomAndRoomUser(sessionID);
 
-    //    if (roomObject.Item1 == false)
-    //    {
-    //        return;
-    //    }
+        if (roomObject.Item1 == false)
+        {
+            return;
+        }
 
 
-    //    var notifyPacket = new PKTNtfRoomChat()
-    //    {
-    //        UserID = roomObject.Item3.UserID,
-    //        ChatMessage = notifyBody
-    //    };
+        var notifyPacket = new PKTNtfRoomChat()
+        {
+            UserID = roomObject.Item3.UserID,
+            ChatMessage = notifyBody
+        };
 
-    //    var body = MemoryPackSerializer.Serialize(notifyPacket);
-    //    var sendData = PacketMaker.MakePacket(PACKETID.NTF_ROOM_CHAT, body);
+        var body = MemoryPackSerializer.Serialize(notifyPacket);
+        var sendData = PacketMaker.MakePacket(PACKETID.NTF_ROOM_CHAT, body);
 
-    //    roomObject.Item2.Broadcast("", sendData);
-    //}
+        roomObject.Item2.Broadcast("", sendData);
+    }
 }
