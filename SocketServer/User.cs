@@ -20,11 +20,33 @@ public class User
     string UserID;
     public int RoomNumber { get; set; } = -1;
 
+    bool Connection = false;
+    private int TimeSpan;
+    public DateTime LastHeartbeat { get; set; }
+    public DateTime ActivatedTime { get; set; }
+
+    public void InitTimeSpan(int timeSpan)
+    {
+        TimeSpan = timeSpan;   
+    }
+
     public void Set(UInt64 sequence, string sessionID, string userID)
     {
         SequenceNumber = sequence;
         SessionID = sessionID;
         UserID = userID;
+    }
+
+    public bool CheckHeartBeat(DateTime curTime)
+    {
+        var diff = curTime - LastHeartbeat;
+
+        if ((int)diff.TotalMilliseconds > TimeSpan)
+        {
+            return false;
+        }
+
+        return true;
     }
 
     public bool IsSessionConfirm(string netSessionID)
@@ -38,9 +60,19 @@ public class User
         return UserID;
     }
 
+    public string UserSessionID()
+    {
+        return SessionID;
+    }
+
     public void RoomEnter(int roomNumber)
     {
         RoomNumber = roomNumber;
+    }
+
+    public void UpdateHeartbeat(DateTime now)
+    {
+        LastHeartbeat = now;
     }
 
     public void LeaveRoom()
@@ -56,6 +88,21 @@ public class User
     public bool IsInRoom()
     {
         return RoomNumber != -1;
+    }
+
+    public bool IsUserConnecting()
+    {
+        return Connection;
+    }
+
+    public void StartConnecting()
+    {
+        Connection = true;
+    }
+
+    public void EndConnecting()
+    {
+        Connection = false;
     }
 }
 

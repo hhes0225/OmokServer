@@ -15,6 +15,9 @@ public class PKHRoom:PKHandler
     int StartRoomNumber;
     PacketToBytes PacketMaker = new PacketToBytes();
 
+    private int _startIndexRoomCheck = 0;
+    private const int MaxCheckRoomCount = 50;
+
     public void SetRoomList(List<Room> roomList)
     {
         RoomList = roomList;
@@ -37,6 +40,23 @@ public class PKHRoom:PKHandler
         packetHandlerMap.Add((int)PACKETID.REQ_ROOM_ENTER, RequestRoomEnter);
         packetHandlerMap.Add((int)PACKETID.REQ_ROOM_LEAVE, RequestRoomLeave);
         packetHandlerMap.Add((int)PACKETID.REQ_ROOM_CHAT, RequestChat);
+        packetHandlerMap.Add((int)PACKETID.NTF_INNER_ROOM_CHECK, NotifyRoomCheck);
+    }
+
+    public void NotifyRoomCheck(PacketData packetData)
+    {
+        ServerNetwork.MainLogger.Debug("Room check");
+
+        var endIndex = _startIndexRoomCheck + MaxCheckRoomCount;
+        //RoomMgr.체크하트비트
+        //RoomMgr.inactivateRoom, & 쫓아내기 & 패킷 클라에 전송
+
+        _startIndexRoomCheck += MaxCheckRoomCount;
+
+        //if (_startIndexRoomCheck >= UserMgr.GetMaxUserCount())
+        //{
+        //    _startIndexRoomCheck = 0;
+        //}
     }
 
     public void RequestRoomEnter(PacketData packetData)
@@ -85,6 +105,7 @@ public class PKHRoom:PKHandler
             ResponseEnterRoomToClient(ERROR_CODE.NONE, sessionID);
 
             ServerNetwork.MainLogger.Debug("RequestEnterInternal - Success");
+            ServerNetwork.MainLogger.Debug($"First Entry Time: {room.FirstEntryTime}");
         }
         catch (Exception ex)
         {
@@ -127,14 +148,20 @@ public class PKHRoom:PKHandler
                 return ;
             }
 
+            var room = GetRoom(user.RoomNumber);
+            room.RemoveUser(sessionID);
+            if (room.CurrentUserCount() == 0)
+            {
+                room.InactivateRoom();
+                ServerNetwork.MainLogger.Debug("Inactivate Room");
+            }
+
             user.LeaveRoom();
 
             ResponseLeaveRoomToClient(sessionID);
             
-
             ServerNetwork.MainLogger.Debug("Request Leave Room - Success");
-
-                                         
+                        
         }
         catch(Exception ex)
         {

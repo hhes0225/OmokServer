@@ -24,6 +24,8 @@ namespace CSCommon
         LOGIN_NOT_FOUND_USER = 1010,
         LOGIN_SESSION_EXPIRED = 1011,
 
+        
+
         DB_LOGIN_INVALID_PASSWORD = 1012,
         DB_LOGIN_EMPTY_USER = 1013,
         DB_LOGIN_EXCEPTION = 1014,
@@ -39,5 +41,8 @@ namespace CSCommon
         OMOK_RENJURULE = 1033, // 쌍삼
         OMOK_TURN_NOT_MATCH = 1034,
         OMOK_NOT_STARTED = 1035,
+
+        //Heartbeat
+        HB_USER_NOT_EXIST = 1050,
     }
 }

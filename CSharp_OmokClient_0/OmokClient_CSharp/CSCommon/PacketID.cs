@@ -39,6 +39,11 @@ namespace CSCommon
 
         public const UInt16 NTFEndOmok = 1038;
 
+        //heartbeat
+        public const UInt16 PingUserConnInfo = 1039;
+        public const UInt16 PongUserConnInfo = 1040;
+        public const UInt16 NtfInnerUserCheck = 1041;
+
 
         public const UInt16 END = 1100;
     }

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,6 +15,8 @@ namespace OmokClient
     public partial class MainForm : Form
     {
         Dictionary<UInt16, Action<byte[]>> PacketFuncDic = new Dictionary<UInt16, Action<byte[]>>();
+
+        private System.Threading.Timer _pingTimer;
 
         void SetPacketHandler()
         {
@@ -32,6 +35,7 @@ namespace OmokClient
             PacketFuncDic.Add(PacketID.ResPutMok, PacketProcess_PutMokResponse);
             PacketFuncDic.Add(PacketID.NTFPutMok, PacketProcess_PutMokNotify);
             PacketFuncDic.Add(PacketID.NTFEndOmok, PacketProcess_EndOmokNotify);
+            PacketFuncDic.Add(PacketID.PongUserConnInfo, PacketProcess_PongUserConnInfo);
         }
 
 
@@ -79,6 +83,8 @@ namespace OmokClient
             if ((ErrorCode)responsePkt.Result == ErrorCode.None)
             {
                 CurSceen = ClientSceen.LOGIN;
+
+                InitAndStartPingTimer(0, 1000);
             }
         }
 
@@ -250,6 +256,32 @@ namespace OmokClient
 
             CurSceen = ClientSceen.ROOM;
             DevLog.Write($"오목 GameOver: Win: {notifyPkt.WinUserID}");
+        }
+
+        void PacketProcess_PingUserConnInfo(object state)
+        {
+            var pingPkt = new PTKPingUserConnInfo();
+            var body = MemoryPackSerializer.Serialize(pingPkt);
+
+            PostSendPacket(CSCommon.PacketID.PingUserConnInfo, body);
+
+        }
+
+        //Login Response 이후 호출됨
+        void InitAndStartPingTimer(int dueTime, int interval)
+        {
+            TimerCallback callback = new TimerCallback(PacketProcess_PingUserConnInfo);
+            _pingTimer = new System.Threading.Timer(callback, null, dueTime, interval);
+        }
+
+        void PacketProcess_PongUserConnInfo(byte[] packetData)
+        {
+            var pongPkt = MemoryPackSerializer.Deserialize<PKTPongUserConnINfo>(packetData);
+
+            if (pongPkt.Result != (Int16)ErrorCode.None)
+            {
+                SetDisconnectd();
+            }
         }
     }
 }

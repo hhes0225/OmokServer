@@ -23,6 +23,10 @@ public class Room
     public static Func<string, byte[], bool> NetSendFunc;
     //MainServer에서 참조할 함수 지정
 
+    public bool IsRoomUsing = false;
+    public DateTime FirstEntryTime { get; set; }
+    public DateTime GameStartTime {  get; set; }
+
     public void Init(int index, int number, int maxUserCount) 
     { 
         Index = index;
@@ -41,7 +45,39 @@ public class Room
         newRoomUser.Set(userID, netSessionID);
         UserList.Add(newRoomUser);
 
+        ActivateRoom();
+
         return true;
+    }
+
+    public bool RemoveUser(string userID)
+    {
+
+        if (GetUser(userID) != null)
+        {
+            return false;
+        }
+
+        UserList.Remove(GetUser(userID));
+        return true;
+    }
+
+    public void ActivateRoom()
+    {
+        if (IsRoomUsing == false)
+        {
+            IsRoomUsing = !IsRoomUsing;
+            FirstEntryTime = DateTime.Now;
+        }
+        
+    }
+    public void InactivateRoom()
+    {
+        if (IsRoomUsing == true)
+        {
+            IsRoomUsing = !IsRoomUsing;
+            FirstEntryTime = DateTime.MinValue;
+        }
     }
 
     public bool RemoveUser(RoomUser user)
@@ -128,6 +164,18 @@ public class Room
 
         //방 전체에게 뿌리기 -> Broadcast
         Broadcast("", sendPacket);
+    }
+
+    public void StartGame()
+    {
+        GameStartTime= DateTime.Now;
+        OmokBoard.StartGame();
+    }
+
+    public void EndGame()
+    {
+        GameStartTime = DateTime.MinValue; 
+        OmokBoard.EndGame();
     }
 
     public void Broadcast(string excludeNetSessionID, byte[] sendPacket)

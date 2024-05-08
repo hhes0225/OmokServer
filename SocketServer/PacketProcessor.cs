@@ -41,12 +41,13 @@ public class PacketProcessor
     PKHCommon CommonPacketHandler = new PKHCommon();
     PKHRoom RoomPacketHandler = new PKHRoom();
     PKHOmokGame OmokPacketHandler = new PKHOmokGame();
+    PKHHeartbeat HeartbeatHandler = new PKHHeartbeat();
 
-    private IMainServer mainServer;
+    SuperSocket.SocketBase.Logging.ILog ProcessorLogger;
 
-    public PacketProcessor(IMainServer mainServer)
+    public PacketProcessor(SuperSocket.SocketBase.Logging.ILog logger)
     {
-        this.mainServer = mainServer;
+        ProcessorLogger = logger;
     }
 
     public void CreateAndStart(List<Room> roomList, MainServer mainServer)
@@ -54,7 +55,7 @@ public class PacketProcessor
         //유저 관련 정보 초기화
         //(총 허용 가능 유저 수: 방 개수*방 인원 제한 수)
         var maxUserCount = mainServer.ServerOption.RoomMaxCount * mainServer.ServerOption.RoomMaxUserCount;
-        UserMgr.Init(maxUserCount);
+        UserMgr.Init(maxUserCount, 0, 500, 10000);
 
         //방 관련 정보 초기화
         RoomList = roomList;
@@ -98,6 +99,9 @@ public class PacketProcessor
         OmokPacketHandler.Init(serverNetwork, UserMgr);
         OmokPacketHandler.SetRoomList(RoomList);
         OmokPacketHandler.RegisterPacketHandler(PacketHandlerMap);
+
+        HeartbeatHandler.Init(serverNetwork, UserMgr);
+        HeartbeatHandler.RegisterPacketHandler(PacketHandlerMap);
     }
 
     void Process()
@@ -121,7 +125,7 @@ public class PacketProcessor
             }
             catch (Exception ex)
             {
-                IsThreadRunning.IfTrue(() => mainServer.MainLogger.Error(ex.ToString()));
+                IsThreadRunning.IfTrue(() => ProcessorLogger.Error(ex.ToString()));
             }
         }
     }

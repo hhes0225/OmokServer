@@ -140,9 +140,10 @@ public class PKHOmokGame:PKHandler
         ServerNetwork.MainLogger.Debug("Game Start...");
 
         room.Broadcast("", sendData);
-        
-        room.OmokBoard.StartGame();
+
+        room.StartGame();
         room.OmokBoard.SetPlayerColor(userList[randomBlackIndex].NetSessionID, userList[room.CurrentUserCount() - randomBlackIndex - 1].NetSessionID); ;
+        ServerNetwork.MainLogger.Debug($"Game Start Time: {room.GameStartTime}");
     }
 
     public void RequestPutOmok(PacketData packetData)
@@ -235,6 +236,7 @@ public class PKHOmokGame:PKHandler
     public void NotifyEndOmok(Room room, string sessionID)
     {
         room.SetAllInitState();
+        room.EndGame();
 
         var ntfEndOmok = new PKTNtfEndOmok();
 
@@ -252,5 +254,6 @@ public class PKHOmokGame:PKHandler
         var sendData = PacketMaker.MakePacket(PACKETID.NTF_END_OMOK, body);
 
         room.Broadcast("", sendData);
+
     }
 }

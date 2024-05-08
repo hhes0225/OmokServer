@@ -18,7 +18,19 @@ public class PacketData
 
     public string SessionID;
     //패킷 전송자 식별하기 위한 ID(SuperSocketLite AppSession에서 자동지정)
-    
+
+    //inner
+    public void Assign(Int16 packetID, byte[] packetBodyData)
+    {
+        SessionID = "";
+        PacketID = packetID;
+
+        if (packetBodyData != null)
+        {
+            BodyData = packetBodyData;
+        }
+    }
+
     public void Assign(string sessionID, Int16 packetID, byte[] packetBodyData)
     {
         SessionID = sessionID;

@@ -164,6 +164,8 @@ namespace OmokClient
 
             EndGame();
 
+            _pingTimer.Dispose();
+
             labelStatus.Text = "서버 접속이 끊어짐";
         }
 

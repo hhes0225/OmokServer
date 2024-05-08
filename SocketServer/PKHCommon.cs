@@ -25,6 +25,9 @@ public class PKHCommon : PKHandler
     public void NotifyInConnectClient(PacketData packetData)
     {
         ServerNetwork.MainLogger.Debug($"Current Connected Session Count: {ServerNetwork.SessionCount}");
+        var sessionID = packetData.SessionID;
+
+        UserMgr.AddJustConnectedUser(sessionID);
     }
 
     public void NotifyInDisconnectClient(PacketData packetData)

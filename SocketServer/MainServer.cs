@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace SocketServer;
 
-public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>, IMainServer
+public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
 {
     public ServerOption ServerOption = new ServerOption();
 
@@ -23,8 +23,6 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>, IMainS
     public PacketProcessor MainPacketProcessor;
     public PacketData notifyPacket = new PacketData();
     RoomManager RoomMgr;
-
-    ILog IMainServer.MainLogger { get; set; }
 
     //서버 설정 정의 & 구성 - 이벤트 핸들러 델리게이트 등록
     public MainServer()
@@ -93,10 +91,13 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>, IMainS
     {
         //방 기본설정 정의(몇개까지? 몇명수용?)->미리 빈 방 만들어놓는다
         Room.NetSendFunc = this.SendData;
+        UserManager.SendInnerPacket = this.Distribute;
+        UserManager.CloseConnection = this.CloseConnection;
+
         RoomMgr.CreateRooms();
 
         //packet processor 설정
-        MainPacketProcessor = new PacketProcessor(this);
+        MainPacketProcessor = new PacketProcessor(MainLogger);
         MainPacketProcessor.CreateAndStart(RoomMgr.GetRoomList(), this);
 
         MainLogger.Info("CreateComponent - Success");
@@ -115,6 +116,11 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>, IMainS
             if(session == null)//클라 존재 X
             {
                 return false;
+            }
+
+            if (sessionID == "InnerPacket")
+            {
+                session.Send(sendData, 0, sendData.Length);
             }
 
             session.Send(sendData, 0, sendData.Length);
@@ -184,6 +190,23 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>, IMainS
 
         //메인 프로세서 버퍼에 등록(처리요청)
         Distribute(packet);
+    }
+
+    public void CloseConnection(string sessionID)
+    {
+        var sessions = GetAllSessions();
+
+        foreach(var session in sessions)
+        {
+            if(session.SessionID == sessionID)
+            {
+                //NTFForceDisconnection(sessionID);
+
+                session.Close();
+
+                return;
+            }
+        }
     }
 }
 

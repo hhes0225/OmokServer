@@ -183,5 +183,19 @@ namespace CSCommon
         public string WinUserID;
     }
 
+    //하트비트 - 유저 연결 상태 확인용(핑퐁)
+    [MemoryPackable]
+    public partial class PTKPingUserConnInfo
+    {
+    }
+
+    [MemoryPackable]
+    public partial class PKTPongUserConnINfo
+    {
+        public Int16 Result;
+    }
+
+
+
 
 }
