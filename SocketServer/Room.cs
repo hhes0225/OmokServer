@@ -22,16 +22,27 @@ public class Room
 
     public static Func<string, byte[], bool> NetSendFunc;
     //MainServer에서 참조할 함수 지정
+    public static Func<string, User> GetUserFromUserMgr;
 
     public bool IsRoomUsing = false;
-    public DateTime FirstEntryTime { get; set; }
-    public DateTime GameStartTime {  get; set; }
+    public DateTime FirstEntryTime { get; private set; }
+    public DateTime GameStartTime {  get; private set; }
+
+    private int RoomTimeSpan, GameTimeSpan, GameTurnTimeSpan;
 
     public void Init(int index, int number, int maxUserCount) 
     { 
         Index = index;
         Number = number;
         MaxUserCount = maxUserCount;
+
+    }
+
+    public void InitTimeSpan(int roomTimeSpan, int gameTimeSpan, int gameTurnTimeSpan)
+    {
+        RoomTimeSpan = roomTimeSpan;
+        GameTimeSpan = gameTimeSpan;
+        GameTurnTimeSpan = gameTurnTimeSpan;
     }
 
     public bool AddUser(string userID, string netSessionID)
@@ -50,23 +61,11 @@ public class Room
         return true;
     }
 
-    public bool RemoveUser(string userID)
-    {
-
-        if (GetUser(userID) != null)
-        {
-            return false;
-        }
-
-        UserList.Remove(GetUser(userID));
-        return true;
-    }
-
     public void ActivateRoom()
     {
         if (IsRoomUsing == false)
         {
-            IsRoomUsing = !IsRoomUsing;
+            IsRoomUsing = true;
             FirstEntryTime = DateTime.Now;
         }
         
@@ -75,14 +74,75 @@ public class Room
     {
         if (IsRoomUsing == true)
         {
-            IsRoomUsing = !IsRoomUsing;
+            IsRoomUsing = false;
             FirstEntryTime = DateTime.MinValue;
+        }
+    }
+
+    public bool IsRoomCreatedButNotPlaying(DateTime curTime)
+    {
+        var diff = curTime- FirstEntryTime;
+
+        //나중에 값 바꿀 것
+        if((int)diff.TotalMinutes >= RoomTimeSpan && OmokBoard.GameFinish == true)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool IsGamePlayingTooLong(DateTime curTime)
+    {
+        var diff = curTime - GameStartTime;
+
+        if((int) diff.TotalHours >= GameTimeSpan && OmokBoard.GameFinish == false) 
+        {
+            return false;
+        }
+
+        return true;
+
+    }
+
+    
+
+    public void RemoveAllUser()
+    {
+        for(int i = 0; i < UserList.Count; i++)
+        {
+            if (UserList[i] != null)
+            {
+                NotifyPacketLeaveUser(UserList[i].UserID);
+                Console.WriteLine($"{UserList[i].UserID}: {DateTime.Now}");
+
+                var user = GetUserFromUserMgr(UserList[i].NetSessionID);
+
+                if (user!=null)
+                {
+                    user.LeaveRoom();
+                }
+                
+                RemoveUser(UserList[i]);
+            }
         }
     }
 
     public bool RemoveUser(RoomUser user)
     {
-        return UserList.Remove(user);
+        if(user == null)
+        {
+            return false;
+        }
+
+        var result = UserList.Remove(user);
+
+        if (CurrentUserCount() == 0)
+        {
+            InactivateRoom();
+        }
+
+        return result;
     }
 
     public List<RoomUser> GetUserList()
@@ -164,6 +224,29 @@ public class Room
 
         //방 전체에게 뿌리기 -> Broadcast
         Broadcast("", sendPacket);
+    }
+
+    public void NotifyEndOmok(string sessionID)
+    {
+        SetAllInitState();
+        EndGame();
+
+        var ntfEndOmok = new PKTNtfEndOmok();
+
+        if (sessionID != "")
+        {
+            var winner = GetUserByNetSessionID(sessionID);
+            ntfEndOmok.WinUserID = winner.UserID;
+        }
+        else
+        {
+            ntfEndOmok.WinUserID = OmokBoard.DrawGame();
+        }
+
+        var body = MemoryPackSerializer.Serialize(ntfEndOmok);
+        var sendData = PacketMaker.MakePacket(PACKETID.NTF_END_OMOK, body);
+
+        Broadcast("", sendData);
     }
 
     public void StartGame()

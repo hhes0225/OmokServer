@@ -138,8 +138,16 @@ namespace OmokClient
             var notifyPkt = MemoryPackSerializer.Deserialize<PKTNtfRoomLeaveUser>(packetData);
 
             RemoveRoomUserList(notifyPkt.UserID);
-            AddRoomChatMessageList(notifyPkt.UserID, "님이 퇴장하셨습니다.");
-
+            if (notifyPkt.UserID != textBoxUserID.Text)
+            {
+                AddRoomChatMessageList(notifyPkt.UserID, "님이 퇴장하셨습니다.");
+            }
+            else
+            {
+                listBoxRoomUserList.Items.Clear();
+                listBoxRoomChatMsg.Items.Clear();
+            }
+            
             DevLog.Write($"방에서 나간 유저 받음");
         }
 
@@ -255,7 +263,16 @@ namespace OmokClient
             EndGame();
 
             CurSceen = ClientSceen.ROOM;
-            DevLog.Write($"오목 GameOver: Win: {notifyPkt.WinUserID}");
+
+            if (notifyPkt.WinUserID == "DRAW")
+            {
+                DevLog.Write($"오목 GameOver: {notifyPkt.WinUserID}");
+            }
+            else
+            {
+                DevLog.Write($"오목 GameOver: Win: {notifyPkt.WinUserID}");
+            }
+            
         }
 
         void PacketProcess_PingUserConnInfo(object state)

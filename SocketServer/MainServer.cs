@@ -167,6 +167,11 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
             {
                 room.RemoveUser(roomUser);
                 room.NotifyPacketLeaveUser(roomUser.UserID);
+                //게임 중에 누가 나가면 남은 사람이 승리
+                if (room.OmokBoard.GameFinish == false)
+                {
+                    room.NotifyEndOmok(room.GetUserList()[0].NetSessionID);
+                }
                 break;
             }
         }

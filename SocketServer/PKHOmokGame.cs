@@ -202,12 +202,12 @@ public class PKHOmokGame:PKHandler
             //만약 CurTurnCount가 19*19라면 draw
             if (room.OmokBoard.CheckWinningCondition(reqData.PosX,reqData.PosY)==true)
             {
-                NotifyEndOmok(room, sessionID);
+                room.NotifyEndOmok(sessionID);
             }
             else if (room.OmokBoard.CurTurnCount >= 19 * 19)
             {
                 //draw
-                NotifyEndOmok(room, "");
+                room.NotifyEndOmok("");
             }
             else
             {
@@ -233,27 +233,27 @@ public class PKHOmokGame:PKHandler
         ServerNetwork.SendData(sessionID, sendData);
     }
 
-    public void NotifyEndOmok(Room room, string sessionID)
-    {
-        room.SetAllInitState();
-        room.EndGame();
+    //public void NotifyEndOmok(Room room, string sessionID)
+    //{
+    //    room.SetAllInitState();
+    //    room.EndGame();
 
-        var ntfEndOmok = new PKTNtfEndOmok();
+    //    var ntfEndOmok = new PKTNtfEndOmok();
 
-        if (sessionID != "")
-        {
-            var winner = room.GetUserByNetSessionID(sessionID);
-            ntfEndOmok.WinUserID = winner.UserID;
-        }
-        else
-        {
-            ntfEndOmok.WinUserID = "DRAW";
-        }
+    //    if (sessionID != "")
+    //    {
+    //        var winner = room.GetUserByNetSessionID(sessionID);
+    //        ntfEndOmok.WinUserID = winner.UserID;
+    //    }
+    //    else
+    //    {
+    //        ntfEndOmok.WinUserID = room.OmokBoard.DrawGame();
+    //    }
         
-        var body = MemoryPackSerializer.Serialize(ntfEndOmok);
-        var sendData = PacketMaker.MakePacket(PACKETID.NTF_END_OMOK, body);
+    //    var body = MemoryPackSerializer.Serialize(ntfEndOmok);
+    //    var sendData = PacketMaker.MakePacket(PACKETID.NTF_END_OMOK, body);
 
-        room.Broadcast("", sendData);
+    //    room.Broadcast("", sendData);
 
-    }
+    //}
 }

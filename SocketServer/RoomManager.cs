@@ -16,11 +16,14 @@ public class RoomManager
     private Timer _checkRoomStateTimer;
     private int RoomTimeSpan, GameTimeSpan, GameTurnTimeSpan;
 
+    public static Func<string, int> RemoveUserFromRoom;
 
     public RoomManager(MainServer mainServer)
     {
         ServerNetwork = mainServer;
-
+        PKHRoom.CheckRoomStateFunc = this.CheckRoomState;
+        PKHRoom.CheckGameStateFunc = this.CheckGameState;
+        SetTimeSpans(10, 1, 10);
     }
 
 
@@ -42,6 +45,7 @@ public class RoomManager
             var roomNubmer = startNumber + i;
             var room = new Room();
             room.Init(i, roomNubmer, maxUserCount);
+            room.InitTimeSpan(RoomTimeSpan, GameTimeSpan, GameTurnTimeSpan);
             RoomList.Add(room);
         }
 
@@ -67,7 +71,7 @@ public class RoomManager
         ServerNetwork.Distribute(internalPacket);
     }
 
-    public void CheckHeartBeat(int beginIndex, int endIndex)
+    public void CheckRoomState(int beginIndex, int endIndex)
     {
         if (endIndex > RoomList.Count)
         {
@@ -78,17 +82,97 @@ public class RoomManager
 
         for(int i = beginIndex; i < endIndex; i++)
         {
+            if (RoomList[i].OmokBoard.GameFinish==false)
+            {
+                continue;
+            }
+            
             if (RoomList[i].IsRoomUsing == false)
             {
                 continue;
             }
 
-            //Room의 체크방크리에이트
-            //ROom의 체크게임스타트
+            //Room의 체크방 크리에이트
+            if (RoomList[i].IsRoomCreatedButNotPlaying(curTime) == true)
+            {
+                continue;
+            }
+
+            //해당 룸의 모든 사람들 쫓아내
+            RoomList[i].RemoveAllUser();
+        }
+    }
+    
+
+    public void CheckGameState(int beginIndex, int endIndex)
+    {
+        if (endIndex > RoomList.Count)
+        {
+            endIndex = RoomList.Count;
+        }
+
+        var curTime = DateTime.Now;
+
+        for (int i = beginIndex; i < endIndex; i++)
+        {
+            if (RoomList[i].OmokBoard.GameFinish == true)
+            {
+                continue;
+            }
+
+            if (RoomList[i].IsRoomUsing == false)
+            {
+                continue;
+            }
+
+            //Room의 체크게임스타트
+            if (RoomList[i].IsGamePlayingTooLong(curTime) == true)
+            {
+                continue;
+            }
+
+            RoomList[i].NotifyEndOmok("");//게임 draw로 끝내
+            RoomList[i].RemoveAllUser();//쫓아내
         }
     }
 
-    //마찬가지로 ROom의 체크게임스타트 함수
+    public void CheckGameTurnState(int beginIndex, int endIndex)
+    {
+        if (endIndex > RoomList.Count)
+        {
+            endIndex = RoomList.Count;
+        }
+
+        var curTime = DateTime.Now;
+
+        for(int i=beginIndex; i < endIndex; i++)
+        {
+            if (RoomList[i].OmokBoard.GameFinish == true)
+            {
+                continue;
+            }
+
+            if (RoomList[i].IsRoomUsing == false)
+            {
+                continue;
+            }
+
+            if (RoomList[i].OmokBoard.IsPutStoneTooLong(curTime) == true)
+            {
+                continue;
+            }
+
+            //턴 강제 넘기기
+
+            //만약 blackTurn>2 &&  whiteTurn>2라면?(둘 다 ->둘다 쫓아내고 크기에 따라 승패결정
+
+            //else if 만약 blackTurn>2 || whiteTurn>2라면?(둘중 트롤만 쫓아내고 안트롤 승
+
+            //게임 끝
+        }
+    }
+
+    //마찬가지로 Room의 체크게임스타트 함수
 
     public List<Room> GetRoomList()
     {

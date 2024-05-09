@@ -145,11 +145,24 @@ namespace OmokClient
 
         public void SetDisconnectd()
         {
-            if (btnConnect.Enabled == false)
+            if (btnConnect.InvokeRequired)
+            {
+                btnConnect.Invoke(new Action(() =>
+                {
+                    btnConnect.Enabled = true;
+                    btnDisconnect.Enabled = false;
+                }));
+            }
+            else
             {
                 btnConnect.Enabled = true;
                 btnDisconnect.Enabled = false;
             }
+            //if (btnConnect.Enabled == false)
+            //{
+            //    btnConnect.Enabled = true;
+            //    btnDisconnect.Enabled = false;
+            //}
 
             while (true)
             {
@@ -159,14 +172,51 @@ namespace OmokClient
                 }
             }
 
-            listBoxRoomChatMsg.Items.Clear();
-            listBoxRoomUserList.Items.Clear();
+            //listBoxRoomChatMsg.Items.Clear();
+            //listBoxRoomUserList.Items.Clear();
+            if (listBoxRoomChatMsg.InvokeRequired)
+            {
+                listBoxRoomChatMsg.Invoke(new Action(() =>
+                {
+                    listBoxRoomChatMsg.Items.Clear();
+                }));
+            }
+            else
+            {
+                listBoxRoomChatMsg.Items.Clear();
+            }
+
+            if (listBoxRoomUserList.InvokeRequired)
+            {
+                listBoxRoomUserList.Invoke(new Action(() =>
+                {
+                    listBoxRoomUserList.Items.Clear();
+                }));
+            }
+            else
+            {
+                listBoxRoomUserList.Items.Clear();
+            }
 
             EndGame();
 
-            _pingTimer.Dispose();
+            if (_pingTimer != null)
+            {
+                _pingTimer.Dispose(); // Timer 해제
+                _pingTimer = null;
+            }
 
-            labelStatus.Text = "서버 접속이 끊어짐";
+            if (labelStatus.InvokeRequired)
+            {
+                labelStatus.Invoke(new Action(() =>
+                {
+                    labelStatus.Text = "서버 접속이 끊어짐";
+                }));
+            }
+            else
+            {
+                labelStatus.Text = "서버 접속이 끊어짐";
+            }
         }
 
 

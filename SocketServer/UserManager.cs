@@ -2,6 +2,7 @@
 using MemoryPack;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -37,6 +38,7 @@ public class UserManager
         MaxUserCount = maxUserCount;
         UserArray = new User[MaxUserCount];
         ConnectedButInactiveUser = new ConnectedUser[MaxUserCount];
+        Room.GetUserFromUserMgr = this.GetUser;
 
         for (int i = 0; i < MaxUserCount; i++)
         {
@@ -70,7 +72,8 @@ public class UserManager
         {
             return ERROR_CODE.LOGIN_FULL_USER_COUNT;
         }
-        ConnectedButInactiveUser[GetUserArrayAvailableIndex()] = user;
+        ConnectedButInactiveUser[GetConnUserArrayAvailableIndex()] = user;
+        Console.WriteLine($"유저 접속 시간:{user.ConnectedTime}");
 
         return ERROR_CODE.NONE;
     }
@@ -157,6 +160,19 @@ public class UserManager
         return -1;
     }
 
+    public int GetConnUserArrayAvailableIndex()
+    {
+        for (int i = 0; i < ConnectedButInactiveUser.Count(); i++)
+        {
+            if (ConnectedButInactiveUser[i].IsUserConnecting() == false)
+            {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+
 
     //이거 나중에 지울 것.
     public void JustCheckLog(string sessionID)
@@ -217,9 +233,11 @@ public class UserManager
 
             //유저가 존재하는데 하트비트 안주고 있으면 접속 끊는다
             CloseConnection(UserArray[i].UserSessionID());
+
+            //유저 삭제
+            UserArray[i] = new User();
         }
 
-        
     }
 
     public void DisconnectInactiveUser(int beginIndex, int endIndex)
@@ -242,23 +260,21 @@ public class UserManager
 
             var connUser = new User();
 
-            if (UserMap.TryGetValue(ConnectedButInactiveUser[i].SessionID, out connUser) == true)
+            if (UserMap.TryGetValue(ConnectedButInactiveUser[i].SessionID, out connUser) == false)
             {
-                if (ConnectedButInactiveUser[i].IsInactiveLogin(connUser.ActivatedTime) == true)
-                {
-                    ConnectedButInactiveUser[i] = new ConnectedUser();
-                }
-            }
-            else
-            {
-                if (ConnectedButInactiveUser[i].IsInactiveLogin(curTime) == true)
+                if (ConnectedButInactiveUser[i].IsInactiveLogin(curTime) == false)
                 {
                     continue;
                 }
             }
+            else
+            {
+                continue;
+            }
 
-            //유저가 접속했지만 로그인 안하는 경우도 끊는다
+            //유저가 접속했지만 로그인 안하는 경우. 접속해제
             CloseConnection(ConnectedButInactiveUser[i].SessionID);
+            ConnectedButInactiveUser[i] = new ConnectedUser();//초기화
         }
     }
 
@@ -274,15 +290,25 @@ class ConnectedUser
     public DateTime ConnectedTime;
     public const int TimeSpan = 10000; // n초간 로그인 안되면 접속해제
 
+    public bool IsUserConnecting()
+    {
+        if (SessionID == "")
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     public bool IsInactiveLogin(DateTime curTime)
     {
         var diff = curTime - ConnectedTime;
 
         if ((int)diff.TotalMilliseconds > TimeSpan)
         {
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 }

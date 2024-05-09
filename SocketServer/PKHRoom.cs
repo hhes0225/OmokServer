@@ -18,6 +18,9 @@ public class PKHRoom:PKHandler
     private int _startIndexRoomCheck = 0;
     private const int MaxCheckRoomCount = 50;
 
+    public static Action<int, int> CheckRoomStateFunc;
+    public static Action<int, int> CheckGameStateFunc;
+
     public void SetRoomList(List<Room> roomList)
     {
         RoomList = roomList;
@@ -40,23 +43,24 @@ public class PKHRoom:PKHandler
         packetHandlerMap.Add((int)PACKETID.REQ_ROOM_ENTER, RequestRoomEnter);
         packetHandlerMap.Add((int)PACKETID.REQ_ROOM_LEAVE, RequestRoomLeave);
         packetHandlerMap.Add((int)PACKETID.REQ_ROOM_CHAT, RequestChat);
-        packetHandlerMap.Add((int)PACKETID.NTF_INNER_ROOM_CHECK, NotifyRoomCheck);
+        packetHandlerMap.Add((int)PACKETID.NTF_INNER_ROOM_CHECK, NotifyInternalRoomCheck);
     }
 
-    public void NotifyRoomCheck(PacketData packetData)
+    public void NotifyInternalRoomCheck(PacketData packetData)
     {
-        ServerNetwork.MainLogger.Debug("Room check");
+        //ServerNetwork.MainLogger.Debug("Room check");
 
         var endIndex = _startIndexRoomCheck + MaxCheckRoomCount;
-        //RoomMgr.체크하트비트
-        //RoomMgr.inactivateRoom, & 쫓아내기 & 패킷 클라에 전송
+        
+        CheckRoomStateFunc(_startIndexRoomCheck, endIndex);
+        CheckGameStateFunc(_startIndexRoomCheck, endIndex);
 
         _startIndexRoomCheck += MaxCheckRoomCount;
 
-        //if (_startIndexRoomCheck >= UserMgr.GetMaxUserCount())
-        //{
-        //    _startIndexRoomCheck = 0;
-        //}
+        if (_startIndexRoomCheck >= RoomList.Count())
+        {
+            _startIndexRoomCheck = 0;
+        }
     }
 
     public void RequestRoomEnter(PacketData packetData)
@@ -149,13 +153,8 @@ public class PKHRoom:PKHandler
             }
 
             var room = GetRoom(user.RoomNumber);
-            room.RemoveUser(sessionID);
-            if (room.CurrentUserCount() == 0)
-            {
-                room.InactivateRoom();
-                ServerNetwork.MainLogger.Debug("Inactivate Room");
-            }
-
+            room.RemoveUser(room.GetUser(user.ID()));
+            
             user.LeaveRoom();
 
             ResponseLeaveRoomToClient(sessionID);
@@ -187,6 +186,12 @@ public class PKHRoom:PKHandler
 
         var userID = roomUser.UserID;
         room.RemoveUser(roomUser);
+
+        //게임 중에 누가 나가면 남은 사람이 승리
+        if (room.OmokBoard.GameFinish==false)
+        {
+            room.NotifyEndOmok(room.GetUserList()[0].NetSessionID);
+        }
 
         room.NotifyPacketLeaveUser(userID);
         return true;

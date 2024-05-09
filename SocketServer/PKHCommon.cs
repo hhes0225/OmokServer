@@ -55,8 +55,6 @@ public class PKHCommon : PKHandler
                 ServerNetwork.Distribute(internalPacket);
             }
             
-
-
             // 유저 리스트에서 제거
             UserMgr.RemoveUser(sessionID);
         }

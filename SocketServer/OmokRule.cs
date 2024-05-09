@@ -9,6 +9,12 @@ public class OmokRule
     string BlackPlayerID="";
     string WhitePlayerID="";
 
+    public DateTime BlackTurnStartTime {  get; set; }
+    public DateTime WhiteTurnStartTime { get; set; }
+
+    public int BlackPassCount = 0;
+    public int WhitePassCount = 0; 
+
     public enum StoneType { None, Black, White };
 
     const int BoardSize = 19;
@@ -29,6 +35,10 @@ public class OmokRule
 
     private Stack<Point> st = new Stack<Point>();
 
+    private const string Draw = "DRAW";
+
+    public DateTime GameStartTime { get; private set; }
+
     public void SetPlayerColor(string blackPlayerID, string whitePlayerID)
     {
         BlackPlayerID = blackPlayerID;
@@ -43,13 +53,49 @@ public class OmokRule
         BlackPlayerTurn = true;
         CurTurnCount = 1;
         GameFinish = false;
+        GameStartTime = DateTime.Now;
 
         st.Clear();
     }
 
     public void EndGame()
     {
+        GameStartTime = DateTime.MinValue;
         GameFinish = true;
+    }
+
+    public string DrawGame()
+    {
+        return Draw;
+    }
+
+    public bool IsPutStoneTooLong(DateTime curTime)
+    {
+        var diff = new TimeSpan();
+
+        if (GameFinish == false)
+        {
+            if (BlackPlayerTurn)
+            {
+                diff = curTime - BlackTurnStartTime;
+
+                if ((int)diff.TotalMilliseconds >= 10000)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                diff = curTime - WhiteTurnStartTime;
+
+                if ((int)diff.TotalMilliseconds >= 10000)
+                {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     public int GetStoneByPos(int x, int y)
@@ -83,6 +129,17 @@ public class OmokRule
 
         CurrentXPos = x;
         CurrentYPos = y;
+
+        if (BlackPlayerTurn == true)
+        {
+            WhiteTurnStartTime = DateTime.Now;
+            Console.WriteLine($"white player turn start : {WhiteTurnStartTime}");
+        }
+        else
+        {
+            BlackTurnStartTime = DateTime.Now;
+            Console.WriteLine($"black player turn start : {BlackTurnStartTime}");
+        }
 
         BlackPlayerTurn = !BlackPlayerTurn;                   // 차례 변경
 
@@ -118,9 +175,6 @@ public class OmokRule
             CurrentXPos = CurrentYPos = -1;
         }
     }
-
-    
-
 
     public bool CheckWinningCondition(int x, int y)
     {
@@ -250,6 +304,8 @@ public class OmokRule
 
         return continuousStoneNum;
     }
+
+    
 
     #region undo & samsam
     void Undo(object sender, EventArgs e)
