@@ -16,7 +16,10 @@ public class PKHOmokGame:PKHandler
     int StartRoomNumber;
     PacketToBytes PacketMaker = new PacketToBytes();
 
-    //OmokRule OmokRule = new OmokRule();
+    private int _startIndexRoomCheck = 0;
+    private const int MaxCheckRoomCount = 50;
+
+    public static Action<int, int> CheckTurnStateFunc;
 
     public void SetRoomList(List<Room> roomList)
     {
@@ -39,6 +42,22 @@ public class PKHOmokGame:PKHandler
     {
         packetHandlerMap.Add((int)PACKETID.REQ_READY_OMOK, RequestUserReady);
         packetHandlerMap.Add((int)PACKETID.REQ_PUT_OMOK, RequestPutOmok);
+        packetHandlerMap.Add((int)PACKETID.NTF_INNER_TURN_CHECK, NotifyInternalTurnCheck);
+    }
+
+    public void NotifyInternalTurnCheck(PacketData packetData)
+    {
+        //ServerNetwork.MainLogger.Debug("Turn check");
+        var endIndex = _startIndexRoomCheck + MaxCheckRoomCount;
+
+        CheckTurnStateFunc(_startIndexRoomCheck, endIndex);
+
+        _startIndexRoomCheck += MaxCheckRoomCount;
+
+        if (_startIndexRoomCheck >= RoomList.Count())
+        {
+            _startIndexRoomCheck = 0;
+        }
     }
 
     public void RequestUserReady(PacketData packetData)
@@ -219,6 +238,8 @@ public class PKHOmokGame:PKHandler
             ServerNetwork.MainLogger.Error(ex.ToString());
         }
     }
+
+    
 
     public void ResponsePutOmok(ERROR_CODE errorCode, string sessionID)
     {

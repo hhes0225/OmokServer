@@ -6,8 +6,8 @@ namespace CSBaseLib;
 
 public class OmokRule
 {
-    string BlackPlayerID="";
-    string WhitePlayerID="";
+    public string BlackPlayerID="";
+    public string WhitePlayerID="";
 
     public DateTime BlackTurnStartTime {  get; set; }
     public DateTime WhiteTurnStartTime { get; set; }
@@ -54,6 +54,7 @@ public class OmokRule
         CurTurnCount = 1;
         GameFinish = false;
         GameStartTime = DateTime.Now;
+        BlackTurnStartTime = DateTime.Now;
 
         st.Clear();
     }
@@ -61,6 +62,8 @@ public class OmokRule
     public void EndGame()
     {
         GameStartTime = DateTime.MinValue;
+        BlackPassCount = 0;
+        WhitePassCount= 0;
         GameFinish = true;
     }
 
@@ -147,6 +150,27 @@ public class OmokRule
         st.Push(new Point(x, y));
 
         return PutStoneResult.Success;
+    }
+
+    public void PassTurn()
+    {
+         if (BlackPlayerTurn == true)
+        {
+            BlackPassCount++;
+            WhiteTurnStartTime = DateTime.Now;
+            Console.WriteLine($"white player turn start : {WhiteTurnStartTime}");
+        }
+        else
+        {
+            WhitePassCount++;
+            BlackTurnStartTime = DateTime.Now;
+            Console.WriteLine($"black player turn start : {BlackTurnStartTime}");
+        }
+
+        BlackPlayerTurn = !BlackPlayerTurn;// 차례 변경
+
+        ++CurTurnCount;
+        return;
     }
 
     public bool CheckAvailablePosition(int x, int y)

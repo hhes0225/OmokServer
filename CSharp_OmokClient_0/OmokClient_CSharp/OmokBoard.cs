@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CSCommon;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -47,6 +48,9 @@ namespace OmokClient
         
         AIPlayer OmokAI = new();
 
+        private Timer TurnTimer;
+        const int Timespan = 10;
+        int RemainingTime = Timespan;
 
         void Omok_Init()
         {
@@ -74,6 +78,13 @@ namespace OmokClient
 
             PrevXPos = PrevYPos = -1;
             StartSoundEffect.Play();
+
+            labelTurnTime.Text = $"Time Left: {RemainingTime}";
+            InitRemainingTime();
+            TurnTimer = new Timer();
+            TurnTimer.Interval = 1000;
+            TurnTimer.Tick += new EventHandler(TurnTimer_Tick);
+            TurnTimer.Start();
 
             OmokLogic.StartGame();
 
@@ -114,6 +125,7 @@ namespace OmokClient
         void EndGame()
         {
             OmokLogic.EndGame();
+            TurnTimer.Stop();
 
             EndSoundEffect.Play();
 
@@ -131,7 +143,21 @@ namespace OmokClient
             }
         }
 
+        private void TurnTimer_Tick(object sender, EventArgs e)
+        {
+            RemainingTime--;
+            labelTurnTime.Text = $"Time Left: {RemainingTime}";
 
+            if (RemainingTime == 0)
+            {
+                TurnTimer.Stop();
+            }
+        }
+
+        public void InitRemainingTime()
+        {
+            RemainingTime = Timespan+1;
+        }
 
         #region omok UI
         void panel1_Paint(object sender, PaintEventArgs e)
@@ -285,6 +311,7 @@ namespace OmokClient
             var ret = OmokLogic.PutStone(x, y);
             DrawStone(x, y);
             ShowCurrentStone();
+            
 
             if (isNotify == false)
             {
@@ -296,9 +323,34 @@ namespace OmokClient
                 IsMyTurn = true;
             }
 
-            //
             Rectangle r = new Rectangle(StartPos, 590, StartPos + StoneSize + 350, StoneSize + 10);
             panel1.Invalidate(r);
+            TurnTimer.Start();
+            InitRemainingTime();
+        }
+
+        void PlayerTurnPassResponse(bool isNotify)
+        {
+            OmokLogic.PassTurn();
+            ShowCurrentStone();
+
+           
+
+            if (isNotify == false)
+            {
+                IsMyTurn = false;
+
+            }
+            else
+            {
+                IsMyTurn = true;
+            }
+            
+
+            Rectangle r = new Rectangle(StartPos, 590, StartPos + StoneSize + 350, StoneSize + 10);
+            panel1.Invalidate(r);
+            TurnTimer.Start();
+            InitRemainingTime();
         }
 
         private void panel1_MouseMove(object sender, MouseEventArgs e)     // 현재 차례의 돌 잔상 구현 (마우스 움직일때)

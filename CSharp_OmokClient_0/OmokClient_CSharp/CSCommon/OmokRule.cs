@@ -14,7 +14,7 @@ public class OmokRule
 
     public bool GameFinish { get; private set; } = true;
 
-    public int CurTuenCount { get; private set; } = 0;
+    public int CurTurnCount { get; private set; } = 0;
 
 
     public int PrevXPos { get; private set; } = -1;
@@ -31,7 +31,7 @@ public class OmokRule
         PrevXPos = PrevYPos = -1;
         CurrentXPos = CurrentYPos = -1;
         BlackPlayerTurn = true;
-        CurTuenCount = 1;
+        CurTurnCount = 1;
         GameFinish = false;
 
         st.Clear();
@@ -49,7 +49,7 @@ public class OmokRule
 
     public bool IsBlackTurn()
     {
-        return ((CurTuenCount % 2) == 1);
+        return ((CurTurnCount % 2) == 1);
     }
 
     public PutStoneResult PutStone(int x, int y)
@@ -73,10 +73,19 @@ public class OmokRule
 
         BlackPlayerTurn = !BlackPlayerTurn;                   // 차례 변경
 
-        ++CurTuenCount;
+        ++CurTurnCount;
         st.Push(new Point(x, y));
 
         return PutStoneResult.Success;
+    }
+
+    public void PassTurn()
+    {
+        BlackPlayerTurn = !BlackPlayerTurn;                   // 차례 변경
+
+        ++CurTurnCount;
+
+        return;
     }
 
     public void WinAndFinishGame(bool Result)

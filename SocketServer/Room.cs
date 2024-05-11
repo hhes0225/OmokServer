@@ -109,28 +109,30 @@ public class Room
 
     public void RemoveAllUser()
     {
-        for(int i = 0; i < UserList.Count; i++)
+        for (int i = UserList.Count - 1; i >= 0; i--)
         {
             if (UserList[i] != null)
             {
-                NotifyPacketLeaveUser(UserList[i].UserID);
-                Console.WriteLine($"{UserList[i].UserID}: {DateTime.Now}");
-
-                var user = GetUserFromUserMgr(UserList[i].NetSessionID);
-
-                if (user!=null)
-                {
-                    user.LeaveRoom();
-                }
-                
                 RemoveUser(UserList[i]);
             }
         }
+
     }
 
     public bool RemoveUser(RoomUser user)
     {
-        if(user == null)
+        NotifyPacketLeaveUser(user.UserID);
+        Console.WriteLine($"{user.UserID}: {DateTime.Now}");
+
+        var userFromUser = GetUserFromUserMgr(user.NetSessionID);
+
+        if (user != null)
+        {
+            userFromUser.LeaveRoom();
+        }
+
+        //여기가 기존
+        if (user == null)
         {
             return false;
         }
@@ -221,6 +223,19 @@ public class Room
 
         var bodyData = MemoryPackSerializer.Serialize(packet);
         var sendPacket = PacketMaker.MakePacket(PACKETID.NTF_READY_OMOK, bodyData);
+
+        //방 전체에게 뿌리기 -> Broadcast
+        Broadcast("", sendPacket);
+    }
+
+    public void NotifyPacketTurnPass()
+    {
+        OmokBoard.PassTurn();
+
+        var packet = new CSBaseLib.PKTNtfTrunPass();
+
+        var bodyData = MemoryPackSerializer.Serialize(packet);
+        var sendPacket = PacketMaker.MakePacket(PACKETID.NTF_TURN_PASS, bodyData);
 
         //방 전체에게 뿌리기 -> Broadcast
         Broadcast("", sendPacket);

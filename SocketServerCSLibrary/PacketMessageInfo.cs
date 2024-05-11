@@ -198,6 +198,11 @@ public partial class PKTNtfPutMok
     public int Mok;
 }
 
+[MemoryPackable]
+public partial class PKTNtfTrunPass
+{
+}
+
 // 오목 게임 종료 통보
 [MemoryPackable]
 public partial class PKTNtfEndOmok
@@ -226,3 +231,9 @@ public partial class PKTNtfInnerUserCheck
 public partial class PKTNtfInnerRoomCheck
 {
 }
+
+[MemoryPackable]
+public partial class PKTNtfInnerTurnCheck
+{
+}
+

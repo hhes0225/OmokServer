@@ -35,14 +35,14 @@ namespace CSCommon
 
         public const UInt16 ReqPutMok = 1035;
         public const UInt16 ResPutMok = 1036;
-        public const UInt16 NTFPutMok = 1037;
+        public const UInt16 NtfPutMok = 1037;
 
-        public const UInt16 NTFEndOmok = 1038;
+        public const UInt16 NtfEndOmok = 1038;
 
         //heartbeat
         public const UInt16 PingUserConnInfo = 1039;
         public const UInt16 PongUserConnInfo = 1040;
-        public const UInt16 NtfInnerUserCheck = 1041;
+        public const UInt16 NtfTurnPass = 1041;
 
 
         public const UInt16 END = 1100;

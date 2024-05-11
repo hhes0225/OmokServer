@@ -33,9 +33,10 @@ namespace OmokClient
             PacketFuncDic.Add(PacketID.NtfReadyOmok, PacketProcess_ReadyOmokNotify);
             PacketFuncDic.Add(PacketID.NtfStartOmok, PacketProcess_StartOmokNotify);
             PacketFuncDic.Add(PacketID.ResPutMok, PacketProcess_PutMokResponse);
-            PacketFuncDic.Add(PacketID.NTFPutMok, PacketProcess_PutMokNotify);
-            PacketFuncDic.Add(PacketID.NTFEndOmok, PacketProcess_EndOmokNotify);
+            PacketFuncDic.Add(PacketID.NtfPutMok, PacketProcess_PutMokNotify);
+            PacketFuncDic.Add(PacketID.NtfEndOmok, PacketProcess_EndOmokNotify);
             PacketFuncDic.Add(PacketID.PongUserConnInfo, PacketProcess_PongUserConnInfo);
+            PacketFuncDic.Add(PacketID.NtfTurnPass, PacketProcess_TurnPassNotify);
         }
 
 
@@ -251,8 +252,20 @@ namespace OmokClient
             PlayerPutStoneResponse(IsMyTurn, notifyPkt.PosX, notifyPkt.PosY);
 
             IsMyTurn = !IsMyTurn;
+            
 
             DevLog.Write($"오목 정보: X: {notifyPkt.PosX},  Y: {notifyPkt.PosY},   알:{notifyPkt.Mok}");
+        }
+
+        void PacketProcess_TurnPassNotify(byte[] packetData)
+        {
+            var notifyPkt = MemoryPackSerializer.Deserialize<PKTNtfPutMok>(packetData);
+
+            PlayerTurnPassResponse(IsMyTurn);
+
+            IsMyTurn = !IsMyTurn;
+
+            DevLog.Write($"오목 정보: Turn passed!");
         }
 
 

@@ -187,14 +187,20 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
         MainLogger.Debug(string.Format($"세션 번호 {session.SessionID}, 받은 데이터 크기 {requestInfo.Body.Length}, " +
             $"ThreadID: {System.Threading.Thread.CurrentThread.ManagedThreadId}"));
 
-        var packet = new PacketData();
-        packet.SessionID = session.SessionID;
-        packet.PacketSize = requestInfo.Size;
-        packet.PacketID = requestInfo.PacketID;
-        packet.BodyData = requestInfo.Body;
 
-        //메인 프로세서 버퍼에 등록(처리요청)
-        Distribute(packet);
+        //Client에서 Internal packet이면 잘못 전송된 패킷임
+        if ((int)requestInfo.PacketID < 8000 || (int)requestInfo.PacketID > 8100)
+        {
+            var packet = new PacketData();
+            packet.SessionID = session.SessionID;
+            packet.PacketSize = requestInfo.Size;
+            packet.PacketID = requestInfo.PacketID;
+            packet.BodyData = requestInfo.Body;
+
+            //메인 프로세서 버퍼에 등록(처리요청)
+            Distribute(packet);
+        }
+
     }
 
     public void CloseConnection(string sessionID)

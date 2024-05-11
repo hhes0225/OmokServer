@@ -195,7 +195,10 @@ namespace CSCommon
         public Int16 Result;
     }
 
-
+    [MemoryPackable]
+    public partial class PKTNtfTrunPass
+    {
+    }
 
 
 }

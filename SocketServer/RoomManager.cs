@@ -14,6 +14,7 @@ public class RoomManager
     MainServer ServerNetwork;
 
     private Timer _checkRoomStateTimer;
+    private Timer _checkTurnStateTimer;
     private int RoomTimeSpan, GameTimeSpan, GameTurnTimeSpan;
 
     public static Func<string, int> RemoveUserFromRoom;
@@ -23,6 +24,8 @@ public class RoomManager
         ServerNetwork = mainServer;
         PKHRoom.CheckRoomStateFunc = this.CheckRoomState;
         PKHRoom.CheckGameStateFunc = this.CheckGameState;
+        PKHOmokGame.CheckTurnStateFunc = this.CheckTurnState;
+
         SetTimeSpans(10, 1, 10);
     }
 
@@ -49,15 +52,22 @@ public class RoomManager
             RoomList.Add(room);
         }
 
-        InitAndStartTimer(0, 5000);
+        InitAndStartRoomTimer(0, 5000);
+        InitAndStartTurnTimer(0, 250);
         SetTimeSpans(1, 1, 0);
     }
 
 
-    public void InitAndStartTimer(int startTime, int interval)
+    public void InitAndStartRoomTimer(int startTime, int interval)
     {
         TimerCallback callback= new TimerCallback(SendRoomCheckPkt);
         _checkRoomStateTimer = new Timer(callback, null, startTime, interval);
+    }
+
+    public void InitAndStartTurnTimer(int startTime, int interval)
+    {
+        TimerCallback callback = new TimerCallback(SendTurnCheckPkt);
+        _checkTurnStateTimer= new Timer(callback, null, startTime, interval);
     }
 
     public void SendRoomCheckPkt(object state)
@@ -68,6 +78,17 @@ public class RoomManager
         var internalPacket = new PacketData();
         internalPacket.Assign((int)PACKETID.NTF_INNER_ROOM_CHECK, body);
 
+        ServerNetwork.Distribute(internalPacket);
+    }
+
+    public void SendTurnCheckPkt(object state)
+    {
+        var ntfPkt = new PKTNtfInnerTurnCheck();
+        var body = MemoryPackSerializer.Serialize(ntfPkt);
+
+        var internalPacket = new PacketData();
+        internalPacket.Assign((int)PACKETID.NTF_INNER_TURN_CHECK, body);
+        
         ServerNetwork.Distribute(internalPacket);
     }
 
@@ -136,7 +157,7 @@ public class RoomManager
         }
     }
 
-    public void CheckGameTurnState(int beginIndex, int endIndex)
+    public void CheckTurnState(int beginIndex, int endIndex)
     {
         if (endIndex > RoomList.Count)
         {
@@ -163,12 +184,46 @@ public class RoomManager
             }
 
             //턴 강제 넘기기
+            RoomList[i].NotifyPacketTurnPass();
+
+            Console.WriteLine($"blackPCount: {RoomList[i].OmokBoard.BlackPassCount}");
+            Console.WriteLine($"whitePCount: {RoomList[i].OmokBoard.WhitePassCount}");
 
             //만약 blackTurn>2 &&  whiteTurn>2라면?(둘 다 ->둘다 쫓아내고 크기에 따라 승패결정
+            if (RoomList[i].OmokBoard.BlackPassCount+ RoomList[i].OmokBoard.WhitePassCount>=4
+               && RoomList[i].OmokBoard.BlackPassCount>1 && RoomList[i].OmokBoard.WhitePassCount > 1)
+            {
+                RoomList[i].NotifyEndOmok("");//게임 draw로 끝내
+                RoomList[i].RemoveAllUser();//쫓아내
+            }
+            else if(RoomList[i].OmokBoard.BlackPassCount + RoomList[i].OmokBoard.WhitePassCount >=4
+                && RoomList[i].OmokBoard.BlackPassCount != RoomList[i].OmokBoard.WhitePassCount)
+            {
+                //else if 만약 blackTurn>2 || whiteTurn>2라면?(둘중 트롤만 쫓아내고 안트롤 승
+                var goodUserID = "";
+                var badUserID = "";
 
-            //else if 만약 blackTurn>2 || whiteTurn>2라면?(둘중 트롤만 쫓아내고 안트롤 승
+                if(RoomList[i].OmokBoard.BlackPassCount > RoomList[i].OmokBoard.WhitePassCount)
+                {
+                    goodUserID = RoomList[i].OmokBoard.WhitePlayerID;
+                    badUserID = RoomList[i].OmokBoard.BlackPlayerID;
+                }
+                else
+                {
+                    goodUserID = RoomList[i].OmokBoard.BlackPlayerID;
+                    badUserID = RoomList[i].OmokBoard.WhitePlayerID;
+                }
 
-            //게임 끝
+                Console.WriteLine($"GoodUser: {goodUserID}");
+                Console.WriteLine($"BadUser: {badUserID}");
+
+                RoomList[i].NotifyEndOmok(goodUserID);
+                RoomList[i].RemoveUser(RoomList[i].GetUserByNetSessionID(badUserID));
+            }
+            else
+            {
+                continue;
+            }
         }
     }
 
