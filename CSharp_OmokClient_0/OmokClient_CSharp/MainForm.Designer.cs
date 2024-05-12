@@ -179,6 +179,7 @@ namespace OmokClient
             this.textBoxIP.Location = new System.Drawing.Point(82, 45);
             this.textBoxIP.Name = "textBoxIP";
             this.textBoxIP.Size = new System.Drawing.Size(85, 25);
+            this.textBoxIP.Text = "34.64.175.89";
             this.textBoxIP.TabIndex = 1;
             // 
             // label2
@@ -195,13 +196,14 @@ namespace OmokClient
             this.textBoxPort.Location = new System.Drawing.Point(249, 45);
             this.textBoxPort.Name = "textBoxPort";
             this.textBoxPort.Size = new System.Drawing.Size(85, 25);
+            this.textBoxPort.Text = "12021";
             this.textBoxPort.TabIndex = 3;
             // 
             // checkBoxLocalHostIP
             // 
             this.checkBoxLocalHostIP.AutoSize = true;
-            this.checkBoxLocalHostIP.Checked = true;
-            this.checkBoxLocalHostIP.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBoxLocalHostIP.Checked = false;
+            this.checkBoxLocalHostIP.CheckState = System.Windows.Forms.CheckState.Unchecked;
             this.checkBoxLocalHostIP.Location = new System.Drawing.Point(345, 10);
             this.checkBoxLocalHostIP.Name = "checkBoxLocalHostIP";
             this.checkBoxLocalHostIP.Size = new System.Drawing.Size(111, 21);
