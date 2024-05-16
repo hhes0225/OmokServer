@@ -31,7 +31,7 @@ public class PacketProcessor
     //큐: 헤더 정보는 그대로, body정보는 serialize된 byte배열
     BufferBlock<PacketData> MsgBuffer = new BufferBlock<PacketData>();
 
-    UserManager UserMgr = new UserManager();
+    UserManager UserMgr;
 
     Tuple<int, int> RoomNumberRange = new Tuple<int, int>(-1, -1);
     List<Room> RoomList = new List<Room>();//룸 리스트 생성
@@ -48,6 +48,7 @@ public class PacketProcessor
     public PacketProcessor(SuperSocket.SocketBase.Logging.ILog logger)
     {
         ProcessorLogger = logger;
+        UserMgr = new UserManager(logger);
     }
 
     public void CreateAndStart(List<Room> roomList, MainServer mainServer)
@@ -89,18 +90,18 @@ public class PacketProcessor
 
     void RegisterPacketHandler(MainServer serverNetwork)
     {
-        CommonPacketHandler.Init(serverNetwork, UserMgr);
+        CommonPacketHandler.Init(serverNetwork.MainLogger, UserMgr);
         CommonPacketHandler.RegisterPacketHandler(PacketHandlerMap);
 
-        RoomPacketHandler.Init(serverNetwork, UserMgr);
+        RoomPacketHandler.Init(serverNetwork.MainLogger, UserMgr);
         RoomPacketHandler.SetRoomList(RoomList);
         RoomPacketHandler.RegisterPacketHandler(PacketHandlerMap);
 
-        OmokPacketHandler.Init(serverNetwork, UserMgr);
+        OmokPacketHandler.Init(serverNetwork.MainLogger, UserMgr);
         OmokPacketHandler.SetRoomList(RoomList);
         OmokPacketHandler.RegisterPacketHandler(PacketHandlerMap);
 
-        HeartbeatHandler.Init(serverNetwork, UserMgr);
+        HeartbeatHandler.Init(serverNetwork.MainLogger, UserMgr);
         HeartbeatHandler.RegisterPacketHandler(PacketHandlerMap);
     }
 
@@ -119,7 +120,7 @@ public class PacketProcessor
                 }
                 else
                 {
-                    System.Diagnostics.Debug.WriteLine($"세션 번호: {packet.SessionID}, PacketID {packet.PacketID}," +
+                    System.Diagnostics.Debug.WriteLine($"MainProcessor - 세션 번호: {packet.SessionID}, PacketID {packet.PacketID}," +
                         $"받은 데이터 크기: {packet.BodyData.Length}");
                 }
             }

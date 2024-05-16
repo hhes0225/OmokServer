@@ -13,27 +13,29 @@ namespace SocketServer;
 public class PKHCommon : PKHandler
 {
     PacketToBytes PacketMaker = new PacketToBytes();
+    int SessionCount = 0;
 
     public void RegisterPacketHandler(Dictionary<int, Action<PacketData>> packetHandlerMap)
     {
-        packetHandlerMap.Add((int)PACKETID.NTF_IN_CONNECT_CLIENT, NotifyInConnectClient);
-        packetHandlerMap.Add((int)PACKETID.NTF_IN_DISCONNECT_CLIENT, NotifyInDisconnectClient);
-        packetHandlerMap.Add((int)PACKETID.REQ_LOGIN, RequestLogin);
+        packetHandlerMap.Add((int)PACKETID.NtfInConnectClient, NotifyInConnectClient);
+        packetHandlerMap.Add((int)PACKETID.NtfInDisconnectClient, NotifyInDisconnectClient);
+        packetHandlerMap.Add((int)PACKETID.ReqLogin, RequestLogin);
 
     }
 
     public void NotifyInConnectClient(PacketData packetData)
     {
-        ServerNetwork.MainLogger.Debug($"Current Connected Session Count: {ServerNetwork.SessionCount}");
+        SessionCount++;
+        HandlerLogger.Debug($"Current Connected Session Count: {SessionCount}");
         var sessionID = packetData.SessionID;
 
-        UserMgr.AddJustConnectedUser(sessionID);
+        _userMgr.AddJustConnectedUser(sessionID);
     }
 
     public void NotifyInDisconnectClient(PacketData packetData)
     {
         var sessionID = packetData.SessionID;
-        var user = UserMgr.GetUser(sessionID);
+        var user = _userMgr.GetUser(sessionID);
 
         if(user != null)
         {
@@ -44,58 +46,59 @@ public class PKHCommon : PKHandler
             {
                 var packet = new PKTInternalNtfRoomLeave()
                 {
-                    UserID = user.ID(),
+                    UserID = user.UserSessionID(),
                     RoomNumber = roomNum
                 };
 
                 var body = MemoryPackSerializer.Serialize(packet);
                 var internalPacket = new PacketData();
-                internalPacket.Assign(sessionID, (Int16)PACKETID.NTF_IN_ROOM_LEAVE, body);
+                internalPacket.Assign(sessionID, (Int16)PACKETID.NtfInRoomLeave, body);
 
-                ServerNetwork.Distribute(internalPacket);
+                DistributeFunc(internalPacket);
             }
             
             // 유저 리스트에서 제거
-            UserMgr.RemoveUser(sessionID);
+            _userMgr.RemoveUser(sessionID);
         }
 
-        ServerNetwork.MainLogger.Debug($"Current Connected Session Count: {ServerNetwork.SessionCount}");
+        HandlerLogger.Debug($"Current Connected Session Count: {--SessionCount}");
     }
 
+    
     // 클라이언트에게 로그인 요청 packet ID를 받으면 이 함수가 호출됨
     public void RequestLogin(PacketData packetData)
     {
         //session ID(오직 유저별로 1개의 통신 세션만 생성 가능)
         var sessionID = packetData.SessionID;
-        ServerNetwork.MainLogger.Debug("로그인 요청 받음");
+        HandlerLogger.Debug("로그인 요청 받음");
 
         try
         {
             //session ID가 이미 존재한다면 이미 로그인 상태인 것임
-            if(UserMgr.GetUser(sessionID) != null)
+            if(_userMgr.GetUser(sessionID) != null)
             {
                 //에러 메시지와 함께 response 메시지 전달
-                ResponseLoginToClient(ERROR_CODE.LOGIN_ALREADY_WORKING, sessionID);
-                ServerNetwork.MainLogger.Debug("이미 로그인 중임");
+                ResponseLoginToClient(ERROR_CODE.LoginAlreadyWorking, sessionID);
+                HandlerLogger.Debug("이미 로그인 중임");
                 return;
             }
 
             //body deserialize & processor의 buffer에 삽입
             var reqData = MemoryPackSerializer.Deserialize<PKTReqLogin>(packetData.BodyData);
-            var errorCode = UserMgr.AddUser(reqData.UserID, sessionID);//유저 리스트에 유저 추가
+            var errorCode = _userMgr.AddUser(reqData.UserID, sessionID);//유저 리스트에 유저 추가
 
             //packet생성해서 그 결과를 response
-            if(errorCode == ERROR_CODE.NONE)
+            if(errorCode == ERROR_CODE.None)
             {
-                ServerNetwork.MainLogger.Debug($"{reqData.UserID} 로그인 성공");
+                HandlerLogger.Debug($"{reqData.UserID} 로그인 성공");
                 ResponseLoginToClient(errorCode, sessionID);
                 //리스폰스 메시지 전달
-                ServerNetwork.MainLogger.Debug("로그인 요청 답변 보냄");
+                HandlerLogger.Debug("로그인 요청 답변 보냄");
             }
         }
         catch (Exception ex)
         {
-            ServerNetwork.MainLogger.Error(ex.ToString());
+            HandlerLogger.Error(ex.ToString());
         }
     }
 
@@ -110,9 +113,9 @@ public class PKHCommon : PKHandler
         //body 직렬화 + 헤더 직렬화(바디 헤더 따로따로 직렬화) 추가해서 전달
         //MakePacket에서 알아서 패킷 크기 계산해줌.
         var bodyData = MemoryPackSerializer.Serialize(resLogin);
-        var sendData = PacketMaker.MakePacket(PACKETID.RES_LOGIN, bodyData);
+        var sendData = PacketMaker.MakePacket(PACKETID.ResLogin, bodyData);
 
-        ServerNetwork.SendData(sessionID, sendData);//패킷 버퍼에 삽입
+        SendDataFunc(sessionID, sendData);//패킷 버퍼에 삽입
     }
 
     public void NotifyMustCloseToClient(ERROR_CODE errorCode, string sessionID)
@@ -123,9 +126,9 @@ public class PKHCommon : PKHandler
         };
 
         var bodyData = MemoryPackSerializer.Serialize(resLogin);
-        var sendData = PacketMaker.MakePacket(PACKETID.NTF_MUST_CLOSE, bodyData);
+        var sendData = PacketMaker.MakePacket(PACKETID.NtfMustClose, bodyData);
 
-        ServerNetwork.SendData(sessionID , sendData);
+        SendDataFunc(sessionID , sendData);
     }
 }
 

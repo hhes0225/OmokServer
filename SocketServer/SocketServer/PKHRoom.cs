@@ -40,15 +40,16 @@ public class PKHRoom:PKHandler
     
     public void RegisterPacketHandler(Dictionary<int, Action<PacketData>> packetHandlerMap)
     {
-        packetHandlerMap.Add((int)PACKETID.REQ_ROOM_ENTER, RequestRoomEnter);
-        packetHandlerMap.Add((int)PACKETID.REQ_ROOM_LEAVE, RequestRoomLeave);
-        packetHandlerMap.Add((int)PACKETID.REQ_ROOM_CHAT, RequestChat);
-        packetHandlerMap.Add((int)PACKETID.NTF_INNER_ROOM_CHECK, NotifyInternalRoomCheck);
+        packetHandlerMap.Add((int)PACKETID.ReqRoomEnter, RequestRoomEnter);
+        packetHandlerMap.Add((int)PACKETID.ReqRoomLeave, RequestRoomLeave);
+        packetHandlerMap.Add((int)PACKETID.ReqRoomChat, RequestChat);
+        packetHandlerMap.Add((int)PACKETID.NtfInnerRoomCheck, NotifyInternalRoomCheck);
+        packetHandlerMap.Add((int)PACKETID.NtfInRoomLeave, NotifyInternalLeaveUserMgr);
     }
 
     public void NotifyInternalRoomCheck(PacketData packetData)
     {
-        //ServerNetwork.MainLogger.Debug("Room check");
+        //HandlerLogger.Debug("Room check");
 
         var endIndex = _startIndexRoomCheck + MaxCheckRoomCount;
         
@@ -66,22 +67,22 @@ public class PKHRoom:PKHandler
     public void RequestRoomEnter(PacketData packetData)
     {
         var sessionID = packetData.SessionID;
-        ServerNetwork.MainLogger.Debug("Request Room Enter");
+        HandlerLogger.Debug("Request Room Enter");
 
         try
         {
-            var user = UserMgr.GetUser(sessionID);
+            var user = _userMgr.GetUser(sessionID);
 
             if (user == null || user.IsSessionConfirm(sessionID)==false)
             {
-                ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_INVALID_USER, sessionID);
+                ResponseEnterRoomToClient(ERROR_CODE.RoomEnterInvalidUser, sessionID);
                 return;
             }
 
             //이미 방에 들어가있는 상태에서 다른 방 입장하려고 할 때
             if (user.IsInRoom())
             {
-                ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_INVALID_STATE, sessionID);
+                ResponseEnterRoomToClient(ERROR_CODE.RoomEnterInvalidState, sessionID);
                 return;
             }
 
@@ -91,13 +92,13 @@ public class PKHRoom:PKHandler
 
             if (room == null)
             {
-                ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_INVALID_ROOM_NUMBER, sessionID);
+                ResponseEnterRoomToClient(ERROR_CODE.RoomEnterInvalidRoomNumber, sessionID);
                 return;
             }
 
             if(room.AddUser(user.ID(), sessionID) == false)
             {
-                ResponseEnterRoomToClient(ERROR_CODE.ROOM_ENTER_FAIL_ADD_USER, sessionID);
+                ResponseEnterRoomToClient(ERROR_CODE.RoomEnterFailAddUser, sessionID);
                 return;
             }
 
@@ -106,14 +107,14 @@ public class PKHRoom:PKHandler
             room.NotifyPacketUserList(sessionID);
             room.NotifyPacketNewUser(sessionID, user.ID());//방의 다른 유저에게 나 왔다고 알리기
 
-            ResponseEnterRoomToClient(ERROR_CODE.NONE, sessionID);
+            ResponseEnterRoomToClient(ERROR_CODE.None, sessionID);
 
-            ServerNetwork.MainLogger.Debug("RequestEnterInternal - Success");
-            ServerNetwork.MainLogger.Debug($"First Entry Time: {room.FirstEntryTime}");
+            HandlerLogger.Debug("RequestEnterInternal - Success");
+            HandlerLogger.Debug($"First Entry Time: {room.FirstEntryTime}");
         }
         catch (Exception ex)
         {
-            ServerNetwork.MainLogger.Error(ex.ToString());
+            HandlerLogger.Error(ex.ToString());
         }
     }
 
@@ -125,52 +126,52 @@ public class PKHRoom:PKHandler
         };
 
         var body = MemoryPackSerializer.Serialize(resRoomEnter);
-        var sendData = PacketMaker.MakePacket(PACKETID.RES_ROOM_ENTER, body);
+        var sendData = PacketMaker.MakePacket(PACKETID.ResRoomEnter, body);
 
-        ServerNetwork.SendData(sessionID, sendData);
+        SendDataFunc(sessionID, sendData);
     }
 
     void RequestRoomLeave(PacketData packetData)
     {
         var sessionID = packetData.SessionID;
-        ServerNetwork.MainLogger.Debug("방 나가기 요청");
+        HandlerLogger.Debug("방 나가기 요청");
 
         try
         {
-            var user = UserMgr.GetUser(sessionID);
+            var user = _userMgr.GetUser(sessionID);
 
             if (user == null)
             {
-                ServerNetwork.MainLogger.Debug("유저 존재하지 않음");
+                HandlerLogger.Debug("유저 존재하지 않음");
                 return;
                 
             }
 
             if(RemoveUserFromRoom(sessionID, user.RoomNumber) == false)
             {
-                ServerNetwork.MainLogger.Debug("올바른 방 나가기 요청이 아님");
+                HandlerLogger.Debug("올바른 방 나가기 요청이 아님");
                 return ;
             }
 
             var room = GetRoom(user.RoomNumber);
-            room.RemoveUser(room.GetUser(user.ID()));
+            //room.RemoveUser(room.GetUser(user.ID()));
             
             user.LeaveRoom();
 
             ResponseLeaveRoomToClient(sessionID);
             
-            ServerNetwork.MainLogger.Debug("Request Leave Room - Success");
+            HandlerLogger.Debug("Request Leave Room - Success");
                         
         }
         catch(Exception ex)
         {
-            ServerNetwork.MainLogger.Error(ex.ToString());
+            HandlerLogger.Error(ex.ToString());
         }
     }
 
     bool RemoveUserFromRoom(string sessionID, int roomNumber)
     {
-        ServerNetwork.MainLogger.Debug($"LeaveRoomUser. SessionID: {sessionID}");
+        HandlerLogger.Debug($"LeaveRoomUser. SessionID: {sessionID}");
 
         var room = GetRoom(roomNumber);
         if (room == null)
@@ -201,19 +202,19 @@ public class PKHRoom:PKHandler
     {
         var resRoomLeave = new PKTResRoomLeave()
         {
-            Result = (Int16)ERROR_CODE.NONE
+            Result = (Int16)ERROR_CODE.None
         };
 
         var body = MemoryPackSerializer.Serialize(resRoomLeave);
-        var sendData = PacketMaker.MakePacket(PACKETID.RES_ROOM_LEAVE, body);
+        var sendData = PacketMaker.MakePacket(PACKETID.ResRoomLeave, body);
             
-        ServerNetwork.SendData(sessionID, sendData);
+        SendDataFunc(sessionID, sendData);
     }
 
     public void NotifyLeaveInternal(PacketData packetData)
     {
         var sessionID = packetData.SessionID;
-        ServerNetwork.MainLogger.Debug($"NotifyLeaveInternal. SessionID: {sessionID}");
+        HandlerLogger.Debug($"NotifyLeaveInternal. SessionID: {sessionID}");
 
         var reqData = MemoryPackSerializer.Deserialize<PKTInternalNtfRoomLeave>(packetData.BodyData);
         RemoveUserFromRoom(sessionID, reqData.RoomNumber);
@@ -222,7 +223,7 @@ public class PKHRoom:PKHandler
     public void RequestChat(PacketData packetData)
     {
         var sessionID = packetData.SessionID;
-        ServerNetwork.MainLogger.Debug("Room Request Chat");
+        HandlerLogger.Debug("Room Request Chat");
 
         try
         {
@@ -242,24 +243,24 @@ public class PKHRoom:PKHandler
             };
 
             var body = MemoryPackSerializer.Serialize(notifyPacket);
-            var sendData = PacketMaker.MakePacket(PACKETID.NTF_ROOM_CHAT, body);
+            var sendData = PacketMaker.MakePacket(PACKETID.NtfRoomChat, body);
 
             roomObject.Item2.Broadcast("", sendData);
             //채팅 전달. 자기 자신에게도 전달됨
             //1st arg가 sessionID인데, 이것이 같으면 전달이 안됨. 근데 여기서는 ""로 했으므로
             //무조건 방 안 모든 유저에게 전송될 것(sessionID가 ""인 클라는 존재 X)
 
-            ServerNetwork.MainLogger.Debug("Room Request Chat - Success");
+            HandlerLogger.Debug("Room Request Chat - Success");
         }
         catch (Exception ex)
         {
-            ServerNetwork.MainLogger.Error(ex.ToString());
+            HandlerLogger.Error(ex.ToString());
         }
     }
 
     (bool, Room, RoomUser) CheckRoomAndRoomUser(string userNetSessionID)
     {
-        var user = UserMgr.GetUser(userNetSessionID);
+        var user = _userMgr.GetUser(userNetSessionID);
 
         if (user == null)
         {
@@ -301,8 +302,28 @@ public class PKHRoom:PKHandler
         };
 
         var body = MemoryPackSerializer.Serialize(notifyPacket);
-        var sendData = PacketMaker.MakePacket(PACKETID.NTF_ROOM_CHAT, body);
+        var sendData = PacketMaker.MakePacket(PACKETID.NtfRoomChat, body);
 
         roomObject.Item2.Broadcast("", sendData);
+    }
+
+    public void NotifyInternalLeaveUserMgr(PacketData packetData)
+    {
+        var body = MemoryPackSerializer.Deserialize<PKTInternalNtfRoomLeave>(packetData.BodyData);
+
+        try
+        {
+            var leaveUser = _userMgr.GetUser(body.UserID);
+
+            if (leaveUser != null)
+            {
+                leaveUser.LeaveRoom();
+            }
+        }
+        catch (Exception ex)
+        {
+            HandlerLogger.Error(ex.ToString());
+        }
+
     }
 }

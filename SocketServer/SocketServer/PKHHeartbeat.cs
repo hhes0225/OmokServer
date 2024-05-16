@@ -17,8 +17,8 @@ public class PKHHeartbeat:PKHandler
 
     public void RegisterPacketHandler(Dictionary<int, Action<PacketData>> packetHandlerMap)
     {
-        packetHandlerMap.Add((int)PACKETID.PING_USER_CONN_INFO, PingUserConnInfo);
-        packetHandlerMap.Add((int)PACKETID.NTF_INNER_USER_CHECK, NotifyInnerUserCheck);
+        packetHandlerMap.Add((int)PACKETID.PingUserConnInfo, PingUserConnInfo);
+        packetHandlerMap.Add((int)PACKETID.NtfInnerUserCheck, NotifyInnerUserCheck);
     }
 
     public void PingUserConnInfo(PacketData packetData)
@@ -29,23 +29,23 @@ public class PKHHeartbeat:PKHandler
         {
             //User 정보 업데이트
             //유저 찾기
-            var user = UserMgr.GetUserByNetSessionID(sessionID);
+            var user = _userMgr.GetUserByNetSessionID(sessionID);
 
             //유저 정보 없음
             if (user == null)
             {
-                PongUserConnInfo(ERROR_CODE.HB_USER_NOT_EXIST, sessionID);
+                PongUserConnInfo(ERROR_CODE.HbUserNotExist, sessionID);
                 return;
             }
 
             //유저 정보 있음
             user.UpdateHeartbeat(DateTime.Now);
 
-            PongUserConnInfo(ERROR_CODE.NONE, sessionID);
+            PongUserConnInfo(ERROR_CODE.None, sessionID);
         }
         catch(Exception ex)
         {
-            ServerNetwork.MainLogger.Error(ex.ToString());
+            HandlerLogger.Error(ex.ToString());
         }
     }
 
@@ -57,20 +57,20 @@ public class PKHHeartbeat:PKHandler
         };
 
         var body = MemoryPackSerializer.Serialize(pongUserConnInfo);
-        var sendData = PacketMaker.MakePacket(PACKETID.PONG_USER_CONN_INFO, body);
+        var sendData = PacketMaker.MakePacket(PACKETID.PongUserConnInfo, body);
 
-        ServerNetwork.SendData(sessionID, sendData);
+        SendDataFunc(sessionID, sendData);
     }
 
     public void NotifyInnerUserCheck(PacketData packetData)
     {
         var endIndex = _startIndexUserCheck + MaxCheckUserCount;
-        UserMgr.CheckHeartBeat(_startIndexUserCheck, endIndex);
-        UserMgr.DisconnectInactiveUser(_startIndexUserCheck, endIndex);
+        _userMgr.CheckHeartBeat(_startIndexUserCheck, endIndex);
+        _userMgr.DisconnectInactiveUser(_startIndexUserCheck, endIndex);
 
         _startIndexUserCheck += MaxCheckUserCount;
 
-        if (_startIndexUserCheck >= UserMgr.GetMaxUserCount()) {
+        if (_startIndexUserCheck >= _userMgr.GetMaxUserCount()) {
             _startIndexUserCheck = 0;
         }
     }

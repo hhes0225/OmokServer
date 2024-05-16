@@ -19,40 +19,41 @@ public enum UserState
 
 public enum ERROR_CODE : short
 {
-    NONE=0, // 정상처리, 에러가 아님
+    None=0, // 정상처리, 에러가 아님
 
     //서버 초기화 에러(Redis)
-    REDIS_INIT_FAIL=1,
+    RedisInitFail=1,
 
     //로그인 : 1000번대
-    LOGIN_INVALID_AUTHTOKEN = 1001,
-    ADD_USER_DUPLICATION = 1002,
-    REMOVE_USER_SEARCH_FAILURE_USER_ID=1003,
-    USER_AUTH_SEARCH_FAILURE_USER_ID=1004,
-    USER_AUTH_ALREADY_SET_AUTH=1005,
+    LoginInvalidAuthToken = 1001,
+    AddUserDuplication = 1002,
+    RemoveUserSearchFailureUserId=1003,
+    UserAuthSearchFailureUserId=1004,
+    UserAuthAlreadySetAuth=1005,
     
-    LOGIN_ALREADY_WORKING=1006,
-    LOGIN_FULL_USER_COUNT=1007,
+    LoginAlreadyWorking=1006,
+    LoginFullUserCount=1007,
     
 
-    DB_LOGIN_INVALID_PASSWORD=1011,
-    DB_LOGIN_EMPTY_USER=1012,
-    DB_LOGIN_EXCEPTION=1013,
+    DbLoginInvalidPassword=1011,
+    DbLoginEmptyUser=1012,
+    DbLoginException=1013,
+    DbGameResultUpdatFail = 1014,
 
-    ROOM_ENTER_INVALID_STATE=1021,
-    ROOM_ENTER_INVALID_USER=1022,
-    ROOM_ENTER_ERROR_SYSTEM=1023,
-    ROOM_ENTER_INVALID_ROOM_NUMBER=1024,
-    ROOM_ENTER_FAIL_ADD_USER=1025,
+    RoomEnterInvalidState=1021,
+    RoomEnterInvalidUser=1022,
+    RoomEnterErrorSystem=1023,
+    RoomEnterInvalidRoomNumber=1024,
+    RoomEnterFailAddUser=1025,
 
-    OMOK_OVERFLOW = 1031,
-    OMOK_ALREADY_EXIST = 1032,
-    OMOK_RENJURULE = 1033, // 쌍삼
-    OMOK_TURN_NOT_MATCH = 1034,
-    OMOK_NOT_STARTED = 1035,
+    OmokOverflow = 1031,
+    OmokAlreadyExist = 1032,
+    OmokRenjuRule = 1033, // 쌍삼
+    OmokTurnNotMatch = 1034,
+    OmokNotStarted = 1035,
 
     //Heartbeat
-    HB_USER_NOT_EXIST = 1050,
+    HbUserNotExist = 1050,
 }
 
 
@@ -86,78 +87,76 @@ public enum ERROR_CODE : short
 
 public enum PACKETID : int
 {
-    REQ_RES_TEST_ECHO=101,
+    ReqResTestEcho=101,
 
     //클라이언트
-    CS_BEGIN=1001,
+    CsBegin=1001,
 
-    REQ_LOGIN=1002,
-    RES_LOGIN=1003,
-    NTF_MUST_CLOSE=1005,
+    ReqLogin=1002,
+    ResLogin=1003,
+    NtfMustClose=1005,
 
-    REQ_ROOM_ENTER=1015,
-    RES_ROOM_ENTER=1016,
-    NTF_ROOM_USER_LIST=1017,
-    NTF_ROOM_NEW_USER=1018,
+    ReqRoomEnter=1015,
+    ResRoomEnter=1016,
+    NtfRoomUserList=1017,
+    NtfRoomNewUser=1018,
 
-    REQ_ROOM_LEAVE=1021,
-    RES_ROOM_LEAVE=1022,
-    NTF_ROOM_LEAVE_USER=1023,
+    ReqRoomLeave=1021,
+    ResRoomLeave=1022,
+    NtfRoomLeaveUser=1023,
 
-    REQ_ROOM_CHAT=1026,
-    NTF_ROOM_CHAT=1028,
+    ReqRoomChat=1026,
+    NtfRoomChat=1028,
 
-    REQ_READY_OMOK=1031,
-    RES_READY_OMOK=1032,
-    NTF_READY_OMOK=1033,
+    ReqReadyOmok=1031,
+    ResReadyOmok=1032,
+    NtfReadyOmok=1033,
 
-    NTF_START_OMOK = 1034,
+    NtfStartOmok = 1034,
 
-    REQ_PUT_OMOK = 1035,
-    RES_PUT_OMOK = 1036,
-    NTF_PUT_OMOK = 1037,
+    ReqPutOmok = 1035,
+    ResPutOmok = 1036,
+    NtfPutOmok = 1037,
 
-    NTF_END_OMOK = 1038,
+    NtfEndOmok = 1038,
 
     //heartbeat
-    PING_USER_CONN_INFO = 1039,
-    PONG_USER_CONN_INFO = 1040,
+    PingUserConnInfo = 1039,
+    PongUserConnInfo = 1040,
 
-    NTF_TURN_PASS = 1041,
+    NtfTurnPass = 1041,
     
 
-    REQ_ROOM_DEV_ALL_ROOM_START_GAME = 1091,
-    RES_ROOM_DEV_ALL_ROOM_START_GAME=1092,
+    ReqRoomDevAllRoomStartGame = 1091,
+    ResRoomDevAllRoomStartGame=1092,
 
-    REQ_ROOM_DEV_ALL_ROOM_END_GAME=1093,
-    RES_ROOM_DEV_ALL_ROOM_END_GAME=1094,
+    ReqRoomDevAllRoomEndGame=1093,
+    ResRoomDevAllRoomEndGame=1094,
 
-    CS_END=1100,
+    CsEnd=1100,
 
 
     //시스템, 서버 - 서버
-    SS_START = 8001,
+    SsStart = 8001,
 
-    NTF_IN_CONNECT_CLIENT=8011,
-    NTF_IN_DISCONNECT_CLIENT=8012,
-    NTF_INNER_USER_CHECK = 8013,
-    NTF_INNER_ROOM_CHECK = 8014,
-    NTF_INNER_TURN_CHECK=8015,
+    NtfInConnectClient=8011,
+    NtfInDisconnectClient=8012,
+    NtfInnerUserCheck = 8013,
+    NtfInnerRoomCheck = 8014,
+    NtfInnerTurnCheck=8015,
 
-    REQ_SS_SERVERINFO =8021,
-    RES_SS_SERVERINFO=8023,
+    ReqSsServerInfo =8021,
+    ResSsServerInfo=8023,
 
-    REQ_IN_ROOM_ENTER=8031,
-    RES_IN_ROOM_LEAVE=8032,
+    ReqInRoomEnter=8031,
+    ResInRoomLeave=8032,
 
-    NTF_IN_ROOM_LEAVE=8036,
+    NtfInRoomLeave=8036,
 
     
     //DB 8101~9000
-    REQ_DB_LOGIN=8101,
-    RES_DB_LOGIN=8102,
-
-
-
-   
+    ReqDbLogin=8101,
+    ResDbLogin=8102,
+    NtfInGameResultUpdate=8103,
+    NtfInInsertTestUser=8104
 }

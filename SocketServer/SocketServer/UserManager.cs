@@ -1,5 +1,6 @@
 ﻿using CSBaseLib;
 using MemoryPack;
+using SuperSocket.SocketBase.Logging;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -22,27 +23,32 @@ public class UserManager
 
     Dictionary<string, User> UserMap = new Dictionary<string, User>();
     //key는 sessionID, value는 이에 맞는 User
-    User[] UserArray=null;
+    List<User> UserArray=null;
     ConnectedUser[] ConnectedButInactiveUser;
 
     private Timer _checkConnectionTimer;
 
-    public static Action<PacketData> SendInnerPacket;
+    public static Action<PacketData> SendInternalFunc;
     public static Action<string> CloseConnection;
+
+    public ILog UserMgrLogger;
 
     private int Timespan;
 
+    public UserManager(ILog logger)
+    {
+        UserMgrLogger = logger;
+    }
 
     public void Init(int maxUserCount, int startTime, int interval, int timespan)
     {
         MaxUserCount = maxUserCount;
-        UserArray = new User[MaxUserCount];
+        UserArray = new List<User>();
         ConnectedButInactiveUser = new ConnectedUser[MaxUserCount];
-        Room.GetUserFromUserMgr = this.GetUser;
 
         for (int i = 0; i < MaxUserCount; i++)
         {
-            UserArray[i] = new User();
+            UserArray.Add(new User());
             ConnectedButInactiveUser[i] = new ConnectedUser();
         }
 
@@ -55,27 +61,29 @@ public class UserManager
     {
         if (IsFullUserCount())
         {
-            return ERROR_CODE.LOGIN_FULL_USER_COUNT;
+            return ERROR_CODE.LoginFullUserCount;
         }
 
         //sessionID로 이미 로그인 중인지 체크
         if (UserMap.ContainsKey(sessionID))
         {
-            return ERROR_CODE.ADD_USER_DUPLICATION;
+            return ERROR_CODE.AddUserDuplication;
         }
 
         ConnectedUser user = new ConnectedUser();
         user.SessionID = sessionID;
         user.ConnectedTime = DateTime.Now;
 
-        if (GetUserArrayAvailableIndex() < 0)
+        int newIndex = GetUserListAvailableIndex();
+
+        if (newIndex < 0)
         {
-            return ERROR_CODE.LOGIN_FULL_USER_COUNT;
+            return ERROR_CODE.LoginFullUserCount;
         }
         ConnectedButInactiveUser[GetConnUserArrayAvailableIndex()] = user;
-        Console.WriteLine($"유저 접속 시간:{user.ConnectedTime}");
+        UserMgrLogger.Debug($"유저 접속 시간:{user.ConnectedTime}");
 
-        return ERROR_CODE.NONE;
+        return ERROR_CODE.None;
     }
 
     //로그인 성공했을 시에만 UserManager에 등록해서 관리할 필요가 있음
@@ -83,13 +91,13 @@ public class UserManager
     {
         if (IsFullUserCount())
         {
-            return ERROR_CODE.LOGIN_FULL_USER_COUNT;
+            return ERROR_CODE.LoginFullUserCount;
         }
 
         //sessionID로 이미 로그인 중인지 체크
         if (UserMap.ContainsKey(sessionID))
         {
-            return ERROR_CODE.ADD_USER_DUPLICATION;
+            return ERROR_CODE.AddUserDuplication;
         }
 
         ++UserSequenceNumber;
@@ -103,19 +111,20 @@ public class UserManager
 
         UserMap.Add(sessionID, user);
 
-        if (GetUserArrayAvailableIndex() < 0) {
-            return ERROR_CODE.LOGIN_FULL_USER_COUNT;
+        int newIndex = GetUserListAvailableIndex();
+        if (newIndex < 0) {
+            return ERROR_CODE.LoginFullUserCount;
         }
-        UserArray[GetUserArrayAvailableIndex()] = user;
+        UserArray[newIndex] = user;
 
-        return ERROR_CODE.NONE;
+        return ERROR_CODE.None;
     }
 
     public ERROR_CODE RemoveUser(string  sessionID) 
     {
         if (UserMap.Remove(sessionID) == false)
         {
-            return ERROR_CODE.REMOVE_USER_SEARCH_FAILURE_USER_ID;
+            return ERROR_CODE.RemoveUserSearchFailureUserId;
         }
 
         foreach(var user in UserArray)
@@ -126,7 +135,7 @@ public class UserManager
             }
         }
 
-        return ERROR_CODE.NONE;
+        return ERROR_CODE.None;
     }
 
     public User GetUser(string sessionID)
@@ -147,7 +156,7 @@ public class UserManager
         return UserArray.FirstOrDefault(x => x.UserSessionID() == netSessionID);
     }
 
-    public int GetUserArrayAvailableIndex()
+    public int GetUserListAvailableIndex()
     {
         for(int i=0;i<UserArray.Count();i++)
         {
@@ -180,8 +189,8 @@ public class UserManager
         var arr = GetUserByNetSessionID(sessionID);
         var dict = UserMap[sessionID];
 
-        Console.WriteLine($"arr: {arr.LastHeartbeat}");
-        Console.WriteLine($"dict: {dict.LastHeartbeat}");
+        UserMgrLogger.Debug($"arr: {arr.LastHeartbeat}");
+        UserMgrLogger.Debug($"dict: {dict.LastHeartbeat}");
     }
 
     void InitAndStartCheckTimer(int startTime, int interval)
@@ -203,9 +212,9 @@ public class UserManager
         var body = MemoryPackSerializer.Serialize(ntfPkt);
 
         var internalPacket = new PacketData();
-        internalPacket.Assign((int)PACKETID.NTF_INNER_USER_CHECK, body);
+        internalPacket.Assign((int)PACKETID.NtfInnerUserCheck, body);
 
-        SendInnerPacket(internalPacket);
+        SendInternalFunc(internalPacket);
     }
 
     public void CheckHeartBeat(int beginIndex, int endIndex)
@@ -235,7 +244,7 @@ public class UserManager
             CloseConnection(UserArray[i].UserSessionID());
 
             //유저 삭제
-            UserArray[i] = new User();
+            UserArray[i].EndConnecting();
         }
 
     }
@@ -284,31 +293,4 @@ public class UserManager
     }
 }
 
-class ConnectedUser
-{
-    public string SessionID="";
-    public DateTime ConnectedTime;
-    public const int TimeSpan = 10000; // n초간 로그인 안되면 접속해제
 
-    public bool IsUserConnecting()
-    {
-        if (SessionID == "")
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    public bool IsInactiveLogin(DateTime curTime)
-    {
-        var diff = curTime - ConnectedTime;
-
-        if ((int)diff.TotalMilliseconds > TimeSpan)
-        {
-            return true;
-        }
-
-        return false;
-    }
-}

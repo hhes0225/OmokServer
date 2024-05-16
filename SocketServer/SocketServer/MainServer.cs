@@ -21,6 +21,7 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
     SuperSocket.SocketBase.Config.IServerConfig m_Config;
 
     public PacketProcessor MainPacketProcessor;
+    public MySqlProcessor MySqlPacketProcessor;
     public PacketData notifyPacket = new PacketData();
     RoomManager RoomMgr;
 
@@ -30,10 +31,7 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
     {
         NewSessionConnected += new SessionHandler<NetworkSession>(OnConnected);
         SessionClosed += new SessionHandler<NetworkSession, CloseReason>(OnClosed);
-        NewRequestReceived += new RequestHandler<NetworkSession, OmokBinaryRequestInfo>(OnPacketReceived);
-
-
-        RoomMgr = new RoomManager(this);
+        NewRequestReceived += new RequestHandler<NetworkSession, OmokBinaryRequestInfo>(OnPacketReceived); 
     }
 
     public void InitConfig(ServerOption option)
@@ -51,6 +49,8 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
             ReceiveBufferSize= option.ReceiveBufferSize,
             SendBufferSize= option.SendBufferSize,
         };
+
+        RoomMgr = new RoomManager(this);
     }
 
     public void CreateAndStartServer()
@@ -85,13 +85,22 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
     {
         Stop();
         MainPacketProcessor.Destroy();
+        MySqlPacketProcessor.Destroy();
     }
     
     public ERROR_CODE CreateComponent()
     {
+        PKHandler.SendDataFunc = this.SendData;
+        PKHandler.DistributeFunc = this.Distribute;
+        PKHMysql.DistributeFunc = this.MySqlDistribute;
+
         //방 기본설정 정의(몇개까지? 몇명수용?)->미리 빈 방 만들어놓는다
-        Room.NetSendFunc = this.SendData;
-        UserManager.SendInnerPacket = this.Distribute;
+        Room.SendFunc = this.SendData;
+        Room.SendInternalFunc = this.Distribute;
+        Room.SendDbInternalFunc = this.MySqlDistribute;
+        RoomManager.SendInternalFunc = this.Distribute;
+
+        UserManager.SendInternalFunc = this.Distribute;
         UserManager.CloseConnection = this.CloseConnection;
 
         RoomMgr.CreateRooms();
@@ -100,9 +109,13 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
         MainPacketProcessor = new PacketProcessor(MainLogger);
         MainPacketProcessor.CreateAndStart(RoomMgr.GetRoomList(), this);
 
+        //MySQL Processor 설정
+        MySqlPacketProcessor = new MySqlProcessor(MainLogger);
+        MySqlPacketProcessor.CreateAndStart(4);
+
         MainLogger.Info("CreateComponent - Success");
 
-        return ERROR_CODE.NONE;
+        return ERROR_CODE.None;
     }
 
     //이 MainServer에서 메시지 Send, 다른 클라, 서버로 메시지 전송할 때 사용
@@ -143,6 +156,11 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
     public void Distribute(PacketData reqestData)
     {
         MainPacketProcessor.InsertPacket(reqestData);
+    }
+
+    public void MySqlDistribute(PacketData requestData)
+    {
+        MySqlPacketProcessor.InsertPacket(requestData);
     }
 
     void OnConnected(NetworkSession session)

@@ -40,14 +40,14 @@ public class PKHOmokGame:PKHandler
 
     public void RegisterPacketHandler(Dictionary<int, Action<PacketData>> packetHandlerMap)
     {
-        packetHandlerMap.Add((int)PACKETID.REQ_READY_OMOK, RequestUserReady);
-        packetHandlerMap.Add((int)PACKETID.REQ_PUT_OMOK, RequestPutOmok);
-        packetHandlerMap.Add((int)PACKETID.NTF_INNER_TURN_CHECK, NotifyInternalTurnCheck);
+        packetHandlerMap.Add((int)PACKETID.ReqReadyOmok, RequestUserReady);
+        packetHandlerMap.Add((int)PACKETID.ReqPutOmok, RequestPutOmok);
+        packetHandlerMap.Add((int)PACKETID.NtfInnerTurnCheck, NotifyInternalTurnCheck);
     }
 
     public void NotifyInternalTurnCheck(PacketData packetData)
     {
-        //ServerNetwork.MainLogger.Debug("Turn check");
+        //HandlerLogger.Debug("Turn check");
         var endIndex = _startIndexRoomCheck + MaxCheckRoomCount;
 
         CheckTurnStateFunc(_startIndexRoomCheck, endIndex);
@@ -63,7 +63,7 @@ public class PKHOmokGame:PKHandler
     public void RequestUserReady(PacketData packetData)
     {
         var sessionID = packetData.SessionID;
-        ServerNetwork.MainLogger.Debug("Ready request");
+        HandlerLogger.Debug("Ready request");
 
         try
         {
@@ -72,20 +72,20 @@ public class PKHOmokGame:PKHandler
 
             if (room == null)
             {
-                ServerNetwork.MainLogger.Debug("유효하지 않은 방");
+                HandlerLogger.Debug("유효하지 않은 방");
                 return;
             }
 
             var roomUser = room.GetUserByNetSessionID(sessionID);
             if (roomUser == null)
             {
-                ServerNetwork.MainLogger.Debug("유저 존재하지 않음");
+                HandlerLogger.Debug("유저 존재하지 않음");
                 return;
             }
 
             if (roomUser.GetUserState() == UserState.Ready)
             {
-                ServerNetwork.MainLogger.Debug("유저 이미 준비상태임");
+                HandlerLogger.Debug("유저 이미 준비상태임");
             }
             else 
             { 
@@ -100,12 +100,12 @@ public class PKHOmokGame:PKHandler
                 NotifyGameStart(room);
             }
 
-            ServerNetwork.MainLogger.Debug($"{roomUser.UserID} is Ready");
+            HandlerLogger.Debug($"{roomUser.UserID} is Ready");
 
         }
         catch(Exception ex)
         {
-            ServerNetwork.MainLogger.Error(ex.ToString());
+            HandlerLogger.Error(ex.ToString());
         }
     }
 
@@ -113,20 +113,20 @@ public class PKHOmokGame:PKHandler
     {
         var resUserReady = new PKTResReadyOmok()
         {
-            Result = (Int16)ERROR_CODE.NONE
+            Result = (Int16)ERROR_CODE.None
         };
 
         var body = MemoryPackSerializer.Serialize(resUserReady);
-        var sendData = PacketMaker.MakePacket(PACKETID.RES_READY_OMOK, body);
+        var sendData = PacketMaker.MakePacket(PACKETID.ResReadyOmok, body);
 
-        ServerNetwork.SendData(sessionID, sendData);
+        SendDataFunc(sessionID, sendData);
     }
 
     public bool IsGameStartPossible(Room room)
     {
         var roomUserList = room.GetUserList();
 
-        if(roomUserList.Count < ServerNetwork.ServerOption.RoomMaxUserCount)
+        if(roomUserList.Count < room.MaxUserCount)
         {
             return false;
         }
@@ -155,20 +155,20 @@ public class PKHOmokGame:PKHandler
 
         var bodyData = MemoryPackSerializer.Serialize(packet);
 
-        var sendData = PacketMaker.MakePacket(PACKETID.NTF_START_OMOK, bodyData);
-        ServerNetwork.MainLogger.Debug("Game Start...");
+        var sendData = PacketMaker.MakePacket(PACKETID.NtfStartOmok, bodyData);
+        HandlerLogger.Debug("Game Start...");
 
         room.Broadcast("", sendData);
 
         room.StartGame();
         room.OmokBoard.SetPlayerColor(userList[randomBlackIndex].NetSessionID, userList[room.CurrentUserCount() - randomBlackIndex - 1].NetSessionID); ;
-        ServerNetwork.MainLogger.Debug($"Game Start Time: {room.GameStartTime}");
+        HandlerLogger.Debug($"Game Start Time: {room.GameStartTime}");
     }
 
     public void RequestPutOmok(PacketData packetData)
     {
         var sessionID = packetData.SessionID;
-        ServerNetwork.MainLogger.Debug("돌 두기 요청");
+        HandlerLogger.Debug("돌 두기 요청");
 
         try
         {
@@ -179,14 +179,14 @@ public class PKHOmokGame:PKHandler
             //게임 아직 시작하지 않았다면 돌려보내기(NOT STARTED)
             if (room.OmokBoard.GameFinish == true)
             {
-                ResponsePutOmok(ERROR_CODE.OMOK_NOT_STARTED, turnPlayer);
+                ResponsePutOmok(ERROR_CODE.OmokNotStarted, turnPlayer);
                 return;
             }
 
             //만약 올바른 턴 유저가 보낸 것이 아니라면 돌려보내기
             if (room.OmokBoard.WhoseTurn() != turnPlayer)
             {
-                ResponsePutOmok(ERROR_CODE.OMOK_TURN_NOT_MATCH, turnPlayer);
+                ResponsePutOmok(ERROR_CODE.OmokTurnNotMatch, turnPlayer);
                 return;
             }
             
@@ -196,13 +196,13 @@ public class PKHOmokGame:PKHandler
 
             if(room.OmokBoard.CheckAvailablePosition(reqData.PosX, reqData.PosY)==false)
             {
-                ResponsePutOmok(ERROR_CODE.OMOK_ALREADY_EXIST, turnPlayer);
+                ResponsePutOmok(ERROR_CODE.OmokAlreadyExist, turnPlayer);
             }
 
             var putStone = room.OmokBoard.PutStone(reqData.PosX, reqData.PosY);
 
             //response message 보내서 돌 두기
-            ResponsePutOmok(ERROR_CODE.NONE, turnPlayer);
+            ResponsePutOmok(ERROR_CODE.None, turnPlayer);
 
             var notifyPutOmok = new PKTNtfPutMok()
             {
@@ -212,7 +212,7 @@ public class PKHOmokGame:PKHandler
             };
 
             var body = MemoryPackSerializer.Serialize(notifyPutOmok);
-            var sendData = PacketMaker.MakePacket(PACKETID.NTF_PUT_OMOK, body);
+            var sendData = PacketMaker.MakePacket(PACKETID.NtfPutOmok, body);
 
             room.Broadcast("", sendData);
 
@@ -230,12 +230,12 @@ public class PKHOmokGame:PKHandler
             }
             else
             {
-                ServerNetwork.MainLogger.Debug("게임 계속 진행...");
+                HandlerLogger.Debug("게임 계속 진행...");
             }
         }
         catch (Exception ex) 
         {
-            ServerNetwork.MainLogger.Error(ex.ToString());
+            HandlerLogger.Error(ex.ToString());
         }
     }
 
@@ -249,9 +249,9 @@ public class PKHOmokGame:PKHandler
         };
 
         var body = MemoryPackSerializer.Serialize(resPutOmok);
-        var sendData = PacketMaker.MakePacket(PACKETID.RES_PUT_OMOK, body);
+        var sendData = PacketMaker.MakePacket(PACKETID.ResPutOmok, body);
 
-        ServerNetwork.SendData(sessionID, sendData);
+        SendDataFunc(sessionID, sendData);
     }
 
     //public void NotifyEndOmok(Room room, string sessionID)

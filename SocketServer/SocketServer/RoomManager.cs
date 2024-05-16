@@ -1,5 +1,6 @@
 ﻿using CSBaseLib;
 using MemoryPack;
+using SuperSocket.SocketBase.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,20 +12,25 @@ namespace SocketServer;
 public class RoomManager
 {
     List<Room> RoomList = new List<Room>();
-    MainServer ServerNetwork;
+    //MainServer ServerNetwork;
+    ServerOption ServerOption;
 
     private Timer _checkRoomStateTimer;
     private Timer _checkTurnStateTimer;
     private int RoomTimeSpan, GameTimeSpan, GameTurnTimeSpan;
 
-    public static Func<string, int> RemoveUserFromRoom;
+    //public static Func<string, int> RemoveUserFromRoom;
+    public static Action<PacketData> SendInternalFunc;
+
+    public ILog RoomMgrLogger;
 
     public RoomManager(MainServer mainServer)
     {
-        ServerNetwork = mainServer;
+        ServerOption = mainServer.ServerOption;
         PKHRoom.CheckRoomStateFunc = this.CheckRoomState;
         PKHRoom.CheckGameStateFunc = this.CheckGameState;
         PKHOmokGame.CheckTurnStateFunc = this.CheckTurnState;
+        RoomMgrLogger = mainServer.MainLogger;
 
         SetTimeSpans(10, 1, 10);
     }
@@ -39,16 +45,16 @@ public class RoomManager
 
     public void CreateRooms()
     {
-        var maxRoomCount = ServerNetwork.ServerOption.RoomMaxCount;
-        var startNumber = ServerNetwork.ServerOption.RoomStartNumber;
-        var maxUserCount = ServerNetwork.ServerOption.RoomMaxUserCount;
+        var maxRoomCount = ServerOption.RoomMaxCount;
+        var startNumber = ServerOption.RoomStartNumber;
+        var maxUserCount = ServerOption.RoomMaxUserCount;
 
         for(int i=0; i<maxRoomCount; i++)
         {
             var roomNubmer = startNumber + i;
             var room = new Room();
             room.Init(i, roomNubmer, maxUserCount);
-            room.InitTimeSpan(RoomTimeSpan, GameTimeSpan, GameTurnTimeSpan);
+            room.InitTimeSpan(RoomTimeSpan, GameTimeSpan);
             RoomList.Add(room);
         }
 
@@ -76,9 +82,9 @@ public class RoomManager
         var body = MemoryPackSerializer.Serialize(ntfPkt);
 
         var internalPacket = new PacketData();
-        internalPacket.Assign((int)PACKETID.NTF_INNER_ROOM_CHECK, body);
+        internalPacket.Assign((int)PACKETID.NtfInnerRoomCheck, body);
 
-        ServerNetwork.Distribute(internalPacket);
+        SendInternalFunc(internalPacket);
     }
 
     public void SendTurnCheckPkt(object state)
@@ -87,9 +93,9 @@ public class RoomManager
         var body = MemoryPackSerializer.Serialize(ntfPkt);
 
         var internalPacket = new PacketData();
-        internalPacket.Assign((int)PACKETID.NTF_INNER_TURN_CHECK, body);
+        internalPacket.Assign((int)PACKETID.NtfInnerTurnCheck, body);
         
-        ServerNetwork.Distribute(internalPacket);
+        SendInternalFunc(internalPacket);
     }
 
     public void CheckRoomState(int beginIndex, int endIndex)
@@ -186,8 +192,8 @@ public class RoomManager
             //턴 강제 넘기기
             RoomList[i].NotifyPacketTurnPass();
 
-            Console.WriteLine($"blackPCount: {RoomList[i].OmokBoard.BlackPassCount}");
-            Console.WriteLine($"whitePCount: {RoomList[i].OmokBoard.WhitePassCount}");
+            RoomMgrLogger.Debug($"blackPCount: {RoomList[i].OmokBoard.BlackPassCount}");
+            RoomMgrLogger.Debug($"whitePCount: {RoomList[i].OmokBoard.WhitePassCount}");
 
             //만약 blackTurn>2 &&  whiteTurn>2라면?(둘 다 ->둘다 쫓아내고 크기에 따라 승패결정
             if (RoomList[i].OmokBoard.BlackPassCount+ RoomList[i].OmokBoard.WhitePassCount>=4
@@ -214,8 +220,8 @@ public class RoomManager
                     badUserID = RoomList[i].OmokBoard.WhitePlayerID;
                 }
 
-                Console.WriteLine($"GoodUser: {goodUserID}");
-                Console.WriteLine($"BadUser: {badUserID}");
+                RoomMgrLogger.Debug($"GoodUser: {goodUserID}");
+                RoomMgrLogger.Debug($"BadUser: {badUserID}");
 
                 RoomList[i].NotifyEndOmok(goodUserID);
                 RoomList[i].RemoveUser(RoomList[i].GetUserByNetSessionID(badUserID));

@@ -49,11 +49,11 @@ public class PacketData
 
         if (isConnect)//Connect
         {
-            packet.PacketID = (Int16)PACKETID.NTF_IN_CONNECT_CLIENT;
+            packet.PacketID = (Int16)PACKETID.NtfInConnectClient;
         }
         else//Disconnect
         {
-            packet.PacketID = (Int16)PACKETID.NTF_IN_DISCONNECT_CLIENT;
+            packet.PacketID = (Int16)PACKETID.NtfInDisconnectClient;
         }
 
         packet.SessionID = sessionID;//이 클라가 접속했다 알리기 위함

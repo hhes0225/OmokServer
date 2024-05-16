@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -237,3 +238,31 @@ public partial class PKTNtfInnerTurnCheck
 {
 }
 
+[MemoryPackable]
+public partial class PKTReqDBLogin
+{
+
+}
+
+[MemoryPackable]
+public partial class PKTResDBLogin
+{
+    public short Result;
+}
+
+[MemoryPackable]
+public partial class PKTNtfInnerGameResultUpdate
+{
+    public bool IsDraw;
+    public string Winner;
+    public string Loser;
+}
+
+[MemoryPackable]
+public partial class PKTNtfInInsertTestUser
+{
+    public string Id;
+    public int WinCount;
+    public int DrawCount;
+    public int LoseCount;
+}
