@@ -89,51 +89,54 @@ public enum PACKETID : int
 {
     ReqResTestEcho=101,
 
-    //클라이언트
-    CsBegin=1001,
+    //from client, request: 1000번대
 
-    ReqLogin=1002,
-    ResLogin=1003,
-    NtfMustClose=1005,
+    ReqBegin=1000,
 
-    ReqRoomEnter=1015,
-    ResRoomEnter=1016,
-    NtfRoomUserList=1017,
-    NtfRoomNewUser=1018,
+    ReqLogin=1001,
+    ReqRoomEnter = 1002,
+    ReqRoomLeave = 1003,
+    ReqRoomChat = 1004,
+    ReqReadyOmok = 1005,
+    ReqPutOmok = 1006,
+    PingUserConnInfo = 1007,
+    ReqRoomDevAllRoomStartGame = 1008,
+    ReqRoomDevAllRoomEndGame = 1009,
 
-    ReqRoomLeave=1021,
-    ResRoomLeave=1022,
-    NtfRoomLeaveUser=1023,
+    ReqEnd = 1999,
 
-    ReqRoomChat=1026,
-    NtfRoomChat=1028,
+    //to client, response: 2000번대
+    ResBegin = 2000,
 
-    ReqReadyOmok=1031,
-    ResReadyOmok=1032,
-    NtfReadyOmok=1033,
+    ResLogin = 2001,
+    ResRoomEnter = 2002,
+    ResRoomLeave = 2003,
+    ResReadyOmok = 2004,
+    ResPutOmok = 2005,
+    PongUserConnInfo = 2006,
+    ResRoomDevAllRoomStartGame = 2007,
+    ResRoomDevAllRoomEndGame = 2008,
+    ResRoomChat = 2009,
 
-    NtfStartOmok = 1034,
+    ResEnd = 2999,
 
-    ReqPutOmok = 1035,
-    ResPutOmok = 1036,
-    NtfPutOmok = 1037,
 
-    NtfEndOmok = 1038,
+    //to client, notify: 3000번대
+    NtfBegin = 3000,
 
-    //heartbeat
-    PingUserConnInfo = 1039,
-    PongUserConnInfo = 1040,
+    NtfMustClose = 3001,
+    NtfRoomUserList = 3002,
+    NtfRoomNewUser = 3003,
+    NtfRoomLeaveUser = 3004,
+    NtfRoomChat = 3005,
+    NtfReadyOmok = 3006,
+    NtfStartOmok = 3007,
+    NtfPutOmok = 3008,
+    NtfEndOmok = 3009,
+    NtfTurnPass = 3010,
 
-    NtfTurnPass = 1041,
-    
+    NtfEnd = 3999,
 
-    ReqRoomDevAllRoomStartGame = 1091,
-    ResRoomDevAllRoomStartGame=1092,
-
-    ReqRoomDevAllRoomEndGame=1093,
-    ResRoomDevAllRoomEndGame=1094,
-
-    CsEnd=1100,
 
 
     //시스템, 서버 - 서버

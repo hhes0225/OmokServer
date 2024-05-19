@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+
 namespace OmokClient
 {
     public partial class MainForm : Form
@@ -94,7 +95,7 @@ namespace OmokClient
             loginReq.AuthToken = textBoxAT.Text;
             var body = MemoryPackSerializer.Serialize(loginReq);
 
-            PostSendPacket(CSCommon.PacketID.ReqLogin, body);
+            PostSendPacket(CSCommon.PacketID.ReqDbLogin, body);
             DevLog.Write($"로그인 요청:  {textBoxUserID.Text}, {textBoxAT.Text}");
         }
 

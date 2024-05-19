@@ -55,7 +55,7 @@ public class PKHMysql
                 return ERROR_CODE.DbGameResultUpdateFail;
             }
 
-            result = queryFactory.Query("User").Where("id", gameResult.Winner).Increment("draw_count", 1);
+            result = queryFactory.Query("User").Where("id", gameResult.Loser).Increment("draw_count", 1);
             if (result != 1)
             {
                 return ERROR_CODE.DbGameResultUpdateFail;

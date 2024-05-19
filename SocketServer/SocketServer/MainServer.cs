@@ -44,7 +44,7 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>, IHoste
         SessionClosed += new SessionHandler<NetworkSession, CloseReason>(OnClosed);
         NewRequestReceived += new RequestHandler<NetworkSession, OmokBinaryRequestInfo>(OnPacketReceived);
 
-        RoomMgr = new RoomManager(this);
+        
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -156,6 +156,8 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>, IHoste
     
     public ERROR_CODE CreateComponent()
     {
+        RoomMgr = new RoomManager(this);
+
         PKHandler.SendDataFunc = this.SendData;
         PKHandler.DistributeFunc = this.Distribute;
         PKHMysql.DistributeFunc = this.MySqlDistribute;
@@ -290,13 +292,13 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>, IHoste
         packet.BodyData = requestInfo.Body;
 
         //Client에서 Internal packet이면 잘못 전송된 패킷임
-        if ((int)requestInfo.PacketID == 8101)
+        if ((int)requestInfo.PacketID == (int)PACKETID.ReqDbLogin)
         {
             //메인 프로세서 버퍼에 등록(처리요청)
             RedisDistribute(packet);
             return;
         }
-        if ((int)requestInfo.PacketID < 8000 || (int)requestInfo.PacketID > 8100)
+        if ((int)requestInfo.PacketID >=(int)PACKETID.ReqBegin || (int)requestInfo.PacketID >= (int)PACKETID.ReqEnd)
         {
 
             //메인 프로세서 버퍼에 등록(처리요청)

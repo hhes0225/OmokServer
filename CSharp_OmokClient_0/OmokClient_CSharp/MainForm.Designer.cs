@@ -179,7 +179,7 @@ namespace OmokClient
             this.textBoxIP.Location = new System.Drawing.Point(82, 45);
             this.textBoxIP.Name = "textBoxIP";
             this.textBoxIP.Size = new System.Drawing.Size(85, 25);
-            this.textBoxIP.Text = "34.64.175.89";
+            this.textBoxIP.Text = "34.47.76.34";
             this.textBoxIP.TabIndex = 1;
             // 
             // label2
@@ -247,6 +247,7 @@ namespace OmokClient
             this.textBoxUserID.Name = "textBoxUserID";
             this.textBoxUserID.Size = new System.Drawing.Size(85, 25);
             this.textBoxUserID.TabIndex = 8;
+            this.textBoxUserID.Text = "jacking751@gmail.com";
             // 
             // label4
             // 
@@ -263,6 +264,7 @@ namespace OmokClient
             this.textBoxAT.Name = "textBoxAT";
             this.textBoxAT.Size = new System.Drawing.Size(85, 25);
             this.textBoxAT.TabIndex = 10;
+            this.textBoxAT.Text = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJqYWNraW5nNzUxQGdtYWlsLmNvbSIsIm5iZiI6MTcxNjExODI2NSwiZXhwIjoxNzE2MTM5ODY1fQ.";
             // 
             // button3
             // 

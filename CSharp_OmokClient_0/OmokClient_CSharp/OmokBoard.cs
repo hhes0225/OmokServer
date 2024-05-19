@@ -125,7 +125,11 @@ namespace OmokClient
         void EndGame()
         {
             OmokLogic.EndGame();
-            TurnTimer.Stop();
+
+            if(TurnTimer != null)
+            {
+                TurnTimer.Stop();
+            }
 
             EndSoundEffect.Play();
 
