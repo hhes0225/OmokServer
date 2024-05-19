@@ -30,6 +30,7 @@ public class CreateAccountController : ControllerBase
 
         if (errorCode != ErrorCode.None)
         {
+            Console.WriteLine("이미 존재");
             response.Result = errorCode;
             return response;
         }

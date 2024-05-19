@@ -35,7 +35,7 @@ public class UserDB : IUserDB
     public async Task<dbUserInfo> FindUserDataAsync(string email)
     {
         return await _queryFactory.Query("User").
-            Where("email", email).
+            Where("id", email).
             FirstOrDefaultAsync<dbUserInfo>();
     }
 
@@ -43,7 +43,7 @@ public class UserDB : IUserDB
     {
         int count = await _queryFactory.Query("User").InsertAsync(new
         {
-            email = email,
+            id = email,
             nickname = "",
             create_date = DateTime.Now,
             recent_login_date = DateTime.Now
@@ -87,7 +87,7 @@ public class DBConfig
 public class dbUserInfo
 {
     public Int64 uid { get; set; }
-    public string email {  get; set; }
+    public string id {  get; set; }
     public string nickname {  get; set; }
     public string create_date {  get; set; }
     public string recent_login_date {  get; set; }
@@ -97,7 +97,7 @@ public class dbUserInfo
 
     public override string ToString()
     {
-        return $"uid: {uid}, Email: {email}"; // 필요한 속성들을 포함하여 원하는 형식으로 출력
+        return $"uid: {uid}, Email: {id}"; // 필요한 속성들을 포함하여 원하는 형식으로 출력
     }
 }
 

@@ -1,5 +1,6 @@
 ﻿
 using System.Drawing;
+using System.Windows.Forms;
 
 namespace OmokClient
 {
@@ -103,6 +104,7 @@ namespace OmokClient
             this.hiveAddrTextBox.Name = "hiveAddrTextBox";
             this.hiveAddrTextBox.Size = new System.Drawing.Size(300, 25);
             this.hiveAddrTextBox.TabIndex = 1;
+            this.hiveAddrTextBox.Text = "127.0.0.1:11500";
             // 
             // btnCreateAccount
             // 
@@ -112,8 +114,7 @@ namespace OmokClient
             this.btnCreateAccount.TabIndex = 5;
             this.btnCreateAccount.Text = "계정 생성";
             this.btnCreateAccount.UseVisualStyleBackColor = true;
-            //*******____이벤트 핸들러 함수 작성&등록할 것!!!
-            //this.btnConnect.Click += new System.EventHandler(this.button1_Click);
+            this.btnCreateAccount.Click += new System.EventHandler(this.btnCreateAccount_Click);
             // 
             // GameAddrLabel
             // 
@@ -130,6 +131,7 @@ namespace OmokClient
             this.gameAddrTextBox.Name = "gameAddrTextBox";
             this.gameAddrTextBox.Size = new System.Drawing.Size(300, 25);
             this.gameAddrTextBox.TabIndex = 1;
+            this.gameAddrTextBox.Text = "localhost:11502";
             // 
             // btnCreateAccount
             // 
@@ -139,8 +141,7 @@ namespace OmokClient
             this.btnLoginApi.TabIndex = 5;
             this.btnLoginApi.Text = "로그인";
             this.btnLoginApi.UseVisualStyleBackColor = true;
-            //*******____이벤트 핸들러 함수 작성&등록할 것!!!
-            //this.btnConnect.Click += new System.EventHandler(this.button1_Click);
+            this.btnLoginApi.Click += new System.EventHandler(this.btnLogin_Click);
 
 
             //
@@ -163,7 +164,7 @@ namespace OmokClient
             this.loginGroupBox.Size = new System.Drawing.Size(555, 115);
             this.loginGroupBox.TabIndex = 12;
             this.loginGroupBox.TabStop = false;
-            this.loginGroupBox.Text = "Login Game Socket Server";
+            this.loginGroupBox.Text = "Socket Server";
             // 
             // label1
             // 
@@ -453,6 +454,94 @@ namespace OmokClient
             this.ResumeLayout(false);
             this.PerformLayout();
 
+            // 새 창을 생성합니다.
+            this.registerForm = new Form();
+            registerForm.Size = new System.Drawing.Size(500, 250);
+            registerForm.Text = "Hive 회원가입";
+
+            // 아이디 라벨을 생성하고 창에 추가합니다.
+            this.labelCreateID = new Label();
+            labelCreateID.Location = new System.Drawing.Point(20, 20);
+            labelCreateID.Text = "ID: ";
+            registerForm.Controls.Add(labelCreateID);
+
+            // 아이디 텍스트박스를 생성하고 창에 추가합니다.
+            this.textboxCreateID = new TextBox();
+            textboxCreateID.Location = new System.Drawing.Point(150, 20);
+            textboxCreateID.Name = "txtId";
+            textboxCreateID.Size = new System.Drawing.Size(200, 27);
+            registerForm.Controls.Add(textboxCreateID);
+
+            // 비밀번호 라벨을 생성하고 창에 추가합니다.
+            this.labelCreatePw = new Label();
+            labelCreatePw.Location = new System.Drawing.Point(20, 60);
+            labelCreatePw.Text = "Password: ";
+            registerForm.Controls.Add(labelCreatePw);
+
+            // 비밀번호 텍스트박스를 생성하고 창에 추가합니다.
+            this.textboxCreatePw = new TextBox();
+            textboxCreatePw.Location = new System.Drawing.Point(150, 60);
+            textboxCreatePw.Name = "txtPassword";
+            textboxCreatePw.Size = new System.Drawing.Size(200, 27);
+            textboxCreatePw.PasswordChar = '*';
+            registerForm.Controls.Add(textboxCreatePw);
+
+            // 회원가입 완료 버튼을 생성하고 창에 추가합니다.
+            this.btnRegister = new Button();
+            btnRegister.Location = new System.Drawing.Point(150, 100);
+            btnRegister.Name = "btnRegister";
+            btnRegister.Size = new System.Drawing.Size(200, 40);
+            btnRegister.Text = "회원가입";
+            btnRegister.UseVisualStyleBackColor = true;
+            registerForm.Controls.Add(btnRegister);
+
+            // 회원가입 완료 버튼의 클릭 이벤트를 처리하는 로직을 추가합니다.
+            btnRegister.Click += new System.EventHandler(this.btnNewFormCreateAccount_Click);
+
+            // 새 창을 생성합니다.
+            this.loginForm = new Form();
+            loginForm.Size = new System.Drawing.Size(500, 250);
+            loginForm.Text = "Hive 로그인";
+
+            // 아이디 라벨을 생성하고 창에 추가합니다.
+            this.labelLoginID = new Label();
+            labelLoginID.Location = new System.Drawing.Point(20, 20);
+            labelLoginID.Text = "ID: ";
+            loginForm.Controls.Add(labelLoginID);
+
+            // 아이디 텍스트박스를 생성하고 창에 추가합니다.
+            this.textboxLoginID = new TextBox();
+            textboxLoginID.Location = new System.Drawing.Point(150, 20);
+            textboxLoginID.Name = "txtId";
+            textboxLoginID.Size = new System.Drawing.Size(200, 27);
+            loginForm.Controls.Add(textboxLoginID);
+
+            // 비밀번호 라벨을 생성하고 창에 추가합니다.
+            this.labelLoginPw = new Label();
+            labelLoginPw.Location = new System.Drawing.Point(20, 60);
+            labelLoginPw.Text = "Password: ";
+            loginForm.Controls.Add(labelLoginPw);
+
+            // 비밀번호 텍스트박스를 생성하고 창에 추가합니다.
+            this.textboxLoginPw = new TextBox();
+            textboxLoginPw.Location = new System.Drawing.Point(150, 60);
+            textboxLoginPw.Name = "txtPassword";
+            textboxLoginPw.Size = new System.Drawing.Size(200, 27);
+            textboxLoginPw.PasswordChar = '*';
+            loginForm.Controls.Add(textboxLoginPw);
+
+            // 회원가입 완료 버튼을 생성하고 창에 추가합니다.
+            this.btnLogin = new Button();
+            btnLogin.Location = new System.Drawing.Point(150, 100);
+            btnLogin.Name = "btnLogin";
+            btnLogin.Size = new System.Drawing.Size(200, 40);
+            btnLogin.Text = "로그인";
+            btnLogin.UseVisualStyleBackColor = true;
+            loginForm.Controls.Add(btnLogin);
+
+            // 회원가입 완료 버튼의 클릭 이벤트를 처리하는 로직을 추가합니다.
+            btnLogin.Click += new System.EventHandler(this.btnNewFormLogin_Click);
+
         }
 
         #endregion
@@ -494,6 +583,22 @@ namespace OmokClient
         private System.Windows.Forms.Label labelStatus;
         private System.Windows.Forms.Label labelTurnTime;
         private System.Windows.Forms.Button btnTest;
+
+        private System.Windows.Forms.Form registerForm;
+        private System.Windows.Forms.Label labelCreateID;
+        private System.Windows.Forms.TextBox textboxCreateID;
+        private System.Windows.Forms.Label labelCreatePw;
+        private System.Windows.Forms.TextBox textboxCreatePw;
+        private System.Windows.Forms.Button btnRegister;
+
+        private System.Windows.Forms.Form loginForm;
+        private System.Windows.Forms.Label labelLoginID;
+        private System.Windows.Forms.TextBox textboxLoginID;
+        private System.Windows.Forms.Label labelLoginPw;
+        private System.Windows.Forms.TextBox textboxLoginPw;
+        private System.Windows.Forms.Button btnLogin;
+
+
     }
 }
 

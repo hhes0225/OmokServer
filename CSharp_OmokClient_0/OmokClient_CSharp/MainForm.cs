@@ -1,6 +1,9 @@
-﻿using MemoryPack;
+﻿using CSCommon;
+using MemoryPack;
 using System;
+using System.Net.Http;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -9,13 +12,13 @@ namespace OmokClient
 {
     public partial class MainForm : Form
     {
+        string ID;
+        string AuthToken;
+
         public MainForm()
         {
             InitializeComponent();
         }
-
-
-
 
         private void MainForm_Load(object sender, EventArgs e)
         {
@@ -49,6 +52,116 @@ namespace OmokClient
             Network.Close();
         }
 
+        private void btnCreateAccount_Click(object sender, EventArgs e)
+        {
+            // 새 창을 표시합니다.
+            registerForm.ShowDialog();
+        }
+
+        private void btnLogin_Click(object sender, EventArgs e)
+        {
+            loginForm.ShowDialog();
+        }
+
+        private async void btnNewFormCreateAccount_Click(Object sender, EventArgs e)
+        {
+            var address = hiveAddrTextBox.Text;
+            var id = textboxCreateID.Text;
+            var pw = textboxCreatePw.Text;
+
+            if(id!="" && pw != "") { 
+                //http client 객체 생성
+                HttpClient client = new HttpClient();
+
+                //POST 요청에 첨부할 데이터 생성
+                var postData = new { Email = id, Password = pw, Nickname = " " };
+                string json = JsonSerializer.Serialize(postData);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                //POST 요청 보내기
+                HttpResponseMessage response = await client.PostAsync("http://"+address+"/CreateAccount", content);
+
+                // 응답 처리
+                if (response.IsSuccessStatusCode)
+                {
+                    MessageBox.Show("계정 생성이 완료되었습니다.");
+                }
+                else
+                {
+                    MessageBox.Show("계정 생성에 실패하였습니다.");
+                }
+
+                textboxCreateID.Clear();
+                textboxCreatePw.Clear();
+                registerForm.Close();
+            }
+            else
+            {
+                MessageBox.Show("회원가입 실패! - 올바른 입력 형식 아님");
+            }
+        }
+
+        private async void btnNewFormLogin_Click(Object sender, EventArgs e)
+        {
+            var hiveAddress = hiveAddrTextBox.Text;
+            var gameAPIAddress= gameAddrTextBox.Text;
+            var id = textboxLoginID.Text;
+            var pw = textboxLoginPw.Text;
+
+            if (id != "" && pw != "")
+            {
+                //http client 객체 생성
+                HttpClient client = new HttpClient();
+
+                //POST 요청에 첨부할 데이터 생성
+                var postData = new { Email = id, Password = pw};
+                string json = JsonSerializer.Serialize(postData);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                //POST 요청 보내기
+                HttpResponseMessage response = await client.PostAsync("http://" + hiveAddress + "/Login", content);
+
+                // 응답 처리
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonString = await response.Content.ReadAsStringAsync();
+                    LoginResponse loginResponse = JsonSerializer.Deserialize<LoginResponse>(jsonString);
+
+                    var gameAPIPostData = new {Email = id, AuthToken = loginResponse.authToken};
+                    json = JsonSerializer.Serialize(gameAPIPostData);
+                    content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                    HttpResponseMessage authTokenResponse = await client.PostAsync("http://" + gameAPIAddress + "/Login", content);
+
+                    if(authTokenResponse.IsSuccessStatusCode)
+                    {
+                        MessageBox.Show("로그인 성공!");
+                        textboxLoginID.Clear();
+                        textboxLoginPw.Clear();
+
+                        textBoxUserID.Text = id;
+                        textBoxAT.Text = loginResponse.authToken;
+
+                        registerForm.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Game API 서버 로그인 실패!");
+                    }
+
+                }
+                else
+                {
+                    MessageBox.Show("Hive 서버 로그인 실패!");
+                }
+
+                
+            }
+            else
+            {
+                MessageBox.Show("로그인 실패! - 올바른 입력 형식 아님");
+            }
+        }
 
         // 접속하기
         private void button1_Click(object sender, EventArgs e)
@@ -160,4 +273,10 @@ namespace OmokClient
             StartGame(true, "My", "Other");
         }
     }
+}
+
+public class LoginResponse
+{
+    public ErrorCode result { get; set; } = ErrorCode.None;
+    public string authToken { get; set; } = "";
 }
