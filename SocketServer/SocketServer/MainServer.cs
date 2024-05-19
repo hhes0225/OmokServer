@@ -1,4 +1,7 @@
 ﻿using CSBaseLib;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using SuperSocket.SocketBase;
 using SuperSocket.SocketBase.Config;
 using SuperSocket.SocketBase.Logging;
@@ -11,13 +14,12 @@ using System.Threading.Tasks;
 
 namespace SocketServer;
 
-public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
+public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>, IHostedService
 {
-    public ServerOption ServerOption = new ServerOption();
-
     public SuperSocket.SocketBase.Logging.ILog MainLogger;
-    //public static SuperSocket.SocketBase.Logging.ILog MainLogger;
 
+
+    public ServerOption ServerOption = new ServerOption();
     SuperSocket.SocketBase.Config.IServerConfig m_Config;
 
     public PacketProcessor MainPacketProcessor;
@@ -27,18 +29,68 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
     public PacketData notifyPacket = new PacketData();
     RoomManager RoomMgr;
 
+    private readonly IHostApplicationLifetime _appLifetime;
+    private readonly ILogger<MainServer> _appLogger;
+
     //서버 설정 정의 & 구성 - 이벤트 핸들러 델리게이트 등록
-    public MainServer()
+    public MainServer(IHostApplicationLifetime appLifetime, IOptions<ServerOption> serverConfig, ILogger<MainServer> logger)
         : base(new DefaultReceiveFilterFactory<ReceiveFilter, OmokBinaryRequestInfo>())
     {
+        ServerOption = serverConfig.Value;
+        _appLogger = logger;
+        _appLifetime = appLifetime;
+
         NewSessionConnected += new SessionHandler<NetworkSession>(OnConnected);
         SessionClosed += new SessionHandler<NetworkSession, CloseReason>(OnClosed);
-        NewRequestReceived += new RequestHandler<NetworkSession, OmokBinaryRequestInfo>(OnPacketReceived); 
+        NewRequestReceived += new RequestHandler<NetworkSession, OmokBinaryRequestInfo>(OnPacketReceived);
+
+        RoomMgr = new RoomManager(this);
+    }
+
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        _appLifetime.ApplicationStarted.Register(AppOnStarted);
+        _appLifetime.ApplicationStopped.Register(AppOnStopped);
+
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        return Task.CompletedTask;
+    }
+
+    private void AppOnStarted()
+    {
+        _appLogger.LogInformation("Onstarted");
+        InitConfig(ServerOption);
+        CreateServer();
+
+        var IsResult = base.Start();
+
+        if (IsResult)
+        {
+            _appLogger.LogInformation("서버 네트워크 시작");
+        }
+        else
+        {
+            _appLogger.LogError("서버 네트워크 시작 실패");
+            return;
+        }
+    }
+
+    private void AppOnStopped()
+    {
+        MainLogger.Info("OnStopped - begin");
+
+        StopServer();
+
+        MainLogger.Info("OnStopped - end");
     }
 
     public void InitConfig(ServerOption option)
     {
-        ServerOption = option;
+        //ServerOption = option;
 
         m_Config = new SuperSocket.SocketBase.Config.ServerConfig
         {
@@ -53,10 +105,10 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
 
         };
 
-        RoomMgr = new RoomManager(this);
+        
     }
 
-    public void CreateAndStartServer()
+    public void CreateServer()
     {
         try
         {
@@ -74,7 +126,7 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
             }
 
             CreateComponent();
-            Start();
+            //Start();
 
             MainLogger.Info("서버 생성 성공");
         }
@@ -82,6 +134,16 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
         {
             Console.WriteLine($"[Error] 서버 생성 실패: {ex.ToString()}");
         }
+    }
+
+    public bool IsRunning(ServerState eCurState)
+    {
+        if (eCurState == ServerState.Running)
+        {
+            return true;
+        }
+
+        return false;
     }
 
     public void StopServer()
