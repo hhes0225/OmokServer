@@ -39,6 +39,7 @@ public enum ERROR_CODE : short
     DbLoginEmptyUser=1012,
     DbLoginException=1013,
     DbGameResultUpdateFail = 1014,
+    DbAlreadyExistUser=1015,
 
     RoomEnterInvalidState=1021,
     RoomEnterInvalidUser=1022,
@@ -144,8 +145,8 @@ public enum PACKETID : int
 
     NtfInConnectClient=8011,
     NtfInDisconnectClient=8012,
-    NtfInnerUserCheck = 8013,
-    NtfInnerRoomCheck = 8014,
+    NtfInUserCheck = 8013,
+    NtfInRoomCheck = 8014,
     NtfInnerTurnCheck=8015,
 
     ReqSsServerInfo =8021,
@@ -161,5 +162,6 @@ public enum PACKETID : int
     ReqDbLogin=8101,
     ResDbLogin=8102,
     NtfInGameResultUpdate=8103,
-    NtfInInsertTestUser=8104
+    ReqInInsertTestUser=8104,
+    ResInInsertTestUser=8105,
 }

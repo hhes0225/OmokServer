@@ -27,6 +27,7 @@ public partial class Room
     public static Action<PacketData> SendDbInternalFunc;
 
     public bool IsRoomUsing = false;
+
     public DateTime FirstEntryTime { get; private set; }
     public DateTime GameStartTime {  get; private set; }
 

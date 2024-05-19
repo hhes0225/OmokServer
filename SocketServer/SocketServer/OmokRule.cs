@@ -84,7 +84,7 @@ public class OmokRule
 
                 if ((int)diff.TotalMilliseconds >= 10000)
                 {
-                    return false;
+                    return true;
                 }
             }
             else
@@ -93,12 +93,12 @@ public class OmokRule
 
                 if ((int)diff.TotalMilliseconds >= 10000)
                 {
-                    return false;
+                    return true;
                 }
             }
         }
 
-        return true;
+        return false;
     }
 
     public int GetStoneByPos(int x, int y)

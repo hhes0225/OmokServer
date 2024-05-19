@@ -23,7 +23,7 @@ public class User
     bool Connection = false;
     private int TimeSpan;
     public DateTime LastHeartbeat { get; set; }
-    public DateTime ActivatedTime { get; set; }
+    public DateTime ConnectedTime { get; set; }
 
     public void InitTimeSpan(int timeSpan)
     {
@@ -37,11 +37,34 @@ public class User
         UserID = userID;
     }
 
+    public ERROR_CODE LoginUpdateID(string userID)
+    {
+        UserID = userID;
+        return ERROR_CODE.None;
+    }
+
     public bool CheckHeartBeat(DateTime curTime)
     {
         var diff = curTime - LastHeartbeat;
 
-        if ((int)diff.TotalMinutes > TimeSpan)
+        if ((int)diff.TotalMilliseconds > TimeSpan)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    public bool CheckInactiveLogin(DateTime curTime)
+    {
+        if(UserID != "")
+        {
+            return true;
+        }
+
+        var diff = curTime - ConnectedTime;
+
+        if ((int)diff.TotalMilliseconds > TimeSpan)
         {
             return false;
         }

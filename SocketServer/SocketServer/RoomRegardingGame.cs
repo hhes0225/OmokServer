@@ -31,6 +31,7 @@ public partial class Room
 
     public void EndGame()
     {
+        FirstEntryTime = DateTime.Now;
         GameStartTime = DateTime.MinValue;
         OmokBoard.EndGame();
     }
@@ -61,7 +62,7 @@ public partial class Room
         Broadcast("", sendPacket);
     }
 
-    public void NotifyPacketTurnPass()
+    public void NotifyClientTurnPass()
     {
         OmokBoard.PassTurn();
 
@@ -90,7 +91,7 @@ public partial class Room
 
             if (loser != null)
             {
-                var data = new PKTNtfInnerGameResultUpdate()
+                var data = new PKTNtfInGameResultUpdate()
                 {
                     IsDraw = false,
                     Winner = winner.UserID,
@@ -108,7 +109,7 @@ public partial class Room
         {
             ntfEndOmok.WinUserID = OmokBoard.DrawGame();
 
-            var data = new PKTNtfInnerGameResultUpdate()
+            var data = new PKTNtfInGameResultUpdate()
             {
                 IsDraw = true,
                 Winner = UserList[0].UserID,

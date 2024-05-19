@@ -225,12 +225,12 @@ public partial class PKTPongUserConnINfo
 }
 
 [MemoryPackable]
-public partial class PKTNtfInnerUserCheck
+public partial class PKTNtfInUserCheck
 {
 }
 
 [MemoryPackable]
-public partial class PKTNtfInnerRoomCheck
+public partial class PKTNtfInRoomCheck
 {
 }
 
@@ -253,7 +253,7 @@ public partial class PKTResDBLogin
 }
 
 [MemoryPackable]
-public partial class PKTNtfInnerGameResultUpdate
+public partial class PKTNtfInGameResultUpdate
 {
     public bool IsDraw;
     public string Winner;
@@ -261,10 +261,16 @@ public partial class PKTNtfInnerGameResultUpdate
 }
 
 [MemoryPackable]
-public partial class PKTNtfInInsertTestUser
+public partial class PKTReqInInsertTestUser
 {
     public string Id;
     public int WinCount;
     public int DrawCount;
     public int LoseCount;
+}
+
+[MemoryPackable]
+public partial class PKTResInInsertTestUser
+{
+    public short Result;
 }

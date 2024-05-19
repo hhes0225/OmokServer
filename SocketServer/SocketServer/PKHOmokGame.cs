@@ -19,7 +19,6 @@ public class PKHOmokGame:PKHandler
     private int _startIndexRoomCheck = 0;
     private const int MaxCheckRoomCount = 50;
 
-    public static Action<int, int> CheckTurnStateFunc;
 
     public void SetRoomList(List<Room> roomList)
     {
@@ -42,23 +41,9 @@ public class PKHOmokGame:PKHandler
     {
         packetHandlerMap.Add((int)PACKETID.ReqReadyOmok, RequestUserReady);
         packetHandlerMap.Add((int)PACKETID.ReqPutOmok, RequestPutOmok);
-        packetHandlerMap.Add((int)PACKETID.NtfInnerTurnCheck, NotifyInternalTurnCheck);
     }
 
-    public void NotifyInternalTurnCheck(PacketData packetData)
-    {
-        //HandlerLogger.Debug("Turn check");
-        var endIndex = _startIndexRoomCheck + MaxCheckRoomCount;
 
-        CheckTurnStateFunc(_startIndexRoomCheck, endIndex);
-
-        _startIndexRoomCheck += MaxCheckRoomCount;
-
-        if (_startIndexRoomCheck >= RoomList.Count())
-        {
-            _startIndexRoomCheck = 0;
-        }
-    }
 
     public void RequestUserReady(PacketData packetData)
     {

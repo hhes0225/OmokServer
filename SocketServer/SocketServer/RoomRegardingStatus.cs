@@ -49,13 +49,12 @@ public partial class Room
     {
         var diff = curTime - FirstEntryTime;
 
-        //나중에 값 바꿀 것
         if ((int)diff.TotalMinutes >= RoomTimeSpan && OmokBoard.GameFinish == true)
         {
-            return false;
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     public bool IsGamePlayingTooLong(DateTime curTime)
@@ -64,11 +63,10 @@ public partial class Room
 
         if ((int)diff.TotalHours >= GameTimeSpan && OmokBoard.GameFinish == false)
         {
-            return false;
+            return true;
         }
 
-        return true;
-
+        return false;
     }
 
 

@@ -18,7 +18,7 @@ public class PKHHeartbeat:PKHandler
     public void RegisterPacketHandler(Dictionary<int, Action<PacketData>> packetHandlerMap)
     {
         packetHandlerMap.Add((int)PACKETID.PingUserConnInfo, PingUserConnInfo);
-        packetHandlerMap.Add((int)PACKETID.NtfInnerUserCheck, NotifyInnerUserCheck);
+        packetHandlerMap.Add((int)PACKETID.NtfInUserCheck, NotifyInUserCheck);
     }
 
     public void PingUserConnInfo(PacketData packetData)
@@ -29,7 +29,7 @@ public class PKHHeartbeat:PKHandler
         {
             //User 정보 업데이트
             //유저 찾기
-            var user = _userMgr.GetUserByNetSessionID(sessionID);
+            var user = _userMgr.GetUserBySessionID(sessionID);
 
             //유저 정보 없음
             if (user == null)
@@ -62,11 +62,11 @@ public class PKHHeartbeat:PKHandler
         SendDataFunc(sessionID, sendData);
     }
 
-    public void NotifyInnerUserCheck(PacketData packetData)
+    public void NotifyInUserCheck(PacketData packetData)
     {
         var endIndex = _startIndexUserCheck + MaxCheckUserCount;
         _userMgr.CheckHeartBeat(_startIndexUserCheck, endIndex);
-        _userMgr.DisconnectInactiveUser(_startIndexUserCheck, endIndex);
+        //_userMgr.DisconnectInactiveUser(_startIndexUserCheck, endIndex);
 
         _startIndexUserCheck += MaxCheckUserCount;
 

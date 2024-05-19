@@ -23,7 +23,7 @@ public class PKHMysql
     public void RegisterPacketHandler(Dictionary<int, Action<PacketData, QueryFactory>> packetHandlerMap)
     {
         packetHandlerMap.Add((int)PACKETID.NtfInGameResultUpdate, NotifyInternalGameResultUpdate);
-        packetHandlerMap.Add((int)PACKETID.NtfInInsertTestUser, NotifyInternalInsertTestData);
+        packetHandlerMap.Add((int)PACKETID.ReqInInsertTestUser, RequestInternalInsertTestData);
     }
 
     public void NotifyInternalGameResultUpdate(PacketData packetData, QueryFactory queryFactory)
@@ -43,7 +43,7 @@ public class PKHMysql
     //유저 정보 가져와서 이긴 사람, 진 사람, 비긴 사람 정보 업데이트
     public ERROR_CODE GameResultUpdate(PacketData packetData, QueryFactory queryFactory)
     {
-        var gameResult = MemoryPackSerializer.Deserialize<PKTNtfInnerGameResultUpdate>(packetData.BodyData);
+        var gameResult = MemoryPackSerializer.Deserialize<PKTNtfInGameResultUpdate>(packetData.BodyData);
         var result=0;
 
         if (gameResult.IsDraw == true)
@@ -80,13 +80,13 @@ public class PKHMysql
         return ERROR_CODE.None;
     }
 
-    public void NotifyInternalInsertTestData(PacketData packetData, QueryFactory queryFactory) 
+    public void RequestInternalInsertTestData(PacketData packetData, QueryFactory queryFactory) 
     {
         try
         {
-            var testUser = MemoryPackSerializer.Deserialize<PKTNtfInInsertTestUser>(packetData.BodyData);
+            var testUser = MemoryPackSerializer.Deserialize<PKTReqInInsertTestUser>(packetData.BodyData);
 
-            queryFactory.Query("User").Insert(new
+            var result = queryFactory.Query("User").Insert(new
             {
                 id = testUser.Id,
                 nickname = ".",
@@ -95,11 +95,32 @@ public class PKHMysql
                 lose_count=testUser.LoseCount
             });
 
+            ResponseInternalInsertTestData(result);
+
         }
         catch(Exception ex) 
         {
             HandlerLogger.Error(ex.ToString());
         }
+    }
+
+    public void ResponseInternalInsertTestData(int result)
+    {
+        var data = new PKTResInInsertTestUser();
+
+        if (result != 1)
+        {
+            data.Result = (short) ERROR_CODE.DbAlreadyExistUser;
+        }
+        else
+        {
+            data.Result = (short) ERROR_CODE.None;
+        }
+
+        var bodyData = MemoryPackSerializer.Serialize(data);
+        var packetData = new PacketData();
+        packetData.Assign((short)PACKETID.ResInInsertTestUser, bodyData);
+        DistributeFunc(packetData);
     }
 
 }

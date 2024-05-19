@@ -20,6 +20,7 @@ public class PKHRoom:PKHandler
 
     public static Action<int, int> CheckRoomStateFunc;
     public static Action<int, int> CheckGameStateFunc;
+    public static Action<int, int> CheckTurnStateFunc;
 
     public void SetRoomList(List<Room> roomList)
     {
@@ -43,7 +44,7 @@ public class PKHRoom:PKHandler
         packetHandlerMap.Add((int)PACKETID.ReqRoomEnter, RequestRoomEnter);
         packetHandlerMap.Add((int)PACKETID.ReqRoomLeave, RequestRoomLeave);
         packetHandlerMap.Add((int)PACKETID.ReqRoomChat, RequestChat);
-        packetHandlerMap.Add((int)PACKETID.NtfInnerRoomCheck, NotifyInternalRoomCheck);
+        packetHandlerMap.Add((int)PACKETID.NtfInRoomCheck, NotifyInternalRoomCheck);
         packetHandlerMap.Add((int)PACKETID.NtfInRoomLeave, NotifyInternalLeaveUserMgr);
     }
 
@@ -55,6 +56,7 @@ public class PKHRoom:PKHandler
         
         CheckRoomStateFunc(_startIndexRoomCheck, endIndex);
         CheckGameStateFunc(_startIndexRoomCheck, endIndex);
+        CheckTurnStateFunc(_startIndexRoomCheck, endIndex);
 
         _startIndexRoomCheck += MaxCheckRoomCount;
 
@@ -71,7 +73,7 @@ public class PKHRoom:PKHandler
 
         try
         {
-            var user = _userMgr.GetUser(sessionID);
+            var user = _userMgr.GetUserBySessionID(sessionID);
 
             if (user == null || user.IsSessionConfirm(sessionID)==false)
             {
@@ -138,7 +140,7 @@ public class PKHRoom:PKHandler
 
         try
         {
-            var user = _userMgr.GetUser(sessionID);
+            var user = _userMgr.GetUserBySessionID(sessionID);
 
             if (user == null)
             {
@@ -260,7 +262,7 @@ public class PKHRoom:PKHandler
 
     (bool, Room, RoomUser) CheckRoomAndRoomUser(string userNetSessionID)
     {
-        var user = _userMgr.GetUser(userNetSessionID);
+        var user = _userMgr.GetUserBySessionID(userNetSessionID);
 
         if (user == null)
         {
@@ -313,7 +315,7 @@ public class PKHRoom:PKHandler
 
         try
         {
-            var leaveUser = _userMgr.GetUser(body.UserID);
+            var leaveUser = _userMgr.GetUserBySessionID(body.UserID);
 
             if (leaveUser != null)
             {

@@ -31,13 +31,13 @@ public class PKHCommon : PKHandler
         HandlerLogger.Debug($"Current Connected Session Count: {SessionCount}");
         var sessionID = packetData.SessionID;
 
-        _userMgr.AddJustConnectedUser(sessionID);
+        _userMgr.AddUser("", sessionID);
     }
 
     public void NotifyInDisconnectClient(PacketData packetData)
     {
         var sessionID = packetData.SessionID;
-        var user = _userMgr.GetUser(sessionID);
+        var user = _userMgr.GetUserBySessionID(sessionID);
 
         if(user != null)
         {
@@ -79,7 +79,7 @@ public class PKHCommon : PKHandler
         try
         {
             //session ID가 이미 존재한다면 이미 로그인 상태인 것임
-            if(_userMgr.GetUser(sessionID) != null)
+            if(_userMgr.GetUserBySessionID(sessionID).ID()!="")
             {
                 //에러 메시지와 함께 response 메시지 전달
                 ResponseLoginToClient(ERROR_CODE.LoginAlreadyWorking, sessionID);
@@ -88,7 +88,9 @@ public class PKHCommon : PKHandler
             }
 
             //body deserialize & processor의 buffer에 삽입
-            var errorCode = _userMgr.AddUser(reqData.UserID, sessionID);//유저 리스트에 유저 추가
+            //접속할 때 이미 추가된 user 세션을 찾아서 userID만 갱신
+            var user = _userMgr.GetUserBySessionID(sessionID);
+            var errorCode = user.LoginUpdateID(reqData.UserID);
 
             //packet생성해서 그 결과를 response
             if(errorCode == ERROR_CODE.None)

@@ -29,7 +29,7 @@ public class RoomManager
         ServerOption = mainServer.ServerOption;
         PKHRoom.CheckRoomStateFunc = this.CheckRoomState;
         PKHRoom.CheckGameStateFunc = this.CheckGameState;
-        PKHOmokGame.CheckTurnStateFunc = this.CheckTurnState;
+        PKHRoom.CheckTurnStateFunc = this.CheckTurnState;
         RoomMgrLogger = mainServer.MainLogger;
 
         SetTimeSpans(10, 1, 10);
@@ -58,43 +58,26 @@ public class RoomManager
             RoomList.Add(room);
         }
 
-        InitAndStartRoomTimer(0, 5000);
-        InitAndStartTurnTimer(0, 250);
+        InitAndStartRoomTimer(0, 250);
         SetTimeSpans(1, 1, 0);
     }
 
 
     public void InitAndStartRoomTimer(int startTime, int interval)
     {
-        TimerCallback callback= new TimerCallback(SendRoomCheckPkt);
+        TimerCallback callback= new TimerCallback(SendRoomAndTurnCheckPkt);
         _checkRoomStateTimer = new Timer(callback, null, startTime, interval);
     }
 
-    public void InitAndStartTurnTimer(int startTime, int interval)
-    {
-        TimerCallback callback = new TimerCallback(SendTurnCheckPkt);
-        _checkTurnStateTimer= new Timer(callback, null, startTime, interval);
-    }
 
-    public void SendRoomCheckPkt(object state)
+    public void SendRoomAndTurnCheckPkt(object state)
     {
-        var ntfPkt = new PKTNtfInnerRoomCheck();
+        var ntfPkt = new PKTNtfInRoomCheck();
         var body = MemoryPackSerializer.Serialize(ntfPkt);
 
         var internalPacket = new PacketData();
-        internalPacket.Assign((int)PACKETID.NtfInnerRoomCheck, body);
+        internalPacket.Assign((int)PACKETID.NtfInRoomCheck, body);
 
-        SendInternalFunc(internalPacket);
-    }
-
-    public void SendTurnCheckPkt(object state)
-    {
-        var ntfPkt = new PKTNtfInnerTurnCheck();
-        var body = MemoryPackSerializer.Serialize(ntfPkt);
-
-        var internalPacket = new PacketData();
-        internalPacket.Assign((int)PACKETID.NtfInnerTurnCheck, body);
-        
         SendInternalFunc(internalPacket);
     }
 
@@ -109,24 +92,11 @@ public class RoomManager
 
         for(int i = beginIndex; i < endIndex; i++)
         {
-            if (RoomList[i].OmokBoard.GameFinish==false)
+            if (RoomList[i].IsRoomUsing==true && RoomList[i].IsRoomCreatedButNotPlaying(curTime) == true)
             {
-                continue;
+                //해당 룸의 모든 사람들 쫓아냄
+                RoomList[i].RemoveAllUser();
             }
-            
-            if (RoomList[i].IsRoomUsing == false)
-            {
-                continue;
-            }
-
-            //Room의 체크방 크리에이트
-            if (RoomList[i].IsRoomCreatedButNotPlaying(curTime) == true)
-            {
-                continue;
-            }
-
-            //해당 룸의 모든 사람들 쫓아내
-            RoomList[i].RemoveAllUser();
         }
     }
     
@@ -142,24 +112,11 @@ public class RoomManager
 
         for (int i = beginIndex; i < endIndex; i++)
         {
-            if (RoomList[i].OmokBoard.GameFinish == true)
+            if (RoomList[i].IsRoomUsing==true && RoomList[i].IsGamePlayingTooLong(curTime) == true)
             {
-                continue;
+                RoomList[i].NotifyEndOmok("");//게임 draw로 끝내
+                RoomList[i].RemoveAllUser();//쫓아내
             }
-
-            if (RoomList[i].IsRoomUsing == false)
-            {
-                continue;
-            }
-
-            //Room의 체크게임스타트
-            if (RoomList[i].IsGamePlayingTooLong(curTime) == true)
-            {
-                continue;
-            }
-
-            RoomList[i].NotifyEndOmok("");//게임 draw로 끝내
-            RoomList[i].RemoveAllUser();//쫓아내
         }
     }
 
@@ -174,67 +131,61 @@ public class RoomManager
 
         for(int i=beginIndex; i < endIndex; i++)
         {
-            if (RoomList[i].OmokBoard.GameFinish == true)
-            {
-                continue;
-            }
+            if (RoomList[i].IsRoomUsing == true && RoomList[i].OmokBoard.IsPutStoneTooLong(curTime)==true) { 
+                //턴 강제 넘기기
+                RoomList[i].NotifyClientTurnPass();
 
-            if (RoomList[i].IsRoomUsing == false)
-            {
-                continue;
-            }
+                RoomMgrLogger.Debug($"blackPCount: {RoomList[i].OmokBoard.BlackPassCount}");
+                RoomMgrLogger.Debug($"whitePCount: {RoomList[i].OmokBoard.WhitePassCount}");
 
-            if (RoomList[i].OmokBoard.IsPutStoneTooLong(curTime) == true)
-            {
-                continue;
-            }
-
-            //턴 강제 넘기기
-            RoomList[i].NotifyPacketTurnPass();
-
-            RoomMgrLogger.Debug($"blackPCount: {RoomList[i].OmokBoard.BlackPassCount}");
-            RoomMgrLogger.Debug($"whitePCount: {RoomList[i].OmokBoard.WhitePassCount}");
-
-            //만약 blackTurn>2 &&  whiteTurn>2라면?(둘 다 ->둘다 쫓아내고 크기에 따라 승패결정
-            if (RoomList[i].OmokBoard.BlackPassCount+ RoomList[i].OmokBoard.WhitePassCount>=4
-               && RoomList[i].OmokBoard.BlackPassCount>1 && RoomList[i].OmokBoard.WhitePassCount > 1)
-            {
-                RoomList[i].NotifyEndOmok("");//게임 draw로 끝내
-                RoomList[i].RemoveAllUser();//쫓아내
-            }
-            else if(RoomList[i].OmokBoard.BlackPassCount + RoomList[i].OmokBoard.WhitePassCount >=4
-                && RoomList[i].OmokBoard.BlackPassCount != RoomList[i].OmokBoard.WhitePassCount)
-            {
-                //else if 만약 blackTurn>2 || whiteTurn>2라면?(둘중 트롤만 쫓아내고 안트롤 승
-                var goodUserID = "";
-                var badUserID = "";
-
-                if(RoomList[i].OmokBoard.BlackPassCount > RoomList[i].OmokBoard.WhitePassCount)
+                var totalPass = RoomList[i].OmokBoard.BlackPassCount + RoomList[i].OmokBoard.WhitePassCount;
+                if (totalPass >= 4)
                 {
-                    goodUserID = RoomList[i].OmokBoard.WhitePlayerID;
-                    badUserID = RoomList[i].OmokBoard.BlackPlayerID;
+                    ForcedEndGame(RoomList[i]);
                 }
-                else
-                {
-                    goodUserID = RoomList[i].OmokBoard.BlackPlayerID;
-                    badUserID = RoomList[i].OmokBoard.WhitePlayerID;
-                }
-
-                RoomMgrLogger.Debug($"GoodUser: {goodUserID}");
-                RoomMgrLogger.Debug($"BadUser: {badUserID}");
-
-                RoomList[i].NotifyEndOmok(goodUserID);
-                RoomList[i].RemoveUser(RoomList[i].GetUserByNetSessionID(badUserID));
             }
-            else
-            {
-                continue;
-            }
+
         }
     }
 
-    //마찬가지로 Room의 체크게임스타트 함수
 
+    public void ForcedEndGame(Room room)
+    {
+        //만약 blackTurn>2 &&  whiteTurn>2라면?(둘 다 ->둘다 쫓아내고 크기에 따라 승패결정
+        if (room.OmokBoard.BlackPassCount == room.OmokBoard.WhitePassCount)
+        {
+            room.NotifyEndOmok("");//게임 draw로 끝내
+            room.RemoveAllUser();//쫓아내
+        }
+        else if (room.OmokBoard.BlackPassCount != room.OmokBoard.WhitePassCount)
+        {
+            //else if 만약 blackTurn>2 || whiteTurn>2라면?(둘중 트롤만 쫓아내고 안트롤 승
+            var goodUserID = "";
+            var badUserID = "";
+
+            if (room.OmokBoard.BlackPassCount > room.OmokBoard.WhitePassCount)
+            {
+                goodUserID = room.OmokBoard.WhitePlayerID;
+                badUserID = room.OmokBoard.BlackPlayerID;
+            }
+            else
+            {
+                goodUserID = room.OmokBoard.BlackPlayerID;
+                badUserID = room.OmokBoard.WhitePlayerID;
+            }
+
+            RoomMgrLogger.Debug($"GoodUser: {goodUserID}");
+            RoomMgrLogger.Debug($"BadUser: {badUserID}");
+
+            room.NotifyEndOmok(goodUserID);
+            room.RemoveUser(room.GetUserByNetSessionID(badUserID));
+        }
+        else
+        {
+            return;
+        }
+    }
+    
     public List<Room> GetRoomList()
     {
         return RoomList;

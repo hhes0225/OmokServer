@@ -24,7 +24,6 @@ public class UserManager
     Dictionary<string, User> UserMap = new Dictionary<string, User>();
     //key는 sessionID, value는 이에 맞는 User
     List<User> UserArray=null;
-    ConnectedUser[] ConnectedButInactiveUser;
 
     private Timer _checkConnectionTimer;
 
@@ -43,46 +42,15 @@ public class UserManager
     {
         MaxUserCount = maxUserCount;
         UserArray = new List<User>();
-        ConnectedButInactiveUser = new ConnectedUser[MaxUserCount];
 
         for (int i = 0; i < MaxUserCount; i++)
         {
             UserArray.Add(new User());
-            ConnectedButInactiveUser[i] = new ConnectedUser();
         }
-
 
         InitAndStartCheckTimer(startTime, interval);
     }
 
-    public ERROR_CODE AddJustConnectedUser(string sessionID)
-    {
-        if (IsFullUserCount())
-        {
-            return ERROR_CODE.LoginFullUserCount;
-        }
-
-        //sessionID로 이미 로그인 중인지 체크
-        if (UserMap.ContainsKey(sessionID))
-        {
-            return ERROR_CODE.AddUserDuplication;
-        }
-
-        ConnectedUser user = new ConnectedUser();
-        user.SessionID = sessionID;
-        user.ConnectedTime = DateTime.Now;
-
-        int newIndex = GetUserListAvailableIndex();
-
-        if (newIndex < 0)
-        {
-            return ERROR_CODE.LoginFullUserCount;
-        }
-        ConnectedButInactiveUser[GetConnUserArrayAvailableIndex()] = user;
-        UserMgrLogger.Debug($"유저 접속 시간:{user.ConnectedTime}");
-
-        return ERROR_CODE.None;
-    }
 
     //로그인 성공했을 시에만 UserManager에 등록해서 관리할 필요가 있음
     public ERROR_CODE AddUser(string userID, string sessionID)
@@ -101,19 +69,18 @@ public class UserManager
         ++UserSequenceNumber;
 
         //유저를 유저 리스트에 등록
-        User user = new User();
-        user.InitTimeSpan(10000);
-        user.Set(UserSequenceNumber, sessionID, userID);
-        user.StartConnecting();
-        user.ActivatedTime= DateTime.Now;
-
-        UserMap.Add(sessionID, user);
-
         int newIndex = GetUserListAvailableIndex();
-        if (newIndex < 0) {
+        if (newIndex < 0)
+        {
             return ERROR_CODE.LoginFullUserCount;
         }
-        UserArray[newIndex] = user;
+        UserArray[newIndex].InitTimeSpan(10000);
+
+        UserArray[newIndex].Set(UserSequenceNumber, sessionID, userID);
+        UserArray[newIndex].StartConnecting();
+        UserArray[newIndex].ConnectedTime= DateTime.Now;
+
+        UserMap.Add(sessionID, UserArray[newIndex]);
 
         return ERROR_CODE.None;
     }
@@ -136,27 +103,20 @@ public class UserManager
         return ERROR_CODE.None;
     }
 
-    public User GetUser(string sessionID)
-    {
-        User user = null;
-        UserMap.TryGetValue(sessionID, out user);
-        return user;
-    }
-
     bool IsFullUserCount()
     {
         return UserMap.Count()>=MaxUserCount;
     }
 
     //유저 배열 or 딕셔너리에서 유저 세션과 인풋세션 비교, 같으면 리턴
-    public User GetUserByNetSessionID(string netSessionID)
+    public User GetUserBySessionID(string netSessionID)
     {
         return UserArray.FirstOrDefault(x => x.UserSessionID() == netSessionID);
     }
 
     public int GetUserListAvailableIndex()
     {
-        for(int i=0;i<UserArray.Count();i++)
+        for(int i=0;i<MaxUserCount;i++)
         {
             if (UserArray[i].IsUserConnecting()==false)
             {
@@ -167,33 +127,9 @@ public class UserManager
         return -1;
     }
 
-    public int GetConnUserArrayAvailableIndex()
-    {
-        for (int i = 0; i < ConnectedButInactiveUser.Count(); i++)
-        {
-            if (ConnectedButInactiveUser[i].IsUserConnecting() == false)
-            {
-                return i;
-            }
-        }
-
-        return -1;
-    }
-
-
-    //이거 나중에 지울 것.
-    public void JustCheckLog(string sessionID)
-    {
-        var arr = GetUserByNetSessionID(sessionID);
-        var dict = UserMap[sessionID];
-
-        UserMgrLogger.Debug($"arr: {arr.LastHeartbeat}");
-        UserMgrLogger.Debug($"dict: {dict.LastHeartbeat}");
-    }
-
     void InitAndStartCheckTimer(int startTime, int interval)
     {
-        TimerCallback callback = new TimerCallback(SendUserCheckPkt);
+        TimerCallback callback = new TimerCallback(SendUserConnectionCheck);
         _checkConnectionTimer = new Timer(callback, null, startTime, interval);
     }
 
@@ -203,14 +139,14 @@ public class UserManager
     }
 
     //250ms마다 호출, 노티파이 패킷 전송
-    public void SendUserCheckPkt(object state)
+    public void SendUserConnectionCheck(object state)
     {
-        var ntfPkt = new PKTNtfInnerUserCheck();
+        var ntfPkt = new PKTNtfInUserCheck();
 
         var body = MemoryPackSerializer.Serialize(ntfPkt);
 
         var internalPacket = new PacketData();
-        internalPacket.Assign((int)PACKETID.NtfInnerUserCheck, body);
+        internalPacket.Assign((int)PACKETID.NtfInUserCheck, body);
 
         SendInternalFunc(internalPacket);
     }
@@ -224,65 +160,20 @@ public class UserManager
 
         var curTime = DateTime.Now;
         
-        //유저 배열 순회
+        
         for(int i = beginIndex; i < endIndex; i++)
         {
-            //유저가 없을 때, 하트비트 잘 주고 있을 때는 아무 동작 X
-            if (UserArray[i].IsUserConnecting() == false)
+            //유저가 존재하는데 하트비트 안주고 있 접속 해제
+            if ((UserArray[i].IsUserConnecting() == true)&&
+                (UserArray[i].CheckHeartBeat(curTime)==false || UserArray[i].CheckInactiveLogin(curTime)==false)) 
             {
-                continue;
+                CloseConnection(UserArray[i].UserSessionID());
+
+                //유저 삭제
+                UserArray[i].EndConnecting();
             }
-
-            if (UserArray[i].CheckHeartBeat(curTime) == true)
-            {
-                continue;
-            }
-
-            //유저가 존재하는데 하트비트 안주고 있으면 접속 끊는다
-            CloseConnection(UserArray[i].UserSessionID());
-
-            //유저 삭제
-            UserArray[i].EndConnecting();
         }
 
-    }
-
-    public void DisconnectInactiveUser(int beginIndex, int endIndex)
-    {
-        if (endIndex >= MaxUserCount)
-        {
-            endIndex = MaxUserCount;
-        }
-
-        var curTime = DateTime.Now;
-
-        //로그인 하지 않고 접속만 한 유저 체크
-        for (int i = beginIndex; i < endIndex; i++)
-        {
-            //유저가 없을 때, 하트비트 잘 주고 있을 때는 아무 동작 X
-            if (ConnectedButInactiveUser[i].SessionID == "")
-            {
-                continue;
-            }
-
-            var connUser = new User();
-
-            if (UserMap.TryGetValue(ConnectedButInactiveUser[i].SessionID, out connUser) == false)
-            {
-                if (ConnectedButInactiveUser[i].IsInactiveLogin(curTime) == false)
-                {
-                    continue;
-                }
-            }
-            else
-            {
-                continue;
-            }
-
-            //유저가 접속했지만 로그인 안하는 경우. 접속해제
-            CloseConnection(ConnectedButInactiveUser[i].SessionID);
-            ConnectedButInactiveUser[i] = new ConnectedUser();//초기화
-        }
     }
 
     public int GetMaxUserCount()
