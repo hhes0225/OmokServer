@@ -48,14 +48,14 @@ public class PKHMysql
 
         if (gameResult.IsDraw == true)
         {
-            result = queryFactory.Query("User").Where("email", gameResult.Winner).Increment("draw_count", 1);
+            result = queryFactory.Query("User").Where("id", gameResult.Winner).Increment("draw_count", 1);
 
             if (result != 1)
             {
                 return ERROR_CODE.DbGameResultUpdateFail;
             }
 
-            result = queryFactory.Query("User").Where("email", gameResult.Winner).Increment("draw_count", 1);
+            result = queryFactory.Query("User").Where("id", gameResult.Winner).Increment("draw_count", 1);
             if (result != 1)
             {
                 return ERROR_CODE.DbGameResultUpdateFail;
@@ -63,13 +63,13 @@ public class PKHMysql
         }
         else
         {
-            result = queryFactory.Query("User").Where("email", gameResult.Winner).Increment("win_count", 1);
+            result = queryFactory.Query("User").Where("id", gameResult.Winner).Increment("win_count", 1);
             if (result != 1)
             {
                 return ERROR_CODE.DbGameResultUpdateFail;
             }
 
-            result = queryFactory.Query("User").Where("email", gameResult.Loser).Increment("lose_count", 1);
+            result = queryFactory.Query("User").Where("id", gameResult.Loser).Increment("lose_count", 1);
             if (result != 1)
             {
                 return ERROR_CODE.DbGameResultUpdateFail;
@@ -88,7 +88,7 @@ public class PKHMysql
 
             queryFactory.Query("User").Insert(new
             {
-                email = testUser.Id,
+                id = testUser.Id,
                 nickname = ".",
                 win_count=testUser.WinCount,
                 draw_count=testUser.DrawCount,
