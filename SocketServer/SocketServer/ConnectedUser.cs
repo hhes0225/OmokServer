@@ -10,7 +10,7 @@ class ConnectedUser
 {
     public string SessionID = "";
     public DateTime ConnectedTime;
-    public const int TimeSpan = 10000; // n초간 로그인 안되면 접속해제
+    public const int TimeSpan = 10; // n초간 로그인 안되면 접속해제
 
     public bool IsUserConnecting()
     {
@@ -26,7 +26,7 @@ class ConnectedUser
     {
         var diff = curTime - ConnectedTime;
 
-        if ((int)diff.TotalMilliseconds > TimeSpan)
+        if ((int)diff.TotalMinutes > TimeSpan)
         {
             return true;
         }

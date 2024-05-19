@@ -80,6 +80,7 @@ public partial class PKTReqLogin//cli->srv 로그인 reqest 패킷
 {
     public string UserID {  get; set; }
     public string AuthToken {  get; set; }
+    public string SessionID { get; set; }
 }
 
 [MemoryPackable]
@@ -241,7 +242,8 @@ public partial class PKTNtfInnerTurnCheck
 [MemoryPackable]
 public partial class PKTReqDBLogin
 {
-
+    public string Id;
+    public string AuthToken;
 }
 
 [MemoryPackable]

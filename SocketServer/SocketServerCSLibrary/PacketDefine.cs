@@ -38,7 +38,7 @@ public enum ERROR_CODE : short
     DbLoginInvalidPassword=1011,
     DbLoginEmptyUser=1012,
     DbLoginException=1013,
-    DbGameResultUpdatFail = 1014,
+    DbGameResultUpdateFail = 1014,
 
     RoomEnterInvalidState=1021,
     RoomEnterInvalidUser=1022,

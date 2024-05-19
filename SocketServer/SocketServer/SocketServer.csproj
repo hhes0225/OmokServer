@@ -30,4 +30,8 @@
     </Reference>
   </ItemGroup>
 
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="copy &quot;C:\Users\ASUS\source\repos\SocketServer\SocketServer\appsettings.json&quot; &quot;C:\Users\ASUS\source\repos\SocketServer\SocketServer\bin\Debug\net8.0\appsettings.json&quot;" />
+  </Target>
+
 </Project>

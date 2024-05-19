@@ -56,7 +56,7 @@ public class PacketProcessor
         //유저 관련 정보 초기화
         //(총 허용 가능 유저 수: 방 개수*방 인원 제한 수)
         var maxUserCount = mainServer.ServerOption.RoomMaxCount * mainServer.ServerOption.RoomMaxUserCount;
-        UserMgr.Init(maxUserCount, 0, 500, 10000);
+        UserMgr.Init(maxUserCount, 0, 500);
 
         //방 관련 정보 초기화
         RoomList = roomList;

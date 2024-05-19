@@ -15,6 +15,8 @@ public class PKHCommon : PKHandler
     PacketToBytes PacketMaker = new PacketToBytes();
     int SessionCount = 0;
 
+    public static Action<PacketData> RedisDistributeFunc;
+
     public void RegisterPacketHandler(Dictionary<int, Action<PacketData>> packetHandlerMap)
     {
         packetHandlerMap.Add((int)PACKETID.NtfInConnectClient, NotifyInConnectClient);
@@ -69,7 +71,9 @@ public class PKHCommon : PKHandler
     public void RequestLogin(PacketData packetData)
     {
         //session ID(오직 유저별로 1개의 통신 세션만 생성 가능)
-        var sessionID = packetData.SessionID;
+        var reqData = MemoryPackSerializer.Deserialize<PKTReqLogin>(packetData.BodyData);
+        var sessionID = reqData.SessionID;
+
         HandlerLogger.Debug("로그인 요청 받음");
 
         try
@@ -84,7 +88,6 @@ public class PKHCommon : PKHandler
             }
 
             //body deserialize & processor의 buffer에 삽입
-            var reqData = MemoryPackSerializer.Deserialize<PKTReqLogin>(packetData.BodyData);
             var errorCode = _userMgr.AddUser(reqData.UserID, sessionID);//유저 리스트에 유저 추가
 
             //packet생성해서 그 결과를 response

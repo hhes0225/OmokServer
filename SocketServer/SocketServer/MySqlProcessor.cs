@@ -17,7 +17,7 @@ public class MySqlProcessor
 {
     bool IsThreadRunning = false;
     List<Thread> ProcessThread = new List<Thread>();
-    string DbConfig = "Server=localhost; user=root; Port=3306; password = awsd95731.;Database=GameDB;";
+    string DbConfig;
 
     BufferBlock<PacketData> MsgBuffer;
 
@@ -29,9 +29,10 @@ public class MySqlProcessor
     
     SuperSocket.SocketBase.Logging.ILog ProcessLogger;
 
-    public MySqlProcessor(SuperSocket.SocketBase.Logging.ILog logger)
+    public MySqlProcessor(ILog logger, ServerOption serverOption)
     {
         ProcessLogger = logger;
+        DbConfig = serverOption.MysqlConfig;
         MsgBuffer = new BufferBlock<PacketData>();
     }
 
@@ -40,8 +41,6 @@ public class MySqlProcessor
         //프로세서 패킷 핸들러 등록
         RegisterPacketHandler(ProcessLogger);
 
-        //DB 컴파일러 두기
-        _compiler = new SqlKata.Compilers.MySqlCompiler();
 
         //스레드 시작 관련 세팅
         IsThreadRunning = true;
@@ -90,10 +89,14 @@ public class MySqlProcessor
 
     void Process()
     {
+        //DB 컴파일러 두기
+        _compiler = new SqlKata.Compilers.MySqlCompiler();
+
         IDbConnection dbConnection = new MySqlConnection(DbConfig);
         dbConnection.Open();
         //SQL 쿼리팩토리 생성
         QueryFactory queryFactory = new QueryFactory(dbConnection, _compiler);
+
 
         while (IsThreadRunning)
         {

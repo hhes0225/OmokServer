@@ -40,7 +40,7 @@ public class AccountDB:IAccountDB
 	{  
         try
         {
-            long count = _queryFactory.Query("Account").Where("email", email).Count<dynamic>();
+            long count = _queryFactory.Query("Account").Where("id", email).Count<dynamic>();
 
             if (count != 0)
             {
@@ -56,7 +56,7 @@ public class AccountDB:IAccountDB
     }
 
     //DB에 사용자 추가(계정 생성 시 호출)
-    public async Task<ErrorCode> CreateAccountAsync(string email, string pw)
+    public async Task<ErrorCode> CreateAccountAsync(string id, string pw)
 	{
         try
         {
@@ -66,7 +66,7 @@ public class AccountDB:IAccountDB
             int count = await _queryFactory.Query("Account").InsertAsync(new dbAccountInfo
             {
                 //uid는 auto increment로 자동 생성
-                email = email,
+                id = id,
                 pw=hashedPasword,
                 salt_value=saltValue,
                 create_date= DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss"),
@@ -87,12 +87,12 @@ public class AccountDB:IAccountDB
 	}
 
 	//사용자 인증(로그인 시 호출)
-    public async Task<Tuple<ErrorCode, String>> VerifyUser(String email, string pw)
+    public async Task<Tuple<ErrorCode, String>> VerifyUser(String id, string pw)
 	{
         string token;
         try
         {
-            dbAccountInfo accountInfo = await _queryFactory.Query("Account").Where("email", email).FirstOrDefaultAsync<dbAccountInfo>();
+            dbAccountInfo accountInfo = await _queryFactory.Query("Account").Where("id", id).FirstOrDefaultAsync<dbAccountInfo>();
 
             //계정 정보 찾을 수 없음
             if (accountInfo == null)
@@ -110,7 +110,7 @@ public class AccountDB:IAccountDB
 
             //최근 로그인 시간 현재 시간으로 변경
             string newDate = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-            int count = _queryFactory.Query("Account").Where("email", email).Update(new {recent_login_date=newDate});
+            int count = _queryFactory.Query("Account").Where("id", id).Update(new {recent_login_date=newDate});
 
         }
         catch (Exception e)
@@ -118,7 +118,7 @@ public class AccountDB:IAccountDB
             return new Tuple<ErrorCode, string>(ErrorCode.LoginFailException, "0");
         }
 
-        return new Tuple<ErrorCode, string>(ErrorCode.None, email);
+        return new Tuple<ErrorCode, string>(ErrorCode.None, id);
     }
 
     private void Open()
@@ -146,7 +146,7 @@ public class DBConfig
 public class dbAccountInfo
 {
     public Int64 uid { get; set; }
-    public string email { get; set; }
+    public string id { get; set; }
     public string pw { get; set; }
     public string salt_value { get; set; }
     public string create_date { get; set; }

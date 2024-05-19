@@ -27,11 +27,11 @@ public class MemoryDB:IMemoryDB
 
         RedisDBAuthUserData user = new()
         {
-            Email = email,
+            Id = email,
             AuthToken = authToken
         };
 
-        string keyValue = user.Email;
+        string keyValue = user.Id;
 
         try
         {
@@ -68,6 +68,6 @@ public class RedisKeyExpireTime
 
 public class RedisDBAuthUserData
 {
-    public string Email { get; set; } = "";
+    public string Id { get; set; } = "";
     public string AuthToken { get; set; } = "";
 }

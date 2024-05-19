@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 
 namespace SocketServer;
 
@@ -7,7 +8,7 @@ class Program
     static void Main(string[] args)
     {
         //ParseCommandLine 메서드
-        var serverOption = ParseCommandLine(args);
+        var serverOption = ParseJsonFile("./appsettings.json");
 
         //MainServer 클래스 변수 관련 설정
         var serverApp = new MainServer();
@@ -43,5 +44,21 @@ class Program
         }
 
         return result.Value;
+    }
+
+    static ServerOption ParseJsonFile(string path)
+    {
+        try
+        {
+            var jsonString = File.ReadAllText(path);
+            var serverOption = JsonSerializer.Deserialize<ServerOption>(jsonString);
+
+            return serverOption;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to parse JSON file: {ex.Message}");
+            return null;
+        }
     }
 }

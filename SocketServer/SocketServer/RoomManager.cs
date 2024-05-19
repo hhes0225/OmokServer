@@ -100,7 +100,7 @@ public class RoomManager
 
     public void CheckRoomState(int beginIndex, int endIndex)
     {
-        if (endIndex > RoomList.Count)
+        if (endIndex >= RoomList.Count)
         {
             endIndex = RoomList.Count;
         }
@@ -133,7 +133,7 @@ public class RoomManager
 
     public void CheckGameState(int beginIndex, int endIndex)
     {
-        if (endIndex > RoomList.Count)
+        if (endIndex >= RoomList.Count)
         {
             endIndex = RoomList.Count;
         }
@@ -165,7 +165,7 @@ public class RoomManager
 
     public void CheckTurnState(int beginIndex, int endIndex)
     {
-        if (endIndex > RoomList.Count)
+        if (endIndex >= RoomList.Count)
         {
             endIndex = RoomList.Count;
         }

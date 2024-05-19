@@ -41,7 +41,7 @@ public class User
     {
         var diff = curTime - LastHeartbeat;
 
-        if ((int)diff.TotalMilliseconds > TimeSpan)
+        if ((int)diff.TotalMinutes > TimeSpan)
         {
             return false;
         }

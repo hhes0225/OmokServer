@@ -52,5 +52,11 @@ public class ServerOption
     //따라서 roomMaxCount, roomStartNumber를 통해 관리
     //ex) 서버 1은 0번부터 10개의 방 관리, 서버2는 10번부터 10개의 방 관리 ...
     [Option("roomStartNumber", Required = true, HelpText = "RoomStartNumber")]
-    public int RoomStartNumber { get; set; } = 0; 
+    public int RoomStartNumber { get; set; } = 0;
+
+    [Option("redisConfig", Required = true, HelpText = "redis server address")]
+    public string RedisConfig { get; set; } = "";
+
+    [Option("mysqlConfig", Required = true, HelpText = "mysql server address")]
+    public string MysqlConfig { get; set; } = "";
 }

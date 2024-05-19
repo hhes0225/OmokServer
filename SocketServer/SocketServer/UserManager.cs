@@ -33,14 +33,13 @@ public class UserManager
 
     public ILog UserMgrLogger;
 
-    private int Timespan;
 
     public UserManager(ILog logger)
     {
         UserMgrLogger = logger;
     }
 
-    public void Init(int maxUserCount, int startTime, int interval, int timespan)
+    public void Init(int maxUserCount, int startTime, int interval)
     {
         MaxUserCount = maxUserCount;
         UserArray = new List<User>();
@@ -52,7 +51,6 @@ public class UserManager
             ConnectedButInactiveUser[i] = new ConnectedUser();
         }
 
-        Timespan = timespan;
 
         InitAndStartCheckTimer(startTime, interval);
     }
@@ -104,7 +102,7 @@ public class UserManager
 
         //유저를 유저 리스트에 등록
         User user = new User();
-        user.InitTimeSpan(Timespan);
+        user.InitTimeSpan(10000);
         user.Set(UserSequenceNumber, sessionID, userID);
         user.StartConnecting();
         user.ActivatedTime= DateTime.Now;
@@ -219,7 +217,7 @@ public class UserManager
 
     public void CheckHeartBeat(int beginIndex, int endIndex)
     {
-        if (endIndex > MaxUserCount)
+        if (endIndex >= MaxUserCount)
         {
             endIndex = MaxUserCount;
         }
@@ -251,7 +249,7 @@ public class UserManager
 
     public void DisconnectInactiveUser(int beginIndex, int endIndex)
     {
-        if (endIndex > MaxUserCount)
+        if (endIndex >= MaxUserCount)
         {
             endIndex = MaxUserCount;
         }

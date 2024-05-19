@@ -11,7 +11,6 @@ namespace SocketServer;
 
 public class PKHMysql
 {
-    //public static Func<string, byte[], bool> SendDataFunc;
     public static Action<PacketData> DistributeFunc;
 
     protected SuperSocket.SocketBase.Logging.ILog HandlerLogger;
@@ -26,21 +25,9 @@ public class PKHMysql
         packetHandlerMap.Add((int)PACKETID.NtfInGameResultUpdate, NotifyInternalGameResultUpdate);
         packetHandlerMap.Add((int)PACKETID.NtfInInsertTestUser, NotifyInternalInsertTestData);
     }
-    
-    ////GameRedis에서 소켓서버 로그인할때 ID, authToken 비교하는거임. mysql은 노노.
-    //public void RequestDBLogin(PacketData packetData, QueryFactory queryFactory)
-    //{
-
-    //}
-
-    //public void ResponseDBLogin(PacketData packetData, QueryFactory queryFactory)
-    //{
-
-    //}
 
     public void NotifyInternalGameResultUpdate(PacketData packetData, QueryFactory queryFactory)
     {
-
         try
         {
             var result = GameResultUpdate(packetData, queryFactory);
@@ -65,13 +52,13 @@ public class PKHMysql
 
             if (result != 1)
             {
-                return ERROR_CODE.DbGameResultUpdatFail;
+                return ERROR_CODE.DbGameResultUpdateFail;
             }
 
             result = queryFactory.Query("User").Where("email", gameResult.Winner).Increment("draw_count", 1);
             if (result != 1)
             {
-                return ERROR_CODE.DbGameResultUpdatFail;
+                return ERROR_CODE.DbGameResultUpdateFail;
             }
         }
         else
@@ -79,13 +66,13 @@ public class PKHMysql
             result = queryFactory.Query("User").Where("email", gameResult.Winner).Increment("win_count", 1);
             if (result != 1)
             {
-                return ERROR_CODE.DbGameResultUpdatFail;
+                return ERROR_CODE.DbGameResultUpdateFail;
             }
 
             result = queryFactory.Query("User").Where("email", gameResult.Loser).Increment("lose_count", 1);
             if (result != 1)
             {
-                return ERROR_CODE.DbGameResultUpdatFail;
+                return ERROR_CODE.DbGameResultUpdateFail;
             }
         }
         HandlerLogger.Debug($"{packetData.SessionID} : Game result DB 업데이트 완료");
@@ -113,8 +100,6 @@ public class PKHMysql
         {
             HandlerLogger.Error(ex.ToString());
         }
-        
-
     }
 
 }

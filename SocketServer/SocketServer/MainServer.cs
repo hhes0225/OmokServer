@@ -22,6 +22,8 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
 
     public PacketProcessor MainPacketProcessor;
     public MySqlProcessor MySqlPacketProcessor;
+    public RedisProcessor RedisPacketProcessor;
+
     public PacketData notifyPacket = new PacketData();
     RoomManager RoomMgr;
 
@@ -48,6 +50,7 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
             MaxRequestLength= option.MaxRequestLength,
             ReceiveBufferSize= option.ReceiveBufferSize,
             SendBufferSize= option.SendBufferSize,
+
         };
 
         RoomMgr = new RoomManager(this);
@@ -86,6 +89,7 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
         Stop();
         MainPacketProcessor.Destroy();
         MySqlPacketProcessor.Destroy();
+        RedisPacketProcessor.Destroy();
     }
     
     public ERROR_CODE CreateComponent()
@@ -93,11 +97,15 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
         PKHandler.SendDataFunc = this.SendData;
         PKHandler.DistributeFunc = this.Distribute;
         PKHMysql.DistributeFunc = this.MySqlDistribute;
+        PKHRedis.DistributeFunc = this.Distribute;
+        PKHRedis.SendFunc = this.SendData;
+        PKHCommon.RedisDistributeFunc = this.RedisDistribute;
 
         //방 기본설정 정의(몇개까지? 몇명수용?)->미리 빈 방 만들어놓는다
         Room.SendFunc = this.SendData;
         Room.SendInternalFunc = this.Distribute;
         Room.SendDbInternalFunc = this.MySqlDistribute;
+
         RoomManager.SendInternalFunc = this.Distribute;
 
         UserManager.SendInternalFunc = this.Distribute;
@@ -110,8 +118,11 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
         MainPacketProcessor.CreateAndStart(RoomMgr.GetRoomList(), this);
 
         //MySQL Processor 설정
-        MySqlPacketProcessor = new MySqlProcessor(MainLogger);
+        MySqlPacketProcessor = new MySqlProcessor(MainLogger, ServerOption);
         MySqlPacketProcessor.CreateAndStart(4);
+
+        RedisPacketProcessor = new RedisProcessor(MainLogger, ServerOption);
+        RedisPacketProcessor.CreateAndStart(2);
 
         MainLogger.Info("CreateComponent - Success");
 
@@ -163,6 +174,11 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
         MySqlPacketProcessor.InsertPacket(requestData);
     }
 
+    public void RedisDistribute(PacketData requestData)
+    {
+        RedisPacketProcessor.InsertPacket(requestData);
+    }
+
     void OnConnected(NetworkSession session)
     {
         MainLogger.Info(string.Format($"세션 번호{session.SessionID} 접속"));
@@ -205,18 +221,25 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>
         MainLogger.Debug(string.Format($"세션 번호 {session.SessionID}, 받은 데이터 크기 {requestInfo.Body.Length}, " +
             $"ThreadID: {System.Threading.Thread.CurrentThread.ManagedThreadId}"));
 
+        var packet = new PacketData();
+        packet.SessionID = session.SessionID;
+        packet.PacketSize = requestInfo.Size;
+        packet.PacketID = requestInfo.PacketID;
+        packet.BodyData = requestInfo.Body;
 
         //Client에서 Internal packet이면 잘못 전송된 패킷임
+        if ((int)requestInfo.PacketID == 8101)
+        {
+            //메인 프로세서 버퍼에 등록(처리요청)
+            RedisDistribute(packet);
+            return;
+        }
         if ((int)requestInfo.PacketID < 8000 || (int)requestInfo.PacketID > 8100)
         {
-            var packet = new PacketData();
-            packet.SessionID = session.SessionID;
-            packet.PacketSize = requestInfo.Size;
-            packet.PacketID = requestInfo.PacketID;
-            packet.BodyData = requestInfo.Body;
 
             //메인 프로세서 버퍼에 등록(처리요청)
             Distribute(packet);
+            return;
         }
 
     }
