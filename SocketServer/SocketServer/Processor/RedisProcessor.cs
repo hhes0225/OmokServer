@@ -1,4 +1,5 @@
 ﻿using CloudStructures;
+using SocketServer.PacketHandler;
 using SuperSocket.SocketBase.Logging;
 using System;
 using System.Collections.Generic;
@@ -7,12 +8,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 
-namespace SocketServer;
+namespace SocketServer.Processor;
 
 public class RedisProcessor
 {
     bool IsThreadRunning = false;
-    List<Thread> ProcessThread = new List<Thread> ();
+    List<Thread> ProcessThread = new List<Thread>();
 
     //레디스 관련 컨피그 필요
     string rConfig;
@@ -42,12 +43,12 @@ public class RedisProcessor
 
         //스레드 시작 관련 세팅
         IsThreadRunning = true;
-        for(int i=0;i<threadNum; i++)
+        for (int i = 0; i < threadNum; i++)
         {
-            ProcessThread.Add(new Thread(this.Process));
+            ProcessThread.Add(new Thread(Process));
         }
 
-        for(int i = 0; i < threadNum; i++)
+        for (int i = 0; i < threadNum; i++)
         {
             ProcessThread[i].Start();
         }
@@ -94,9 +95,9 @@ public class RedisProcessor
                         $"받은 데이터 크기: {packet.BodyData.Length}");
                 }
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
-                IsThreadRunning.IfTrue(()=>ProcessLogger.Error(ex.ToString()));
+                IsThreadRunning.IfTrue(() => ProcessLogger.Error(ex.ToString()));
             }
         }
     }

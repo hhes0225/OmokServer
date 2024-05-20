@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\..\..\..\..\..\source\repos\SocketLibrary\SocketLibrary\SocketLibrary.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="sound\대국승리.wav">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

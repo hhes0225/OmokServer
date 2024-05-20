@@ -1,12 +1,14 @@
-﻿using CSBaseLib;
+﻿using SocketLibrary;
 using MemoryPack;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SocketServer.UserDir;
 
-namespace SocketServer;
+namespace SocketServer.RoomDir;
+
 
 public partial class Room
 {
@@ -51,7 +53,7 @@ public partial class Room
             return;
         }
 
-        var packet = new CSBaseLib.PKTNtfReadyOmok();
+        var packet = new SocketLibrary.PKTNtfReadyOmok();
         packet.UserID = userID;
         packet.IsReady = (Int16)(GetUser(userID).GetUserState());
 
@@ -66,7 +68,7 @@ public partial class Room
     {
         OmokBoard.PassTurn();
 
-        var packet = new CSBaseLib.PKTNtfTrunPass();
+        var packet = new SocketLibrary.PKTNtfTurnPass();
 
         var bodyData = MemoryPackSerializer.Serialize(packet);
         var sendPacket = PacketMaker.MakePacket(PACKETID.NtfTurnPass, bodyData);

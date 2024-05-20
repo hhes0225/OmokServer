@@ -1,6 +1,6 @@
 ﻿using CloudStructures;
 using CloudStructures.Structures;
-using CSBaseLib;
+using SocketLibrary;
 using MemoryPack;
 using SuperSocket.SocketBase.Logging;
 using System;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocketServer;
+namespace SocketServer.PacketHandler;
 
 public class PKHRedis
 {
@@ -41,7 +41,7 @@ public class PKHRedis
 
             //ResponseDBLogin(packetData.SessionID, Result);
 
-            if (Result == ERROR_CODE.None)
+            if (Result == ErrorCode.None)
             {
                 var data = new PKTReqLogin()
                 {
@@ -50,42 +50,42 @@ public class PKHRedis
                     SessionID = packetData.SessionID
                 };
 
-                var body = MemoryPackSerializer.Serialize<PKTReqLogin>(data);
+                var body = MemoryPackSerializer.Serialize(data);
                 var sendData = new PacketData();
                 sendData.Assign((short)PACKETID.ReqLogin, body);
                 DistributeFunc(sendData);
             }
-            
+
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             HandlerLogger.Error(ex.ToString());
         }
     }
 
-    public ERROR_CODE CheckUserInfoFromRedis(PKTReqDBLogin user, RedisConnection redisConnection)
+    public ErrorCode CheckUserInfoFromRedis(PKTReqDBLogin user, RedisConnection redisConnection)
     {
-        ERROR_CODE errorCode = ERROR_CODE.None;
+        ErrorCode errorCode = ErrorCode.None;
 
         if (user == null)
         {
-            return ERROR_CODE.DbLoginEmptyUser;
+            return ErrorCode.DbLoginEmptyUser;
         }
         else
         {
-            RedisString<RedisDBAuthUserData> redis = new (redisConnection, user.Id, null);
-           var userAuthData = redis.GetAsync().Result;//await 사용 X 동기 처리 하기 위함
+            RedisString<RedisDBAuthUserData> redis = new(redisConnection, user.Id, null);
+            var userAuthData = redis.GetAsync().Result;//await 사용 X 동기 처리 하기 위함
 
             HandlerLogger.Debug($"{userAuthData}");
 
             if (!userAuthData.HasValue)
             {
-                return ERROR_CODE.DbLoginEmptyUser;
+                return ErrorCode.DbLoginEmptyUser;
             }
 
             if (userAuthData.Value.AuthToken != user.AuthToken)
             {
-                return ERROR_CODE.LoginInvalidAuthToken;
+                return ErrorCode.LoginInvalidAuthToken;
             }
         }
 
@@ -93,7 +93,7 @@ public class PKHRedis
     }
 
 
-    public void ResponseDBLogin(string sessionID, ERROR_CODE errorCode)
+    public void ResponseDBLogin(string sessionID, ErrorCode errorCode)
     {
         var data = new PKTResDBLogin()
         {

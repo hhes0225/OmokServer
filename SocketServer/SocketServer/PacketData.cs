@@ -1,4 +1,4 @@
-﻿using CSBaseLib;
+﻿using SocketLibrary;
 using MemoryPack;
 using System;
 using System.Collections.Generic;
@@ -76,7 +76,7 @@ public partial class PKTInternalResRoomEnter
     //시스템 내부에서 방 입장 결과 전달
     //(결과, 누가, 어떤 방에 입장 시도했는지)
 {
-    public ERROR_CODE ErrorCode { get; set; }
+    public ErrorCode Result { get; set; }
     public string UserID {  get; set; }
     public int RoomNumber { get; set;}
 }

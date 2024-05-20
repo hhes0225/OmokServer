@@ -1,4 +1,4 @@
-﻿using CSBaseLib;
+﻿using SocketLibrary;
 using MemoryPack;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocketServer;
+namespace SocketServer.RoomDir;
 
 public partial class Room
 {
@@ -119,7 +119,7 @@ public partial class Room
 
     public void NotifyPacketUserList(string userNetSessionID)
     {
-        var packet = new CSBaseLib.PKTNtfRoomUserList();
+        var packet = new SocketLibrary.PKTNtfRoomUserList();
 
         foreach(var user in UserList)
         {
@@ -134,7 +134,7 @@ public partial class Room
 
     public void NotifyPacketNewUser(string newUserNetSessionID, string newUserID)
     {
-        var packet = new CSBaseLib.PKTNtfRoomNewUser();
+        var packet = new SocketLibrary.PKTNtfRoomNewUser();
         packet.UserID = newUserID;
 
         var bodyData = MemoryPackSerializer.Serialize(packet);
@@ -150,7 +150,7 @@ public partial class Room
             return;
         }
 
-        var packet = new CSBaseLib.PKTNtfRoomLeaveUser();
+        var packet = new SocketLibrary.PKTNtfRoomLeaveUser();
         packet.UserID = userID;
 
         var bodyData = MemoryPackSerializer.Serialize(packet);

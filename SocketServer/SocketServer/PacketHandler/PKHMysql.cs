@@ -1,4 +1,4 @@
-﻿using CSBaseLib;
+﻿using SocketLibrary;
 using MemoryPack;
 using SqlKata.Execution;
 using System;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocketServer;
+namespace SocketServer.PacketHandler;
 
 public class PKHMysql
 {
@@ -33,7 +33,7 @@ public class PKHMysql
             var result = GameResultUpdate(packetData, queryFactory);
             HandlerLogger.Debug($"Game result database update result : {result}");
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             HandlerLogger.Error(ex.ToString());
         }
@@ -41,10 +41,10 @@ public class PKHMysql
     }
 
     //유저 정보 가져와서 이긴 사람, 진 사람, 비긴 사람 정보 업데이트
-    public ERROR_CODE GameResultUpdate(PacketData packetData, QueryFactory queryFactory)
+    public ErrorCode GameResultUpdate(PacketData packetData, QueryFactory queryFactory)
     {
         var gameResult = MemoryPackSerializer.Deserialize<PKTNtfInGameResultUpdate>(packetData.BodyData);
-        var result=0;
+        var result = 0;
 
         if (gameResult.IsDraw == true)
         {
@@ -52,13 +52,13 @@ public class PKHMysql
 
             if (result != 1)
             {
-                return ERROR_CODE.DbGameResultUpdateFail;
+                return ErrorCode.DbGameResultUpdateFail;
             }
 
             result = queryFactory.Query("User").Where("id", gameResult.Loser).Increment("draw_count", 1);
             if (result != 1)
             {
-                return ERROR_CODE.DbGameResultUpdateFail;
+                return ErrorCode.DbGameResultUpdateFail;
             }
         }
         else
@@ -66,21 +66,21 @@ public class PKHMysql
             result = queryFactory.Query("User").Where("id", gameResult.Winner).Increment("win_count", 1);
             if (result != 1)
             {
-                return ERROR_CODE.DbGameResultUpdateFail;
+                return ErrorCode.DbGameResultUpdateFail;
             }
 
             result = queryFactory.Query("User").Where("id", gameResult.Loser).Increment("lose_count", 1);
             if (result != 1)
             {
-                return ERROR_CODE.DbGameResultUpdateFail;
+                return ErrorCode.DbGameResultUpdateFail;
             }
         }
         HandlerLogger.Debug($"{packetData.SessionID} : Game result DB 업데이트 완료");
 
-        return ERROR_CODE.None;
+        return ErrorCode.None;
     }
 
-    public void RequestInternalInsertTestData(PacketData packetData, QueryFactory queryFactory) 
+    public void RequestInternalInsertTestData(PacketData packetData, QueryFactory queryFactory)
     {
         try
         {
@@ -90,15 +90,15 @@ public class PKHMysql
             {
                 id = testUser.Id,
                 nickname = ".",
-                win_count=testUser.WinCount,
-                draw_count=testUser.DrawCount,
-                lose_count=testUser.LoseCount
+                win_count = testUser.WinCount,
+                draw_count = testUser.DrawCount,
+                lose_count = testUser.LoseCount
             });
 
             ResponseInternalInsertTestData(result);
 
         }
-        catch(Exception ex) 
+        catch (Exception ex)
         {
             HandlerLogger.Error(ex.ToString());
         }
@@ -110,11 +110,11 @@ public class PKHMysql
 
         if (result != 1)
         {
-            data.Result = (short) ERROR_CODE.DbAlreadyExistUser;
+            data.Result = (short)ErrorCode.DbAlreadyExistUser;
         }
         else
         {
-            data.Result = (short) ERROR_CODE.None;
+            data.Result = (short)ErrorCode.None;
         }
 
         var bodyData = MemoryPackSerializer.Serialize(data);

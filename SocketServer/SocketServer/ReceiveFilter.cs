@@ -31,7 +31,7 @@ public class OmokBinaryRequestInfo:BinaryRequestInfo
 //헤더 정보만 읽어옴(HEADER_SIZE에 의해 4byte), body는 그대로 byte 배열
 public class ReceiveFilter : FixedHeaderReceiveFilter<OmokBinaryRequestInfo>
 {
-    public ReceiveFilter() : base(CSBaseLib.PacketDef.PacketHeaderSize)
+    public ReceiveFilter() : base(SocketLibrary.PacketDef.PacketHeaderSize)
     {
     }
 
@@ -45,7 +45,7 @@ public class ReceiveFilter : FixedHeaderReceiveFilter<OmokBinaryRequestInfo>
 
         var packetSize = BitConverter.ToInt16(header, offset);
         //offset부터 2byte 변환, 0~2byte는 패킷 전체 길이에 대한 정보 저장
-        var bodySize = packetSize - CSBaseLib.PacketDef.PacketHeaderSize;
+        var bodySize = packetSize - SocketLibrary.PacketDef.PacketHeaderSize;
 
         return bodySize;
     }

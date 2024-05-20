@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CSBaseLib;
+using SocketLibrary;
 
-namespace SocketServer;
+namespace SocketServer.UserDir;
 
 public class User
 {
     //??무슨 의미의 변수???
-    UInt64 SequenceNumber = 0;
+    ulong SequenceNumber = 0;
     //매번 바뀌는 Unique한 값.
     //일반적으로 패킷 순서 추적, 특정 작업/이벤트의 순서 추적하는 데 사용되는 고유값
     //이를 통해 데이터가 올바른 순서로 처리되고 중복, 누락 없이 전달됨
@@ -27,20 +27,20 @@ public class User
 
     public void InitTimeSpan(int timeSpan)
     {
-        TimeSpan = timeSpan;   
+        TimeSpan = timeSpan;
     }
 
-    public void Set(UInt64 sequence, string sessionID, string userID)
+    public void Set(ulong sequence, string sessionID, string userID)
     {
         SequenceNumber = sequence;
         SessionID = sessionID;
         UserID = userID;
     }
 
-    public ERROR_CODE LoginUpdateID(string userID)
+    public ErrorCode LoginUpdateID(string userID)
     {
         UserID = userID;
-        return ERROR_CODE.None;
+        return ErrorCode.None;
     }
 
     public bool CheckHeartBeat(DateTime curTime)
@@ -57,7 +57,7 @@ public class User
 
     public bool CheckInactiveLogin(DateTime curTime)
     {
-        if(UserID != "")
+        if (UserID != "")
         {
             return true;
         }

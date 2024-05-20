@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using CSBaseLib;
+using SocketServer.UserDir;
+using SocketLibrary;
 
-namespace SocketServer;
+namespace SocketServer.PacketHandler;
 
 public class PKHandler
 {
@@ -23,6 +24,6 @@ public class PKHandler
     public void Init(SuperSocket.SocketBase.Logging.ILog logger, UserManager userMgr)
     {
         HandlerLogger = logger;
-        _userMgr=userMgr;
+        _userMgr = userMgr;
     }
 }

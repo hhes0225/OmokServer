@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace CSCommon;
+namespace SocketLibrary;
 
 public class OmokRule
 {

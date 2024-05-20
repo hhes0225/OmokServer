@@ -1,4 +1,4 @@
-﻿using CSCommon;
+﻿using SocketLibrary;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,7 +13,7 @@ namespace OmokClient
 {
     public partial class MainForm : Form
     {
-        CSCommon.OmokRule OmokLogic = new CSCommon.OmokRule();
+        SocketLibrary.OmokRule OmokLogic = new SocketLibrary.OmokRule();
 
         #region 오목 게임 상수
         private int StartPos = 30;
@@ -40,7 +40,7 @@ namespace OmokClient
         bool IsMyTurn = false;
 
         private bool AIMode = false;
-        private CSCommon.OmokRule.StoneType ComputerStone = CSCommon.OmokRule.StoneType.None;
+        private SocketLibrary.OmokRule.StoneType ComputerStone = SocketLibrary.OmokRule.StoneType.None;
 
         string MyPlayerName = "";
         string BlackUserID = "";
@@ -209,11 +209,11 @@ namespace OmokClient
             Rectangle r = new Rectangle(StartPos + GridSize * x - StoneSize / 2,
                 StartPos + GridSize * y - StoneSize / 2, StoneSize, StoneSize);
 
-            if (OmokLogic.GetStoneByPos(x, y) == (int)CSCommon.OmokRule.StoneType.Black)                              // 검은 돌
+            if (OmokLogic.GetStoneByPos(x, y) == (int)SocketLibrary.OmokRule.StoneType.Black)                              // 검은 돌
             {
                 g.FillEllipse(BlackColor, r);
             }
-            else if (OmokLogic.GetStoneByPos(x, y) == (int)CSCommon.OmokRule.StoneType.White)                         // 흰 돌
+            else if (OmokLogic.GetStoneByPos(x, y) == (int)SocketLibrary.OmokRule.StoneType.White)                         // 흰 돌
             {
                 g.FillEllipse(WhiteColor, r);
             }
@@ -234,11 +234,11 @@ namespace OmokClient
             if (OmokLogic.PrevXPos >= 0 && OmokLogic.PrevYPos >= 0)
             {
                 // 전돌 다시 찍어서 빨간 점 없애기
-                if (OmokLogic.GetStoneByPos(OmokLogic.PrevXPos, OmokLogic.PrevYPos) == (int)CSCommon.OmokRule.StoneType.Black)
+                if (OmokLogic.GetStoneByPos(OmokLogic.PrevXPos, OmokLogic.PrevYPos) == (int)SocketLibrary.OmokRule.StoneType.Black)
                 {
                     g.FillEllipse(BlackColor, AreaForPrevStoneRedraw);
                 }
-                else if (OmokLogic.GetStoneByPos(OmokLogic.PrevXPos, OmokLogic.PrevYPos) == (int)CSCommon.OmokRule.StoneType.White)
+                else if (OmokLogic.GetStoneByPos(OmokLogic.PrevXPos, OmokLogic.PrevYPos) == (int)SocketLibrary.OmokRule.StoneType.White)
                 {
                     g.FillEllipse(WhiteColor, AreaForPrevStoneRedraw);
                 }
@@ -299,7 +299,7 @@ namespace OmokClient
                 return;
             }
             // 바둑판 해당 좌표에 아무것도 없고, 게임이 끝나지 않았으면
-            else if (OmokLogic.GetStoneByPos(x, y) == (int)CSCommon.OmokRule.StoneType.None && !OmokLogic.GameFinish)
+            else if (OmokLogic.GetStoneByPos(x, y) == (int)SocketLibrary.OmokRule.StoneType.None && !OmokLogic.GameFinish)
             {
                 PlayerPutStoneRequest(false, x, y);
             }
@@ -379,7 +379,7 @@ namespace OmokClient
             {
                 return;
             }
-            else if (OmokLogic.GetStoneByPos(x, y) == (int)CSCommon.OmokRule.StoneType.None &&
+            else if (OmokLogic.GetStoneByPos(x, y) == (int)SocketLibrary.OmokRule.StoneType.None &&
                         !OmokLogic.GameFinish &&
                         (PrevXPos != x || PrevYPos != y)
                         )

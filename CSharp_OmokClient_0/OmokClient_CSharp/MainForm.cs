@@ -1,4 +1,4 @@
-﻿using CSCommon;
+﻿using SocketLibrary;
 using MemoryPack;
 using System;
 using System.Net.Http;
@@ -22,7 +22,7 @@ namespace OmokClient
 
         private void MainForm_Load(object sender, EventArgs e)
         {
-            PacketBuffer.Init((8096 * 10), CSCommon.MsgPackPacketHeaderInfo.HeadSize, 2048);
+            PacketBuffer.Init((8096 * 10), SocketLibrary.MsgPackPacketHeaderInfo.HeadSize, 2048);
 
             IsNetworkThreadRunning = true;
             NetworkReadThread = new System.Threading.Thread(this.NetworkReadProcess);
@@ -194,7 +194,7 @@ namespace OmokClient
         // 접속 끊기
         private void btnDisconnect_Click(object sender, EventArgs e)
         {
-            PostSendPacket(CSCommon.PacketID.ReqRoomLeave, null);
+            PostSendPacket((ushort)PACKETID.ReqRoomLeave, null);
             SetDisconnectd();
             Network.Close();
         }
@@ -202,41 +202,41 @@ namespace OmokClient
         // 로그인 요청
         private void button3_Click(object sender, EventArgs e)
         {
-            var loginReq = new CSCommon.PKTReqLogin();
+            var loginReq = new SocketLibrary.PKTReqLogin();
             //bodyData setting
             loginReq.UserID = textBoxUserID.Text;
             loginReq.AuthToken = textBoxAT.Text;
             var body = MemoryPackSerializer.Serialize(loginReq);
 
-            PostSendPacket(CSCommon.PacketID.ReqDbLogin, body);
+            PostSendPacket((ushort)PACKETID.ReqDbLogin, body);
             DevLog.Write($"로그인 요청:  {textBoxUserID.Text}, {textBoxAT.Text}");
         }
 
         // 방 입장
         private void button4_Click(object sender, EventArgs e)
         {
-            var roomEnterReq = new CSCommon.PKTReqRoomEnter()
+            var roomEnterReq = new SocketLibrary.PKTReqRoomEnter()
             {
                 RoomNum = int.Parse(textBoxRoomNumber.Text)
             };
 
             var body = MemoryPackSerializer.Serialize(roomEnterReq);
 
-            PostSendPacket(CSCommon.PacketID.ReqRoomEnter, body);
+            PostSendPacket((ushort)PACKETID.ReqRoomEnter, body);
             DevLog.Write($"방 입장 요청:  {textBoxRoomNumber.Text} 번");
         }
 
         // 방 나가기
         private void button5_Click(object sender, EventArgs e)
         {
-            PostSendPacket(CSCommon.PacketID.ReqRoomLeave, null);
+            PostSendPacket((ushort)PACKETID.ReqRoomLeave, null);
             DevLog.Write("방 나가기 요청");
         }
 
         // 게임 준비 완료
         private void button6_Click(object sender, EventArgs e)
         {
-            var userReadyReq = new CSCommon.PKTReqReadyOmok()
+            var userReadyReq = new SocketLibrary.PKTReqReadyOmok()
             {
                 RoomNumber = int.Parse(textBoxRoomNumber.Text),
                 UserID = textBoxUserID.Text
@@ -244,7 +244,7 @@ namespace OmokClient
 
             var body = MemoryPackSerializer.Serialize(userReadyReq);
 
-            PostSendPacket(CSCommon.PacketID.ReqReadyOmok, body);
+            PostSendPacket((ushort)PACKETID.ReqReadyOmok, body);
 
             DevLog.Write($"게임 준비 완료 요청");
         }
@@ -258,11 +258,11 @@ namespace OmokClient
                 return;
             }
 
-            var requestPkt = new CSCommon.PKTReqRoomChat();
+            var requestPkt = new SocketLibrary.PKTReqRoomChat();
             requestPkt.ChatMessage = textBoxRoomSendMsg.Text;
             var packet = MemoryPackSerializer.Serialize(requestPkt);
 
-            PostSendPacket(CSCommon.PacketID.ReqRoomChat, packet);
+            PostSendPacket((ushort)PACKETID.ReqRoomChat, packet);
             DevLog.Write($"방 채팅 요청");
 
             textBoxRoomSendMsg.Clear();

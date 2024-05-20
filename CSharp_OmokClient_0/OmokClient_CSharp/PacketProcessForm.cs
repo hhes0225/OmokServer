@@ -1,4 +1,4 @@
-﻿using CSCommon;
+﻿using SocketLibrary;
 using MemoryPack;
 using System;
 using System.Collections.Generic;
@@ -18,25 +18,26 @@ namespace OmokClient
 
         private System.Threading.Timer _pingTimer;
 
+
         void SetPacketHandler()
         {
             //PacketFuncDic.Add(PACKET_ID.PACKET_ID_ERROR_NTF, PacketProcess_ErrorNotify);
-            PacketFuncDic.Add(PacketID.ResLogin, PacketProcess_Login);
-            PacketFuncDic.Add(PacketID.ResRoomEnter, PacketProcess_RoomEnter);
-            PacketFuncDic.Add(PacketID.NtfRoomUserList, PacketProcess_RoomUserList);
-            PacketFuncDic.Add(PacketID.NtfRoomNewUser, PacketProcess_RoomNewUser);
-            PacketFuncDic.Add(PacketID.ResRoomLeave, PacketProcess_RoomLeave);
-            PacketFuncDic.Add(PacketID.NtfRoomLeaveUser, PacketProcess_RoomLeaveUser);
-            PacketFuncDic.Add(PacketID.ResRoomChat, PacketProcess_RoomChatResponse);
-            PacketFuncDic.Add(PacketID.NtfRoomChat, PacketProcess_RoomChatNotify);
-            PacketFuncDic.Add(PacketID.ResReadyOmok, PacketProcess_ReadyOmokResponse);
-            PacketFuncDic.Add(PacketID.NtfReadyOmok, PacketProcess_ReadyOmokNotify);
-            PacketFuncDic.Add(PacketID.NtfStartOmok, PacketProcess_StartOmokNotify);
-            PacketFuncDic.Add(PacketID.ResPutMok, PacketProcess_PutMokResponse);
-            PacketFuncDic.Add(PacketID.NtfPutMok, PacketProcess_PutMokNotify);
-            PacketFuncDic.Add(PacketID.NtfEndOmok, PacketProcess_EndOmokNotify);
-            PacketFuncDic.Add(PacketID.PongUserConnInfo, PacketProcess_PongUserConnInfo);
-            PacketFuncDic.Add(PacketID.NtfTurnPass, PacketProcess_TurnPassNotify);
+            PacketFuncDic.Add((ushort)PACKETID.ResLogin, PacketProcess_Login);
+            PacketFuncDic.Add((ushort)PACKETID.ResRoomEnter, PacketProcess_RoomEnter);
+            PacketFuncDic.Add((ushort)PACKETID.NtfRoomUserList, PacketProcess_RoomUserList);
+            PacketFuncDic.Add((ushort)PACKETID.NtfRoomNewUser, PacketProcess_RoomNewUser);
+            PacketFuncDic.Add((ushort)PACKETID.ResRoomLeave, PacketProcess_RoomLeave);
+            PacketFuncDic.Add((ushort)PACKETID.NtfRoomLeaveUser, PacketProcess_RoomLeaveUser);
+            PacketFuncDic.Add((ushort)PACKETID.ResRoomChat, PacketProcess_RoomChatResponse);
+            PacketFuncDic.Add((ushort)PACKETID.NtfRoomChat, PacketProcess_RoomChatNotify);
+            PacketFuncDic.Add((ushort)PACKETID.ResReadyOmok, PacketProcess_ReadyOmokResponse);
+            PacketFuncDic.Add((ushort)PACKETID.NtfReadyOmok, PacketProcess_ReadyOmokNotify);
+            PacketFuncDic.Add((ushort)PACKETID.NtfStartOmok, PacketProcess_StartOmokNotify);
+            PacketFuncDic.Add((ushort)PACKETID.ResPutOmok, PacketProcess_PutMokResponse);
+            PacketFuncDic.Add((ushort)PACKETID.NtfPutOmok, PacketProcess_PutMokNotify);
+            PacketFuncDic.Add((ushort)PACKETID.NtfEndOmok, PacketProcess_EndOmokNotify);
+            PacketFuncDic.Add((ushort)PACKETID.PongUserConnInfo, PacketProcess_PongUserConnInfo);
+            PacketFuncDic.Add((ushort)PACKETID.NtfTurnPass, PacketProcess_TurnPassNotify);
         }
 
 
@@ -198,7 +199,7 @@ namespace OmokClient
 
             AddRoomChatMessageList(notifyPkt.UserID, "님 준비 완료!");
 
-            if (notifyPkt.IsReady==CSCommon.UserState.Ready)
+            if (notifyPkt.IsReady==SocketLibrary.UserState.Ready)
             {
                 DevLog.Write($"[{notifyPkt.UserID}]님은 게임 준비 완료");
             }
@@ -293,7 +294,7 @@ namespace OmokClient
             var pingPkt = new PTKPingUserConnInfo();
             var body = MemoryPackSerializer.Serialize(pingPkt);
 
-            PostSendPacket(CSCommon.PacketID.PingUserConnInfo, body);
+            PostSendPacket((ushort) PACKETID.PingUserConnInfo, body);
 
         }
 

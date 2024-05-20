@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
+using SocketServer.PacketHandler;
+using SocketServer.UserDir;
+using SocketServer.RoomDir;
 
-namespace SocketServer;
+namespace SocketServer.Processor;
 //이 프로젝트는 싱글 스레드.
 //즉, 패킷을 주고 받는 스레드가 멀티가 아니라 단 하나라는 것이다.(공장에 일꾼 하나같은 느낌)
 
@@ -26,7 +29,7 @@ namespace SocketServer;
 public class PacketProcessor
 {
     bool IsThreadRunning = false;
-    System.Threading.Thread ProcessThread = null;
+    Thread ProcessThread = null;
 
     //큐: 헤더 정보는 그대로, body정보는 serialize된 byte배열
     BufferBlock<PacketData> MsgBuffer = new BufferBlock<PacketData>();
@@ -69,7 +72,7 @@ public class PacketProcessor
 
         //스레드 시작 관련 세팅
         IsThreadRunning = true;
-        ProcessThread = new System.Threading.Thread(this.Process);
+        ProcessThread = new Thread(Process);
         ProcessThread.Start();
     }
 
@@ -110,7 +113,8 @@ public class PacketProcessor
         //스레드 동작하는 동안 계속 실행됨
         while (IsThreadRunning)
         {
-            try{
+            try
+            {
                 //패킷 receive
                 var packet = MsgBuffer.Receive();
 

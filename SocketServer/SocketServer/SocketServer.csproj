@@ -24,10 +24,14 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SocketLibrary\SocketLibrary\SocketLibrary.csproj" />
     <ProjectReference Include="..\SocketServerCSLibrary\SocketServerCSLibrary.csproj" />
   </ItemGroup>
 
   <ItemGroup>
+    <Reference Include="SocketServerCSLibrary">
+      <HintPath>..\..\SocketServerCSLibrary\SocketServerCSLibrary\bin\Debug\net8.0\SocketServerCSLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="SuperSocketLite">
       <HintPath>..\net8.0\SuperSocketLite.dll</HintPath>
     </Reference>

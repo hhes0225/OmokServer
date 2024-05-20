@@ -1,4 +1,4 @@
-﻿using CSBaseLib;
+﻿using SocketLibrary;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -11,6 +11,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SocketServer.PacketHandler;
+using SocketServer.Processor;
+using SocketServer.UserDir;
+using SocketServer.RoomDir;
 
 namespace SocketServer;
 
@@ -154,7 +158,7 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>, IHoste
         RedisPacketProcessor.Destroy();
     }
     
-    public ERROR_CODE CreateComponent()
+    public ErrorCode CreateComponent()
     {
         RoomMgr = new RoomManager(this);
 
@@ -190,7 +194,7 @@ public class MainServer:AppServer<NetworkSession, OmokBinaryRequestInfo>, IHoste
 
         MainLogger.Info("CreateComponent - Success");
 
-        return ERROR_CODE.None;
+        return ErrorCode.None;
     }
 
     //이 MainServer에서 메시지 Send, 다른 클라, 서버로 메시지 전송할 때 사용

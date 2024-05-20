@@ -1,4 +1,4 @@
-﻿using CSBaseLib;
+﻿using SocketLibrary;
 using MemoryPack;
 using System;
 using System.Collections.Generic;
@@ -6,10 +6,11 @@ using System.Linq;
 using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
+using SocketServer.RoomDir;
 
-namespace SocketServer;
+namespace SocketServer.PacketHandler;
 
-public class PKHRoom:PKHandler
+public class PKHRoom : PKHandler
 {
     List<Room> RoomList = null;
     int StartRoomNumber;
@@ -31,14 +32,14 @@ public class PKHRoom:PKHandler
     Room GetRoom(int roomNumber)
     {
         var index = roomNumber - StartRoomNumber;
-        if(index<0 || index >= RoomList.Count())
+        if (index < 0 || index >= RoomList.Count())
         {
             return null;
         }
 
         return RoomList[index];
     }
-    
+
     public void RegisterPacketHandler(Dictionary<int, Action<PacketData>> packetHandlerMap)
     {
         packetHandlerMap.Add((int)PACKETID.ReqRoomEnter, RequestRoomEnter);
@@ -53,7 +54,7 @@ public class PKHRoom:PKHandler
         //HandlerLogger.Debug("Room check");
 
         var endIndex = _startIndexRoomCheck + MaxCheckRoomCount;
-        
+
         CheckRoomStateFunc(_startIndexRoomCheck, endIndex);
         CheckGameStateFunc(_startIndexRoomCheck, endIndex);
         CheckTurnStateFunc(_startIndexRoomCheck, endIndex);
@@ -75,16 +76,16 @@ public class PKHRoom:PKHandler
         {
             var user = _userMgr.GetUserBySessionID(sessionID);
 
-            if (user == null || user.IsSessionConfirm(sessionID)==false)
+            if (user == null || user.IsSessionConfirm(sessionID) == false)
             {
-                ResponseEnterRoomToClient(ERROR_CODE.RoomEnterInvalidUser, sessionID);
+                ResponseEnterRoomToClient(ErrorCode.RoomEnterInvalidUser, sessionID);
                 return;
             }
 
             //이미 방에 들어가있는 상태에서 다른 방 입장하려고 할 때
             if (user.IsInRoom())
             {
-                ResponseEnterRoomToClient(ERROR_CODE.RoomEnterInvalidState, sessionID);
+                ResponseEnterRoomToClient(ErrorCode.RoomEnterInvalidState, sessionID);
                 return;
             }
 
@@ -94,13 +95,13 @@ public class PKHRoom:PKHandler
 
             if (room == null)
             {
-                ResponseEnterRoomToClient(ERROR_CODE.RoomEnterInvalidRoomNumber, sessionID);
+                ResponseEnterRoomToClient(ErrorCode.RoomEnterInvalidRoomNumber, sessionID);
                 return;
             }
 
-            if(room.AddUser(user.ID(), sessionID) == false)
+            if (room.AddUser(user.ID(), sessionID) == false)
             {
-                ResponseEnterRoomToClient(ERROR_CODE.RoomEnterFailAddUser, sessionID);
+                ResponseEnterRoomToClient(ErrorCode.RoomEnterFailAddUser, sessionID);
                 return;
             }
 
@@ -109,7 +110,7 @@ public class PKHRoom:PKHandler
             room.NotifyPacketUserList(sessionID);
             room.NotifyPacketNewUser(sessionID, user.ID());//방의 다른 유저에게 나 왔다고 알리기
 
-            ResponseEnterRoomToClient(ERROR_CODE.None, sessionID);
+            ResponseEnterRoomToClient(ErrorCode.None, sessionID);
 
             HandlerLogger.Debug("RequestEnterInternal - Success");
             HandlerLogger.Debug($"First Entry Time: {room.FirstEntryTime}");
@@ -120,11 +121,11 @@ public class PKHRoom:PKHandler
         }
     }
 
-    void ResponseEnterRoomToClient(ERROR_CODE errorCode, string sessionID)
+    void ResponseEnterRoomToClient(ErrorCode errorCode, string sessionID)
     {
-        var resRoomEnter = new PKTResRoomEnter() 
+        var resRoomEnter = new PKTResRoomEnter()
         {
-            Result = (Int16)errorCode
+            Result = (short)errorCode
         };
 
         var body = MemoryPackSerializer.Serialize(resRoomEnter);
@@ -146,26 +147,26 @@ public class PKHRoom:PKHandler
             {
                 HandlerLogger.Debug("유저 존재하지 않음");
                 return;
-                
+
             }
 
-            if(RemoveUserFromRoom(sessionID, user.RoomNumber) == false)
+            if (RemoveUserFromRoom(sessionID, user.RoomNumber) == false)
             {
                 HandlerLogger.Debug("올바른 방 나가기 요청이 아님");
-                return ;
+                return;
             }
 
             var room = GetRoom(user.RoomNumber);
             //room.RemoveUser(room.GetUser(user.ID()));
-            
+
             user.LeaveRoom();
 
             ResponseLeaveRoomToClient(sessionID);
-            
+
             HandlerLogger.Debug("Request Leave Room - Success");
-                        
+
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             HandlerLogger.Error(ex.ToString());
         }
@@ -191,7 +192,7 @@ public class PKHRoom:PKHandler
         room.RemoveUser(roomUser);
 
         //게임 중에 누가 나가면 남은 사람이 승리
-        if (room.OmokBoard.GameFinish==false)
+        if (room.OmokBoard.GameFinish == false)
         {
             room.NotifyEndOmok(room.GetUserList()[0].NetSessionID);
         }
@@ -204,12 +205,12 @@ public class PKHRoom:PKHandler
     {
         var resRoomLeave = new PKTResRoomLeave()
         {
-            Result = (Int16)ERROR_CODE.None
+            Result = (short)ErrorCode.None
         };
 
         var body = MemoryPackSerializer.Serialize(resRoomLeave);
         var sendData = PacketMaker.MakePacket(PACKETID.ResRoomLeave, body);
-            
+
         SendDataFunc(sessionID, sendData);
     }
 
@@ -231,11 +232,11 @@ public class PKHRoom:PKHandler
         {
             var roomObject = CheckRoomAndRoomUser(sessionID);
 
-            if(roomObject.Item1 == false)
+            if (roomObject.Item1 == false)
             {
                 return;
             }
-            
+
             var reqData = MemoryPackSerializer.Deserialize<PKTReqRoomChat>(packetData.BodyData);
 
             var notifyPacket = new PKTNtfRoomChat()

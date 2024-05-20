@@ -1,4 +1,4 @@
-﻿using CSBaseLib;
+﻿using SocketLibrary;
 using MemoryPack;
 using System;
 using System.Collections.Generic;
@@ -7,9 +7,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocketServer;
+namespace SocketServer.PacketHandler;
 
-public class PKHHeartbeat:PKHandler
+public class PKHHeartbeat : PKHandler
 {
     PacketToBytes PacketMaker = new PacketToBytes();
     private int _startIndexUserCheck = 0;
@@ -34,26 +34,26 @@ public class PKHHeartbeat:PKHandler
             //유저 정보 없음
             if (user == null)
             {
-                PongUserConnInfo(ERROR_CODE.HbUserNotExist, sessionID);
+                PongUserConnInfo(ErrorCode.HbUserNotExist, sessionID);
                 return;
             }
 
             //유저 정보 있음
             user.UpdateHeartbeat(DateTime.Now);
 
-            PongUserConnInfo(ERROR_CODE.None, sessionID);
+            PongUserConnInfo(ErrorCode.None, sessionID);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             HandlerLogger.Error(ex.ToString());
         }
     }
 
-    public void PongUserConnInfo(ERROR_CODE errorCode, string sessionID)
+    public void PongUserConnInfo(ErrorCode errorCode, string sessionID)
     {
         var pongUserConnInfo = new PKTPongUserConnINfo
         {
-            Result = (Int16)errorCode
+            Result = (short)errorCode
         };
 
         var body = MemoryPackSerializer.Serialize(pongUserConnInfo);
@@ -70,7 +70,8 @@ public class PKHHeartbeat:PKHandler
 
         _startIndexUserCheck += MaxCheckUserCount;
 
-        if (_startIndexUserCheck >= _userMgr.GetMaxUserCount()) {
+        if (_startIndexUserCheck >= _userMgr.GetMaxUserCount())
+        {
             _startIndexUserCheck = 0;
         }
     }

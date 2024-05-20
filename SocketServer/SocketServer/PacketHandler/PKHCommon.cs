@@ -1,4 +1,4 @@
-﻿using CSBaseLib;
+﻿using SocketLibrary;
 using MemoryPack;
 using System;
 using System.Collections.Generic;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocketServer;
+namespace SocketServer.PacketHandler;
 
 //방 기능과 관련없는 공통적인 로적 처리
 
@@ -39,7 +39,7 @@ public class PKHCommon : PKHandler
         var sessionID = packetData.SessionID;
         var user = _userMgr.GetUserBySessionID(sessionID);
 
-        if(user != null)
+        if (user != null)
         {
             //연결 끊길 시, 속해있던 방에서 나가기
             var roomNum = user.RoomNumber;
@@ -54,11 +54,11 @@ public class PKHCommon : PKHandler
 
                 var body = MemoryPackSerializer.Serialize(packet);
                 var internalPacket = new PacketData();
-                internalPacket.Assign(sessionID, (Int16)PACKETID.NtfInRoomLeave, body);
+                internalPacket.Assign(sessionID, (short)PACKETID.NtfInRoomLeave, body);
 
                 DistributeFunc(internalPacket);
             }
-            
+
             // 유저 리스트에서 제거
             _userMgr.RemoveUser(sessionID);
         }
@@ -66,7 +66,7 @@ public class PKHCommon : PKHandler
         HandlerLogger.Debug($"Current Connected Session Count: {--SessionCount}");
     }
 
-    
+
     // 클라이언트에게 로그인 요청 packet ID를 받으면 이 함수가 호출됨
     public void RequestLogin(PacketData packetData)
     {
@@ -79,10 +79,10 @@ public class PKHCommon : PKHandler
         try
         {
             //session ID가 이미 존재한다면 이미 로그인 상태인 것임
-            if(_userMgr.GetUserBySessionID(sessionID).ID()!="")
+            if (_userMgr.GetUserBySessionID(sessionID).ID() != "")
             {
                 //에러 메시지와 함께 response 메시지 전달
-                ResponseLoginToClient(ERROR_CODE.LoginAlreadyWorking, sessionID);
+                ResponseLoginToClient(ErrorCode.LoginAlreadyWorking, sessionID);
                 HandlerLogger.Debug("이미 로그인 중임");
                 return;
             }
@@ -93,7 +93,7 @@ public class PKHCommon : PKHandler
             var errorCode = user.LoginUpdateID(reqData.UserID);
 
             //packet생성해서 그 결과를 response
-            if(errorCode == ERROR_CODE.None)
+            if (errorCode == ErrorCode.None)
             {
                 HandlerLogger.Debug($"{reqData.UserID} 로그인 성공");
                 ResponseLoginToClient(errorCode, sessionID);
@@ -108,7 +108,7 @@ public class PKHCommon : PKHandler
     }
 
     //Request 함수에서 response도 전송하고 있기 때문에 핸들러 등록 X
-    public void ResponseLoginToClient(ERROR_CODE errorCode, string sessionID) 
+    public void ResponseLoginToClient(ErrorCode errorCode, string sessionID)
     {
         var resLogin = new PKTResLogin()
         {
@@ -123,7 +123,7 @@ public class PKHCommon : PKHandler
         SendDataFunc(sessionID, sendData);//패킷 버퍼에 삽입
     }
 
-    public void NotifyMustCloseToClient(ERROR_CODE errorCode, string sessionID)
+    public void NotifyMustCloseToClient(ErrorCode errorCode, string sessionID)
     {
         var resLogin = new PKTNtfMustClose()
         {
@@ -133,8 +133,8 @@ public class PKHCommon : PKHandler
         var bodyData = MemoryPackSerializer.Serialize(resLogin);
         var sendData = PacketMaker.MakePacket(PACKETID.NtfMustClose, bodyData);
 
-        SendDataFunc(sessionID , sendData);
+        SendDataFunc(sessionID, sendData);
     }
 }
 
-    
+

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CSCommon;
+using SocketLibrary;
 
 namespace OmokClient
 {
@@ -315,7 +315,7 @@ namespace OmokClient
 
         void SendPacketOmokPut(int x, int y)
         {
-            var requestPkt = new CSCommon.PKTReqPutMok
+            var requestPkt = new SocketLibrary.PKTReqPutMok
             {
                 RoomNumber = int.Parse(textBoxRoomNumber.Text),
                 PosX = x,
@@ -323,7 +323,7 @@ namespace OmokClient
             };
 
             var packet = MemoryPackSerializer.Serialize(requestPkt);
-            PostSendPacket(CSCommon.PacketID.ReqPutMok, packet);
+            PostSendPacket((ushort)PACKETID.ReqPutOmok, packet);
 
             DevLog.Write($"put stone 요청 : x  [ {x} ], y: [ {y} ] ");
         }

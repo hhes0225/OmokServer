@@ -1,4 +1,4 @@
-﻿using CSBaseLib;
+﻿using SocketLibrary;
 using MemoryPack;
 using SuperSocket.SocketBase.Logging;
 using System;
@@ -6,8 +6,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SocketServer.PacketHandler;
+using SocketServer.Game;
 
-namespace SocketServer;
+namespace SocketServer.RoomDir;
 
 public class RoomManager
 {
@@ -27,9 +29,9 @@ public class RoomManager
     public RoomManager(MainServer mainServer)
     {
         ServerOption = mainServer.ServerOption;
-        PKHRoom.CheckRoomStateFunc = this.CheckRoomState;
-        PKHRoom.CheckGameStateFunc = this.CheckGameState;
-        PKHRoom.CheckTurnStateFunc = this.CheckTurnState;
+        PKHRoom.CheckRoomStateFunc = CheckRoomState;
+        PKHRoom.CheckGameStateFunc = CheckGameState;
+        PKHRoom.CheckTurnStateFunc = CheckTurnState;
         RoomMgrLogger = mainServer.MainLogger;
 
         SetTimeSpans(10, 1, 10);
@@ -49,7 +51,7 @@ public class RoomManager
         var startNumber = ServerOption.RoomStartNumber;
         var maxUserCount = ServerOption.RoomMaxUserCount;
 
-        for(int i=0; i<maxRoomCount; i++)
+        for (int i = 0; i < maxRoomCount; i++)
         {
             var roomNubmer = startNumber + i;
             var room = new Room();
@@ -65,7 +67,7 @@ public class RoomManager
 
     public void InitAndStartRoomTimer(int startTime, int interval)
     {
-        TimerCallback callback= new TimerCallback(SendRoomAndTurnCheckPkt);
+        TimerCallback callback = new TimerCallback(SendRoomAndTurnCheckPkt);
         _checkRoomStateTimer = new Timer(callback, null, startTime, interval);
     }
 
@@ -90,16 +92,16 @@ public class RoomManager
 
         var curTime = DateTime.Now;
 
-        for(int i = beginIndex; i < endIndex; i++)
+        for (int i = beginIndex; i < endIndex; i++)
         {
-            if (RoomList[i].IsRoomUsing==true && RoomList[i].IsRoomCreatedButNotPlaying(curTime) == true)
+            if (RoomList[i].IsRoomUsing == true && RoomList[i].IsRoomCreatedButNotPlaying(curTime) == true)
             {
                 //해당 룸의 모든 사람들 쫓아냄
                 RoomList[i].RemoveAllUser();
             }
         }
     }
-    
+
 
     public void CheckGameState(int beginIndex, int endIndex)
     {
@@ -112,7 +114,7 @@ public class RoomManager
 
         for (int i = beginIndex; i < endIndex; i++)
         {
-            if (RoomList[i].IsRoomUsing==true && RoomList[i].IsGamePlayingTooLong(curTime) == true)
+            if (RoomList[i].IsRoomUsing == true && RoomList[i].IsGamePlayingTooLong(curTime) == true)
             {
                 RoomList[i].NotifyEndOmok("");//게임 draw로 끝내
                 RoomList[i].RemoveAllUser();//쫓아내
@@ -129,9 +131,10 @@ public class RoomManager
 
         var curTime = DateTime.Now;
 
-        for(int i=beginIndex; i < endIndex; i++)
+        for (int i = beginIndex; i < endIndex; i++)
         {
-            if (RoomList[i].IsRoomUsing == true && RoomList[i].OmokBoard.IsPutStoneTooLong(curTime)==true) { 
+            if (RoomList[i].IsRoomUsing == true && RoomList[i].OmokBoard.IsPutStoneTooLong(curTime) == true)
+            {
                 //턴 강제 넘기기
                 RoomList[i].NotifyClientTurnPass();
 
@@ -185,7 +188,7 @@ public class RoomManager
             return;
         }
     }
-    
+
     public List<Room> GetRoomList()
     {
         return RoomList;

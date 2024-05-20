@@ -5,13 +5,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
-using CSBaseLib;
+using SocketLibrary;
 using MemoryPack;
 using MySqlConnector;
 using SqlKata.Execution;
 using SuperSocket.SocketBase.Logging;
+using SocketServer.PacketHandler;
 
-namespace SocketServer;
+namespace SocketServer.Processor;
 
 public class MySqlProcessor
 {
@@ -26,8 +27,8 @@ public class MySqlProcessor
     //패킷 핸들러 등록
     Dictionary<int, Action<PacketData, QueryFactory>> PacketHandlerMap = new Dictionary<int, Action<PacketData, QueryFactory>>();
     PKHMysql MysqlPacketHandler = new PKHMysql();
-    
-    SuperSocket.SocketBase.Logging.ILog ProcessLogger;
+
+    ILog ProcessLogger;
 
     public MySqlProcessor(ILog logger, ServerOption serverOption)
     {
@@ -46,7 +47,7 @@ public class MySqlProcessor
         IsThreadRunning = true;
         for (int i = 0; i < threadNum; i++)
         {
-            ProcessThread.Add(new Thread(this.Process));
+            ProcessThread.Add(new Thread(Process));
         }
 
         for (int i = 0; i < threadNum; i++)
@@ -72,7 +73,7 @@ public class MySqlProcessor
 
     public void Destroy()
     {
-        IsThreadRunning=false;
+        IsThreadRunning = false;
         MsgBuffer.Complete();
     }
 
@@ -114,7 +115,7 @@ public class MySqlProcessor
                         $"받은 데이터 크기: {packet.BodyData.Length}");
                 }
             }
-            catch(Exception ex) 
+            catch (Exception ex)
             {
                 IsThreadRunning.IfTrue(() => ProcessLogger.Error(ex.ToString()));
             }

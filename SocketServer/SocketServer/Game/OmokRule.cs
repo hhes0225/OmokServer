@@ -2,18 +2,18 @@
 using System.Collections.Generic;
 using System.Drawing;
 
-namespace CSBaseLib;
+namespace SocketServer.Game;
 
 public class OmokRule
 {
-    public string BlackPlayerID="";
-    public string WhitePlayerID="";
+    public string BlackPlayerID = "";
+    public string WhitePlayerID = "";
 
-    public DateTime BlackTurnStartTime {  get; set; }
+    public DateTime BlackTurnStartTime { get; set; }
     public DateTime WhiteTurnStartTime { get; set; }
 
     public int BlackPassCount = 0;
-    public int WhitePassCount = 0; 
+    public int WhitePassCount = 0;
 
     public enum StoneType { None, Black, White };
 
@@ -63,7 +63,7 @@ public class OmokRule
     {
         GameStartTime = DateTime.MinValue;
         BlackPassCount = 0;
-        WhitePassCount= 0;
+        WhitePassCount = 0;
         GameFinish = true;
     }
 
@@ -108,7 +108,7 @@ public class OmokRule
 
     public string WhoseTurn()
     {
-        if((CurTurnCount % 2) == 1)
+        if (CurTurnCount % 2 == 1)
         {
             return BlackPlayerID;
         }
@@ -154,7 +154,7 @@ public class OmokRule
 
     public void PassTurn()
     {
-         if (BlackPlayerTurn == true)
+        if (BlackPlayerTurn == true)
         {
             BlackPassCount++;
             WhiteTurnStartTime = DateTime.Now;
@@ -329,7 +329,7 @@ public class OmokRule
         return continuousStoneNum;
     }
 
-    
+
 
     #region undo & samsam
     void Undo(object sender, EventArgs e)

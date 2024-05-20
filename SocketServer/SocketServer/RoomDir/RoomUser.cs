@@ -1,11 +1,11 @@
-﻿using CSBaseLib;
+﻿using SocketServer.UserDir;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SocketServer;
+namespace SocketServer.RoomDir;
 public class RoomUser
 {
     public string UserID { get; private set; }
