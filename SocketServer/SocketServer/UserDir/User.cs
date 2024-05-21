@@ -9,14 +9,10 @@ namespace SocketServer.UserDir;
 
 public class User
 {
-    //??무슨 의미의 변수???
     ulong SequenceNumber = 0;
-    //매번 바뀌는 Unique한 값.
-    //일반적으로 패킷 순서 추적, 특정 작업/이벤트의 순서 추적하는 데 사용되는 고유값
-    //이를 통해 데이터가 올바른 순서로 처리되고 중복, 누락 없이 전달됨
+   
     string SessionID;
-    //supersocket이 sessionID를 보고 req, res, ntf 할 수 있음
-
+   
     string UserID;
     public int RoomNumber { get; set; } = -1;
 
