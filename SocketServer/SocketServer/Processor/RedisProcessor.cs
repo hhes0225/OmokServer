@@ -15,10 +15,7 @@ public class RedisProcessor
     bool IsThreadRunning = false;
     List<Thread> ProcessThread = new List<Thread>();
 
-    //레디스 관련 컨피그 필요
     string rConfig;
-    //RedisConnection _redisConnection;
-    //RedisConfig _redisConfig;
 
     BufferBlock<PacketData> MsgBuffer;
 
