@@ -65,7 +65,6 @@ public class PacketData
 
 [MemoryPackable]
 public partial class PKTInternalReqRoomEnter
-    //Room 입장 시 시스템 내부에 유저 ID, 방 번호 자기 자신에게 req(입장 가능 여부 체크..?)
 {
     public string UserID {  get; set; }
     public int RoomNumber {  get; set; }
@@ -73,8 +72,6 @@ public partial class PKTInternalReqRoomEnter
 
 [MemoryPackable]
 public partial class PKTInternalResRoomEnter
-    //시스템 내부에서 방 입장 결과 전달
-    //(결과, 누가, 어떤 방에 입장 시도했는지)
 {
     public ErrorCode Result { get; set; }
     public string UserID {  get; set; }
@@ -83,8 +80,6 @@ public partial class PKTInternalResRoomEnter
 
 [MemoryPackable]
 public partial class PKTInternalNtfRoomLeave
-    //시스템 내부에서 방 나갔을 때 전달
-    //누가, 어떤 방에서 나갔는지
 {
     public string UserID { get; set; }
     public int RoomNumber { get; set; }
