@@ -240,28 +240,4 @@ public class PKHOmokGame : PKHandler
 
         SendDataFunc(sessionID, sendData);
     }
-
-    //public void NotifyEndOmok(Room room, string sessionID)
-    //{
-    //    room.SetAllInitState();
-    //    room.EndGame();
-
-    //    var ntfEndOmok = new PKTNtfEndOmok();
-
-    //    if (sessionID != "")
-    //    {
-    //        var winner = room.GetUserByNetSessionID(sessionID);
-    //        ntfEndOmok.WinUserID = winner.UserID;
-    //    }
-    //    else
-    //    {
-    //        ntfEndOmok.WinUserID = room.OmokBoard.DrawGame();
-    //    }
-
-    //    var body = MemoryPackSerializer.Serialize(ntfEndOmok);
-    //    var sendData = PacketMaker.MakePacket(PACKETID.NTF_END_OMOK, body);
-
-    //    room.Broadcast("", sendData);
-
-    //}
 }
