@@ -9,8 +9,6 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services.AddScoped<IUserDB, UserDB>();
 builder.Services.AddSingleton<IMemoryDB, MemoryDB>();
 
-
-// Add services to the container.
 builder.Services.AddControllers();
 
 IConfiguration configuration = builder.Configuration;
