@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 
 namespace SocketLibrary;
 
-//PacketData.cs
 //client와 server간 서로 주고받을 Packet 형식, 패킷화, 디패킷화에 대해 정의
 //이 코드는 cli-srv 같은 코드 공유해야 함
 
@@ -19,13 +18,11 @@ public class PacketDef
     public const int InvalidRoomNumber = -1;
 }
 
-//패킷 body 클래스를 byte 배열로 변환
-//(해당 서버에서 전송하는 패킷 만들기 위함)
 public class PacketToBytes
 {
     public byte[] MakePacket(PACKETID packetID, byte[] bodyData)
     {
-        var pktID = (Int16)packetID;//2byte 패킷ID 나타내는 헤더
+        var pktID = (Int16)packetID;
         Int16 bodyDataSize = 0;
 
         //패킷 헤더의 'PacketSize'(총 패킷 사이즈, 2 Byte Size) 계산하기 위한 부분
@@ -51,15 +48,12 @@ public class PacketToBytes
         return completePacket;
     }
 
-    //packetID와 body 데이터 분리(Deserialize 위해)
     public static Tuple<int, byte[]> SplitBodyFromReceiveData(int recvLength, byte[] recvData)
     {
-        //header의 size, id는 2byte이므로 2byte로 변환
         var packetSize = BitConverter.ToInt16(recvData, 0);//header에서 읽어오기
         var packetID = BitConverter.ToInt16(recvData, 2);
         var bodySize = packetSize - PacketDef.PacketHeaderSize;
 
-        //body는 deserialize하지 않고 byte 그대로 전달
         var packetBody = new byte[bodySize];
         Buffer.BlockCopy(recvData, PacketDef.PacketHeaderSize, packetBody, 0, bodySize);
         //recvData의 offset header부터, packetbody의 0에 넣는다. bodysize만큼
