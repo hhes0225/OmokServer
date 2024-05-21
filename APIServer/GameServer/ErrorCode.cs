@@ -19,8 +19,8 @@
     AuthTokenMismatch = 2008,
     AuthTokenNotFound = 2009,
     AuthTokenFailWrongKeyword = 2010,
-    //이 이후는 용도 알아봐야 함
-    AuthTokenFailSetNx = 2011,//???
+
+    AuthTokenFailSetNx = 2011,
     LoginFailAddRedis = 2012,
     CheckAuthFailNotExist = 2015,
     CheckAuthFailNotMatch = 2016,
