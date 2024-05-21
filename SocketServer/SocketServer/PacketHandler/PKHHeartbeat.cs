@@ -27,18 +27,14 @@ public class PKHHeartbeat : PKHandler
 
         try
         {
-            //User 정보 업데이트
-            //유저 찾기
             var user = _userMgr.GetUserBySessionID(sessionID);
 
-            //유저 정보 없음
             if (user == null)
             {
                 PongUserConnInfo(ErrorCode.HbUserNotExist, sessionID);
                 return;
             }
 
-            //유저 정보 있음
             user.UpdateHeartbeat(DateTime.Now);
 
             PongUserConnInfo(ErrorCode.None, sessionID);
