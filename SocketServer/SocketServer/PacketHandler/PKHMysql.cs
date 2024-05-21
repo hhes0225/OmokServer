@@ -40,7 +40,6 @@ public class PKHMysql
 
     }
 
-    //유저 정보 가져와서 이긴 사람, 진 사람, 비긴 사람 정보 업데이트
     public ErrorCode GameResultUpdate(PacketData packetData, QueryFactory queryFactory)
     {
         var gameResult = MemoryPackSerializer.Deserialize<PKTNtfInGameResultUpdate>(packetData.BodyData);
