@@ -8,7 +8,6 @@ using MemoryPack;
 namespace SocketLibrary;
 
 //클라이언트와 정확히 동일한 내용이어야 함.
-//클라이언트가 1001번 에러를 보냈을 때 서버에 에러 코드가 없어서 처리를 못해주거나 다른 에러 처리로 넘어갈수도 있음
 public enum ErrorCode : short
 {
     None = 0, // 정상처리, 에러가 아님
