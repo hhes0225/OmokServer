@@ -12,18 +12,13 @@ using System.Threading.Tasks;
 
 namespace SocketServer.UserDir;
 
-//현재 로그인한 유저(전체유저 X) == 서버와 통신해서 sessionID가 있는 유저 관리
-//sessionID: 한 클라이언트가 서버 요청한 순간부터 로그아웃 등으로 끊어지기까지 고유하게 유지됨.
-//userID가 기준이 아닌 이유: 한 클라이언트가 여러 세션 생성할 수 있기 때문(다중창 등...)
-//따라서 sessionID는 고유하지만 userID는 고유하지 않을 수도 있다.
-
 public class UserManager
 {
     int MaxUserCount;//한 서버에 최대 유저 몇명?
     ulong UserSequenceNumber = 0;
 
     Dictionary<string, User> UserMap = new Dictionary<string, User>();
-    //key는 sessionID, value는 이에 맞는 User
+    
     List<User> UserArray = null;
 
     private Timer _checkConnectionTimer;
