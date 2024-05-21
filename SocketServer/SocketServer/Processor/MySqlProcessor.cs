@@ -54,21 +54,6 @@ public class MySqlProcessor
         {
             ProcessThread[i].Start();
         }
-
-
-        //테스트 유저 삽입
-        //var data = new PKTNtfInInsertTestUser()
-        //{
-        //    Id = "qwer",
-        //    WinCount = 2,
-        //    DrawCount = 5,
-        //    LoseCount = 1
-        //};
-
-        //var body = MemoryPackSerializer.Serialize(data);
-        //var InternalPacket = new PacketData();
-        //InternalPacket.Assign((short)PACKETID.NtfInInsertTestUser, body);
-        //InsertPacket(InternalPacket);
     }
 
     public void Destroy()
