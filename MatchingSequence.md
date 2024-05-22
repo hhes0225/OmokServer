@@ -70,7 +70,7 @@ sequenceDiagram
   end
 
   F->>E: 주기적으로 레디스 리스트 체크
-  alt 요청이 들어옴
+  alt 레디스에 데이터가 있음, 디폴트값임
     F->>F: 빈 방 정보 검색(RoomManager)
     F->>E: 소켓서버 IP, Port, 빈 방 넘버 Set
   end
