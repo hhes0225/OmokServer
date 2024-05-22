@@ -286,7 +286,8 @@ namespace OmokClient
             {
                 DevLog.Write($"오목 GameOver: Win: {notifyPkt.WinUserID}");
             }
-            
+
+            btnMatching.Enabled = true;
         }
 
         void PacketProcess_PingUserConnInfo(object state)

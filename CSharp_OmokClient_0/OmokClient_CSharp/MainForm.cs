@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Net;
 
 
 namespace OmokClient
@@ -52,18 +53,18 @@ namespace OmokClient
             Network.Close();
         }
 
-        private void btnCreateAccount_Click(object sender, EventArgs e)
+        private void BtnCreateAccount_Click(object sender, EventArgs e)
         {
             // 새 창을 표시합니다.
             registerForm.ShowDialog();
         }
 
-        private void btnLogin_Click(object sender, EventArgs e)
+        private void BtnLogin_Click(object sender, EventArgs e)
         {
             loginForm.ShowDialog();
         }
 
-        private async void btnNewFormCreateAccount_Click(Object sender, EventArgs e)
+        private async void BtnNewFormCreateAccount_Click(Object sender, EventArgs e)
         {
             var address = hiveAddrTextBox.Text;
             var id = textboxCreateID.Text;
@@ -101,7 +102,7 @@ namespace OmokClient
             }
         }
 
-        private async void btnNewFormLogin_Click(Object sender, EventArgs e)
+        private async void BtnNewFormLogin_Click(Object sender, EventArgs e)
         {
             var hiveAddress = hiveAddrTextBox.Text;
             var gameAPIAddress= gameAddrTextBox.Text;
@@ -142,7 +143,10 @@ namespace OmokClient
                         textBoxUserID.Text = id;
                         textBoxAT.Text = loginResponse.authToken;
 
-                        registerForm.Close();
+                        ID = id;
+                        AuthToken = loginResponse.authToken;
+
+                        loginForm.Close();
                     }
                     else
                     {
@@ -161,6 +165,51 @@ namespace OmokClient
             {
                 MessageBox.Show("로그인 실패! - 올바른 입력 형식 아님");
             }
+        }
+
+        private async void BtnMatching_Click(object sender, EventArgs e)
+        {
+            var gameAPIAddress = gameAddrTextBox.Text;
+
+            if (gameAPIAddress != "")
+            {
+                //http client 객체 생성
+                HttpClient client = new HttpClient();
+
+                //POST 요청에 첨부할 데이터 생성
+                var postData = new { UserID = ID };
+                string json = JsonSerializer.Serialize(postData);
+                StringContent content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                //POST 요청 보내기
+                HttpResponseMessage response = await client.PostAsync("http://" + gameAPIAddress + "/MatchingRequest", content);
+
+                // 응답 처리
+                if (response.IsSuccessStatusCode)
+                {
+                    string jsonString = await response.Content.ReadAsStringAsync();
+                    CheckMatchingResponse checkMatchingResponse = JsonSerializer.Deserialize<CheckMatchingResponse>(jsonString);
+
+                    btnMatching.Enabled = false;
+
+                    textBoxIP.Text = checkMatchingResponse.SocketServerAddress;
+                    textBoxPort.Text = checkMatchingResponse.SocketServerPort;
+                    textBoxRoomNumber.Text = checkMatchingResponse.RoomNumber;
+
+                    ConnectSocketServer();
+                    Login();
+                    RoomEnter();
+                }
+                else
+                {
+                    MessageBox.Show("매칭 실패!");
+                }
+            }
+            else
+            {
+                MessageBox.Show("게임 서버 주소를 입력해 주세요.");
+            }
+
         }
 
         // 접속하기

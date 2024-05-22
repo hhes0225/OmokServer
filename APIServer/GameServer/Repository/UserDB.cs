@@ -82,6 +82,7 @@ public class DBConfig
 {
     public string UserDB { get; set; }
     public string RedisDB { get; set; }
+    public string RedisMatchingList {  get; set; }
 }
 
 public class dbUserInfo

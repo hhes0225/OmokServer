@@ -39,6 +39,7 @@ namespace OmokClient
             this.gameAddrLabel = new System.Windows.Forms.Label();
             this.gameAddrTextBox = new System.Windows.Forms.TextBox();
             this.btnLoginApi = new System.Windows.Forms.Button();
+            this.btnMatching = new System.Windows.Forms.Button();
 
             this.loginGroupBox = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -82,6 +83,7 @@ namespace OmokClient
             this.apiGroupBox.Controls.Add(this.gameAddrLabel);
             this.apiGroupBox.Controls.Add(this.gameAddrTextBox);
             this.apiGroupBox.Controls.Add(this.btnLoginApi);
+            this.apiGroupBox.Controls.Add(this.btnMatching);
             this.apiGroupBox.Location = new System.Drawing.Point(16, 10);
             this.apiGroupBox.Name = "apiGroupBox";
             this.apiGroupBox.Size = new System.Drawing.Size(555, 90);
@@ -102,19 +104,19 @@ namespace OmokClient
             // 
             this.hiveAddrTextBox.Location = new System.Drawing.Point(120, 23);
             this.hiveAddrTextBox.Name = "hiveAddrTextBox";
-            this.hiveAddrTextBox.Size = new System.Drawing.Size(300, 25);
+            this.hiveAddrTextBox.Size = new System.Drawing.Size(150, 25);
             this.hiveAddrTextBox.TabIndex = 1;
-            this.hiveAddrTextBox.Text = "127.0.0.1:11500";
+            this.hiveAddrTextBox.Text = ":11500";
             // 
             // btnCreateAccount
             // 
-            this.btnCreateAccount.Location = new System.Drawing.Point(430, 20);
+            this.btnCreateAccount.Location = new System.Drawing.Point(280, 20);
             this.btnCreateAccount.Name = "btnCreateAccount";
             this.btnCreateAccount.Size = new System.Drawing.Size(90, 27);
             this.btnCreateAccount.TabIndex = 5;
             this.btnCreateAccount.Text = "계정 생성";
             this.btnCreateAccount.UseVisualStyleBackColor = true;
-            this.btnCreateAccount.Click += new System.EventHandler(this.btnCreateAccount_Click);
+            this.btnCreateAccount.Click += new System.EventHandler(this.BtnCreateAccount_Click);
             // 
             // GameAddrLabel
             // 
@@ -129,19 +131,29 @@ namespace OmokClient
             // 
             this.gameAddrTextBox.Location = new System.Drawing.Point(120, 53);
             this.gameAddrTextBox.Name = "gameAddrTextBox";
-            this.gameAddrTextBox.Size = new System.Drawing.Size(300, 25);
+            this.gameAddrTextBox.Size = new System.Drawing.Size(150, 25);
             this.gameAddrTextBox.TabIndex = 1;
-            this.gameAddrTextBox.Text = "localhost:11502";
+            this.gameAddrTextBox.Text = ":11502";
             // 
             // btnCreateAccount
             // 
-            this.btnLoginApi.Location = new System.Drawing.Point(430, 50);
+            this.btnLoginApi.Location = new System.Drawing.Point(280, 50);
             this.btnLoginApi.Name = "btnLoginApi";
             this.btnLoginApi.Size = new System.Drawing.Size(90, 27);
             this.btnLoginApi.TabIndex = 5;
             this.btnLoginApi.Text = "로그인";
             this.btnLoginApi.UseVisualStyleBackColor = true;
-            this.btnLoginApi.Click += new System.EventHandler(this.btnLogin_Click);
+            this.btnLoginApi.Click += new System.EventHandler(this.BtnLogin_Click);
+            //
+            // btnMatching
+            //
+            this.btnMatching.Location = new System.Drawing.Point(400, 20);
+            this.btnMatching.Name = "btnMatching";
+            this.btnMatching.Size = new System.Drawing.Size(90, 57);
+            this.btnMatching.TabIndex = 5;
+            this.btnMatching.Text = "게임 매칭";
+            this.btnMatching.UseVisualStyleBackColor = true;
+            this.btnMatching.Click += new System.EventHandler(this.BtnMatching_Click);
 
 
             //
@@ -248,7 +260,6 @@ namespace OmokClient
             this.textBoxUserID.Name = "textBoxUserID";
             this.textBoxUserID.Size = new System.Drawing.Size(85, 25);
             this.textBoxUserID.TabIndex = 8;
-            this.textBoxUserID.Text = "jacking751@gmail.com";
             // 
             // label4
             // 
@@ -265,7 +276,6 @@ namespace OmokClient
             this.textBoxAT.Name = "textBoxAT";
             this.textBoxAT.Size = new System.Drawing.Size(85, 25);
             this.textBoxAT.TabIndex = 10;
-            this.textBoxAT.Text = "eyJhbGciOiJub25lIiwidHlwIjoiSldUIn0.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJqYWNraW5nNzUxQGdtYWlsLmNvbSIsIm5iZiI6MTcxNjExODI2NSwiZXhwIjoxNzE2MTM5ODY1fQ.";
             // 
             // button3
             // 
@@ -446,7 +456,7 @@ namespace OmokClient
             
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.Name = "MainForm";
-            this.Text = "Form1";
+            this.Text = "Omok Game";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.groupBox1.ResumeLayout(false);
@@ -496,7 +506,7 @@ namespace OmokClient
             registerForm.Controls.Add(btnRegister);
 
             // 회원가입 완료 버튼의 클릭 이벤트를 처리하는 로직을 추가합니다.
-            btnRegister.Click += new System.EventHandler(this.btnNewFormCreateAccount_Click);
+            btnRegister.Click += new System.EventHandler(this.BtnNewFormCreateAccount_Click);
 
             // 새 창을 생성합니다.
             this.loginForm = new Form();
@@ -540,7 +550,7 @@ namespace OmokClient
             loginForm.Controls.Add(btnLogin);
 
             // 회원가입 완료 버튼의 클릭 이벤트를 처리하는 로직을 추가합니다.
-            btnLogin.Click += new System.EventHandler(this.btnNewFormLogin_Click);
+            btnLogin.Click += new System.EventHandler(this.BtnNewFormLogin_Click);
 
         }
 
@@ -553,6 +563,7 @@ namespace OmokClient
         private System.Windows.Forms.Label gameAddrLabel;
         private System.Windows.Forms.TextBox gameAddrTextBox;
         private System.Windows.Forms.Button btnLoginApi;
+        private System.Windows.Forms.Button btnMatching;
 
         private System.Windows.Forms.GroupBox loginGroupBox;
         private System.Windows.Forms.Label label1;

@@ -30,5 +30,8 @@
     LoginFailHiveConnectionException =5001,
     UserDBInsertException=5002,
 
+    //Matching 관련 Error 6000~
+    MatchingFailError=6002,
+    MatchingNotYet = 6003,
 
 }
