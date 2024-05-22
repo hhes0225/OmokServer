@@ -19,4 +19,5 @@ sequenceDiagram
   alt 검증 성공
     B->>D: 매칭요청(ID) 전달
     D->>D: Matching Concurrent Queue에 ID 등록
+  end
 ```
